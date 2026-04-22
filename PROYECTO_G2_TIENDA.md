@@ -27,7 +27,7 @@ Un **producto** es cualquier artículo que la tienda vende. Es la entidad centra
 Ejemplos reales: "Camiseta básica algodón — 19,99 €", "Auriculares Bluetooth — 29,99 €", "Mochila urbana 30L — 45,00 €".
 
 ```
-- id: Long               → identificador único, lo genera la base de datos
+- id: UUID               → identificador único, lo genera la base de datos
 - name: String            → nombre del producto ("Camiseta básica")
 - description: String     → descripción corta ("Algodón 100%, disponible en 5 colores")
 - price: Double           → precio de venta (19.99)
@@ -41,7 +41,7 @@ Una **categoría** agrupa productos del mismo tipo para que el cliente pueda fil
 Ejemplos reales: "Electrónica", "Ropa", "Hogar", "Deportes", "Libros".
 
 ```
-- id: Long               → identificador único
+- id: UUID               → identificador único
 - name: String            → nombre de la categoría ("Electrónica")
 - description: String     → descripción de qué incluye ("Móviles, portátiles, auriculares...")
 ```
@@ -53,7 +53,7 @@ Una **compra** es el registro de que un cliente ha comprado un producto concreto
 Ejemplos reales: "Juan compró 2 unidades de Camiseta básica el 15/04/2026 a 19,99 € la unidad, total 39,98 €".
 
 ```
-- id: Long               → identificador único
+- id: UUID               → identificador único
 - purchaseDate: LocalDateTime → cuándo se hizo la compra (2026-04-15T10:30)
 - quantity: Integer       → cuántas unidades del producto (2)
 - unitPrice: Double       → precio por unidad en el momento de la compra (19.99)
@@ -67,7 +67,7 @@ Una **reseña** es la opinión que un cliente deja sobre un producto después de
 Ejemplos reales: "★★★★★ — Muy buena calidad, la tela es suave y no encoge al lavar".
 
 ```
-- id: Long               → identificador único
+- id: UUID               → identificador único
 - rating: Integer         → puntuación de 1 a 5 (5)
 - comment: String         → texto de la opinión ("Muy buena calidad...")
 - createdAt: LocalDateTime → cuándo se escribió la reseña (2026-04-16T14:00)
