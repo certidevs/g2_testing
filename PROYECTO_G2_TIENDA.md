@@ -32,6 +32,9 @@ Ejemplos reales: "Camiseta básica algodón — 19,99 €", "Auriculares Bluetoo
 - description: String     → descripción corta ("Algodón 100%, disponible en 5 colores")
 - price: Double           → precio de venta (19.99)
 - stock: Integer          → cuántas unidades quedan en almacén (50)
+- brand: String            -> Marca del articulo
+- product_type: String      -> Tipo de producto (ejemplo: electronica)
+- category: String          -> Categoria del producto (ejemplo: sobremesa)
 ```
 
 ### Category
