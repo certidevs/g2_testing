@@ -22,11 +22,17 @@ public class Brand
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
+    @Column(nullable = false, unique = true, length = 9)
+    private String nif;
+
     @Column(length = 100)
     private String country;
 
     @Column(length = 255)
     private String website;
+
+    @Column(length = 255)
+    private String logo;
 
     @Column(nullable = false)
     private Boolean active;
