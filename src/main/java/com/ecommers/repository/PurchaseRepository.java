@@ -12,44 +12,51 @@ import java.util.UUID;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
-    // Simples
-    // Encontrar compras por estado (ej. INICIADO, TERMINADO)
+    // -------- SIMPLES --------
+
+    // Status
     List<Purchase> findByPurchaseStatus(PurchaseStatus purchaseStatus);
 
-    // Encontrar compras por modo de envío
+    // Modo de envío
     List<Purchase> findByShippingMode(ShippingMode shippingMode);
 
-    // Encontrar compras por rango de fecha de creación
-    List<Purchase> findByCreationDateBetween(LocalDateTime startDate, LocalDateTime endDate);
-
-    // Encontrar compras por rango de fecha de finalización
-    List<Purchase> findByFinishedDateBetween(LocalDateTime finishedDateAfter, LocalDateTime finishedDateBefore);
-
-    // Encontrar compras por producto asociado
+    // Producto asociado
     List<Purchase> findByProduct(Product product);
 
-    // Encontrar compras con precio total mayor a un valor
-    List<Purchase> findByTotalPriceGreaterThan(Double totalPrice);
+    // --------- RANGOS --------
 
-    // Encontrar compras con precio total menor a un valor
-    List<Purchase> finByTotalPriceLessThan(Double totalPrice);
+    // Rango de fecha de creación
+    List<Purchase> findByCreationDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-    // Encontrar compras con precio unitario entre dos valores
+    // Rango de fecha de finalización
+    List<Purchase> findByFinishedDateBetween(LocalDateTime finishedDateAfter, LocalDateTime finishedDateBefore);
+
+    // Rango precio unitario
     List<Purchase> findByUnitPriceBetween(Double minPrice, Double maxPrice);
 
-    // Encontrar compras con precio total entre dos valores
+    // Rango precio total
     List<Purchase> findByTotalPriceBetween(Double minTotalPrice, Double maxTotalPrice);
 
-    // Encontrar compras por comentario del usuario (si contiene una palabra clave)
+    // Precio total mayor a un valor
+    List<Purchase> findByTotalPriceGreaterThan(Double totalPrice);
+
+    // Precio total menor a un valor
+    List<Purchase> finByTotalPriceLessThan(Double totalPrice);
+
+    // -------- ESPECÍFICOS --------
+
+    // Comentario del usuario (palabra clave)
     List<Purchase> findByUserCommentContaining(String keyword);
 
-    // Encontrar compras ordenadas por fecha de creación descendente
+    // -------- ORDENACIÓN --------
+
+    // Ordenado por fecha de creación descendente
     List<Purchase> findAllByOrderByCreationDateDesc();
 
-    // Encontrar compras terminadas en un rango de fechas, ordenadas por precio total
+    // -------- COMPLEJOS --------
+
+    // Compras terminadas en rango de fechas y ordenadas por precio total
     List<Purchase> findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
             LocalDateTime start, LocalDateTime end, PurchaseStatus status);
 
-    // Encontrar por Id del producto
-    List<Purchase> findByProductId(UUID productId);
 }
