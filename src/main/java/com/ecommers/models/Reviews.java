@@ -11,23 +11,29 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @Entity
+@Table (name = "reviews")
 @AllArgsConstructor
-@ToString
+@Builder
+@ToString(exclude = {"product","category"})
 public class Reviews {
 
-    // Reviews  long id
+    // Reviews  uuid
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     // Integer rating 1-5
     @Min(1)
     @Max(5)
     private Integer rating;
 
+    // Review's title
+    @Column(length = 1000)
+
+    private String title;
+    @Column(length = 1000)
     // Review's message
     private String message;
 
@@ -41,13 +47,19 @@ public class Reviews {
     private LocalDateTime creationDate;
 
     // Modified date
-    private LocalDateTime modifiedDate;
+    @Builder.Default
+    private LocalDateTime modifiedDate = LocalDateTime.now();
 
-    @ToString.Exclude
+    // Product
     @ManyToOne
     private Product product;
 
+    // Tostring para categories
+    // @ToString.Exclude
+    // @ManyToOne
+    // private Category category;
+
     // Vamos a integrar una aprobación de la review? es decir, en función de su status
     // Listado de reviews para admin para aprobar o desaprobar con estados
-
+    // Estados de la reseña:approved, pending approval, rejected
 }

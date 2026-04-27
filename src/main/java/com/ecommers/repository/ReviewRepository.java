@@ -1,16 +1,18 @@
 package com.ecommers.repository;
 
 import com.ecommers.models.Reviews;
+//import com.ecommers.models.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Reviews, Long> {
     // Conultas personalizadas
 
     // Traer review por producto
-    List<Reviews> findByProductId(Long productId);
+    List<Reviews> findByProductId(UUID productId);
 
     //Filtrar reviews por valoración
     List<Reviews> findByRating(Integer rating);
@@ -28,8 +30,10 @@ public interface ReviewRepository extends JpaRepository<Reviews, Long> {
     List<Reviews> findByVerified(Boolean verified);
 
     // Contar numero total de reseñas de cada producto
-    List<Reviews> countByProductId(Long productId);
+    Long countByProductId(UUID productId);
 
     // Filtrar mejores reviews por categoría
-    List<Reviews> findByCategory(String category);
+    // List<Reviews> findByProductCategory(Category category);
+
+
 }
