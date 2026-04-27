@@ -20,7 +20,7 @@ public class Product {
     private Long id;
 
     @NotBlank //El titulos del producto Obligatorio y no puede estar en blanco
-    @Column(nullable = false)//Obliga a poner el Título porque prohìbe guardar danos nulos (vacios)
+    @Column(nullable = false)//Obliga a poner el Título porque prohìbe guardar datos nulos (vacios)
     private String  title;
 
     @PositiveOrZero //El precio del producto no puede ser negativo
