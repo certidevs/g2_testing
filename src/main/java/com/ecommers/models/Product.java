@@ -1,4 +1,5 @@
 package com.ecommers.models;
+import com.ecommers.enums.ProductStockStatus;
 import jakarta.validation.constraints.NotBlank;
 // importado de jakarta.validation para validar que el
 // título del producto no esté en blanco
@@ -39,8 +40,23 @@ public class Product {
     @Column(length = 2000) //Limitar la longitud de la descripción larga a 2000 caracteres
     private String longDescription; //Descripción larga del producto
 
-    private Integer stock; // Cantidad de productos disponibles en el inventario
+//    private Integer stock; // Cantidad de productos disponibles en el inventario
+
+    @Enumerated(EnumType.STRING)
+    private ProductStockStatus stockStatus;
 
     private String imageUrl; //URL de la imagen del producto
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+
 
 }
