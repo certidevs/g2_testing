@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -17,10 +19,10 @@ import lombok.*;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //Delegar el ID a la Base de Datos.
-    private Long id;
+    private UUID id;
 
     @NotBlank //El titulos del producto Obligatorio y no puede estar en blanco
-    @Column(nullable = false)//Obliga a poner el Título porque prohìbe guardar danos nulos (vacios)
+    @Column(nullable = false)//Obliga a poner el Título porque prohìbe guardar datos nulos (vacios)
     private String  title;
 
     @PositiveOrZero //El precio del producto no puede ser negativo
