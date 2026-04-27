@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table (name = "Compras")
@@ -18,7 +19,7 @@ public class Purchases {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId; // ID del producto comprado
+    private UUID productId; // ID del producto comprado
 
     private LocalDateTime creationDate; // Fecha y hora de inicio de la compra
 
