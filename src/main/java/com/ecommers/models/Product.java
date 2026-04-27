@@ -52,11 +52,11 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
-    @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-
+//    @ToString.Exclude
+//    @ManyToOne
+//    @JoinColumn(name = "category_id")
+//    private Category category;
+//
 
 
 }
