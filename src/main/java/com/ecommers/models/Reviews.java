@@ -31,7 +31,7 @@ public class Reviews {
     // Review's message
     private String message;
 
-    // Review's verification status
+    // Review's really verificated?
     private Boolean verified;
 
     // Review's product id
@@ -46,5 +46,8 @@ public class Reviews {
     @ToString.Exclude
     @ManyToOne
     private Product product;
+
+    // Vamos a integrar una aprobación de la review? es decir, en función de su status
+    // Listado de reviews para admin para aprobar o desaprobar con estados
 
 }
