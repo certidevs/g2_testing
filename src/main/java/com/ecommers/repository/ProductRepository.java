@@ -2,32 +2,39 @@ package com.ecommers.repository;
 
 import com.ecommers.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     //  Conultas personalizadas
 
-    //BUSCAR
+    //BUSCAR findAll
 
     // Buscar productos por nombre
-    List<Product> findByName(String name);
+    List<Product> findByTitle(String name);
     // Buscar productos por categoría
-    List<Product> findByCategory(String category);
+    //List<Product> findByCategoryId(UUID categoryId);
 
     //FILTRAR
 
     //Filtrar por rango de precio
     List<Product> findByPriceBetween(Double minPrice, Double maxPrice);
     //Filtrar por marca
-    List<Product> findByBrand(String brand);
+    List<Product> findByBrandId(UUID brandId);
 
     // ORDENAR
 
     //Ordenar por precio de forma ascendente (Menor a Mayor)
-    List<Product> findAllByOrderByPriceAsc();
+    List<Product> findByAvailableTrueOrderByPriceAsc();
     //Ordenar por precio de forma Descendente (Mayor a Menor)
-    List<Product> findAllByOrderByPriceDesc();
+    List<Product> findByAvailableTrueOrderByPriceDesc();
+
+
+
+
+
 
 
 }
