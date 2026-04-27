@@ -37,12 +37,7 @@ public class Purchase {
 
     private String userComment; // Requisitos especificados por el comprador a la hora de la entrega
 
-    @ToString.Exclude
-    @ManyToOne
-    private Product product; // Asociación con el producto comprado
-
     // @ToString.Exclude
     // @ManyToOne
     // private PurchaseLine purchaseLine;
-
 }
