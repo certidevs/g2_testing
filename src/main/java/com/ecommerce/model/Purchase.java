@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Purchase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; // ID del producto comprado
 
     private LocalDateTime creationDate; // Fecha y hora de inicio de la compra
@@ -31,13 +31,11 @@ public class Purchase {
     @Enumerated(EnumType.STRING) // Tipo de envío: STANDARD, EXPRESS, PREMIUM
     private ShippingMode shippingMode;
 
-    private Double unitPrice; // Precio por unidad
-
     private Double totalPrice; // Precio total de compra
 
     private String userComment; // Requisitos especificados por el comprador a la hora de la entrega
 
-    // @ToString.Exclude
-    // @ManyToOne
-    // private PurchaseLine purchaseLine;
+    @ToString.Exclude
+    @ManyToOne
+    private Product product;
 }
