@@ -1,4 +1,4 @@
-package com.ecommerce.enums;
+package com.ecommerce.model.enums;
 
 public enum ShippingMode {
     STANDARD, EXPRESS, PREMIUM
