@@ -30,9 +30,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Rango de fecha de finalización
     List<Purchase> findByFinishedDateBetween(LocalDateTime finishedDateAfter, LocalDateTime finishedDateBefore);
 
-    // Rango precio unitario
-    List<Purchase> findByUnitPriceBetween(Double minPrice, Double maxPrice);
-
     // Rango precio total
     List<Purchase> findByTotalPriceBetween(Double minTotalPrice, Double maxTotalPrice);
 
