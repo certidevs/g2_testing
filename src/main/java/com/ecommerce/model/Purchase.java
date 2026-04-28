@@ -47,8 +47,9 @@ public class Purchase {
     }
 
     @PreUpdate //Para llevar un registro de la ultima modificación.
-    public void preUpdate()
-    {
-        this.finishedDate = LocalDateTime.now();
+    public void preUpdate() {
+        if(purchaseStatus == PurchaseStatus.TERMINADO){
+            this.finishedDate = LocalDateTime.now(); //Actualiza la fecha de finalización si el estado es TERMINADO
+        }
     }
 }
