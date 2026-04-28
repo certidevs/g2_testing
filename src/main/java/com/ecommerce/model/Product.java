@@ -19,7 +19,7 @@ import java.util.UUID;
 @Table(name = "Productos")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //Delegar el ID a la Base de Datos.
+    @GeneratedValue(strategy = GenerationType.UUID) //Delegar el ID a la Base de Datos.
     private UUID id;
 
     @NotBlank //El titulos del producto Obligatorio y no puede estar en blanco
@@ -51,6 +51,11 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brand brand;
+
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
 
 //    @ToString.Exclude
 //    @ManyToOne
