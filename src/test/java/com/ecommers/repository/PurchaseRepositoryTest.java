@@ -7,14 +7,50 @@ import static org.junit.jupiter.api.Assertions.*;
 class PurchaseRepositoryTest {
 
     @Test
-    void findByTotalPriceLessThanEqualOrderByTotalPrice() {
+    void findByPurchaseStatus() {
     }
 
     @Test
-    void findByProduct_Id() {
+    void findByShippingMode() {
+    }
+
+    @Test
+    void findByProduct() {
+    }
+
+    @Test
+    void findByCreationDateBetween() {
     }
 
     @Test
     void findByFinishedDateBetween() {
+    }
+
+    @Test
+    void findByUnitPriceBetween() {
+    }
+
+    @Test
+    void findByTotalPriceBetween() {
+    }
+
+    @Test
+    void findByTotalPriceGreaterThan() {
+    }
+
+    @Test
+    void finByTotalPriceLessThan() {
+    }
+
+    @Test
+    void findByUserCommentContaining() {
+    }
+
+    @Test
+    void findAllByOrderByCreationDateDesc() {
+    }
+
+    @Test
+    void findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice() {
     }
 }
