@@ -1,7 +1,7 @@
 package com.ecommerce.repository;
 
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.enums.PurchaseStatus;
+import com.ecommerce.enums.ShippingMode;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,7 +1,7 @@
 package com.ecommerce.model;
 
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.enums.PurchaseStatus;
+import com.ecommerce.enums.ShippingMode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +21,7 @@ public class Purchase {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; // ID del producto comprado
 
+    @Column(nullable = false)
     private LocalDateTime creationDate; // Fecha y hora de inicio de la compra
 
     private LocalDateTime finishedDate; // Fecha y hora de finalización de la compra
@@ -38,4 +39,16 @@ public class Purchase {
     @ToString.Exclude
     @ManyToOne
     private Product product;
+
+    @PrePersist // Esto garantiza valores por defecto al crear el registro de la compra
+    public void prePersist()
+    {
+        this.creationDate = LocalDateTime.now();
+    }
+
+    @PreUpdate //Para llevar un registro de la ultima modificación.
+    public void preUpdate()
+    {
+        this.finishedDate = LocalDateTime.now();
+    }
 }

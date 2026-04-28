@@ -1,4 +1,4 @@
-package com.ecommerce.model.enums;
+package com.ecommerce.enums;
 
 public enum Role // Para gestionar el rol del usuario
 {
