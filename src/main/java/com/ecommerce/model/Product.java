@@ -1,5 +1,5 @@
-package com.ecommers.models;
-import com.ecommers.enums.ProductStockStatus;
+package com.ecommerce.model;
+import com.ecommerce.model.enums.ProductStockStatus;
 import jakarta.validation.constraints.NotBlank;
 // importado de jakarta.validation para validar que el
 // título del producto no esté en blanco

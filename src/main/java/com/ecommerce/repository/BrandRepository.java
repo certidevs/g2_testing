@@ -1,6 +1,6 @@
-package com.ecommers.repository;
+package com.ecommerce.repository;
 
-import com.ecommers.models.Brand;
+import com.ecommerce.model.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,7 @@
-package com.ecommers.models;
+package com.ecommerce.model;
 
-import com.ecommers.enums.PurchaseStatus;
-import com.ecommers.enums.ShippingMode;
+import com.ecommerce.model.enums.PurchaseStatus;
+import com.ecommerce.model.enums.ShippingMode;
 import jakarta.persistence.*;
 import lombok.*;
 

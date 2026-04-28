@@ -1,14 +1,13 @@
-package com.ecommers.repository;
+package com.ecommerce.repository;
 
-import com.ecommers.enums.PurchaseStatus;
-import com.ecommers.enums.ShippingMode;
-import com.ecommers.models.Product;
-import com.ecommers.models.Purchase;
+import com.ecommerce.model.enums.PurchaseStatus;
+import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.model.Product;
+import com.ecommerce.model.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
