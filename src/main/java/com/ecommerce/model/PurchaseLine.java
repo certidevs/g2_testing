@@ -1,13 +1,17 @@
 package com.ecommerce.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.UUID;
 
+@Entity
+@Table (name = "Carrito")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PurchaseLine {
 
     @Id
@@ -23,4 +27,8 @@ public class PurchaseLine {
     @ToString.Exclude
     @ManyToOne
     Product product;
+
+    public double getTotal(int quantity, double price){
+        return quantity * price; // Method to calculate the total price of one product * quantity
+    }
 }
