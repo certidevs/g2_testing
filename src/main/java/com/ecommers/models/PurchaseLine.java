@@ -12,7 +12,7 @@ public class PurchaseLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID productId;
+    private UUID id;
 
     private int quatinty;
 
