@@ -19,7 +19,7 @@ public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID productId; // ID del producto comprado
+    private UUID id; // ID del producto comprado
 
     private LocalDateTime creationDate; // Fecha y hora de inicio de la compra
 
