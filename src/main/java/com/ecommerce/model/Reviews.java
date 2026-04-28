@@ -21,7 +21,7 @@ public class Reviews {
 
     // Reviews  uuid
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     // Integer rating 1-5
