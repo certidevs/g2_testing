@@ -10,6 +10,8 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @DataJpaTest
 class PurchaseLineRepositoryTest {
 
@@ -39,9 +41,9 @@ class PurchaseLineRepositoryTest {
     @BeforeEach
     void setUp(){
         product1 = Product.builder().price(20.50).build();
-        product2 = Product.builder().price(30.50).build();
-        product3 = Product.builder().price(15.50).build();
-        product4 = Product.builder().price(10.50).build();
+        product2 = Product.builder().price(30.00).build();
+        product3 = Product.builder().price(10.00).build();
+        product4 = Product.builder().price(5.00).build();
         productRepository.saveAll(List.of(product1, product2, product3, product4));
 
         purchaseLine1 = PurchaseLine.builder()
@@ -50,26 +52,26 @@ class PurchaseLineRepositoryTest {
                 .purchase(purchase1)
                 .build();
         purchaseLine2 = PurchaseLine.builder()
-                .quatinty(4)
+                .quatinty(2)
                 .product(product2)
-                .purchase(purchase1)
+                .purchase(purchase2)
                 .build();
         purchaseLine3 = PurchaseLine.builder()
-                .quatinty(10)
-                .product(product2)
-                .purchase(purchase1)
+                .quatinty(4)
+                .product(product3)
+                .purchase(purchase3)
                 .build();
         purchaseLine4 = PurchaseLine.builder()
-                .quatinty(8)
-                .product(product2)
-                .purchase(purchase1)
+                .quatinty(10)
+                .product(product4)
+                .purchase(purchase4)
                 .build();
         purchaseLineRepository.saveAll(List.of(purchaseLine1, purchaseLine2, purchaseLine3, purchaseLine4));
 
-        purchase1 = Purchase.builder().totalPrice(purchaseLine1.getTotal(purchaseLine1.getQuatinty(), purchaseLine1.getProduct().getPrice())).build();
-        purchase2 = Purchase.builder().totalPrice(purchaseLine2.getTotal(purchaseLine2.getQuatinty(), purchaseLine2.getProduct().getPrice())).build();
-        purchase3 = Purchase.builder().totalPrice(purchaseLine3.getTotal(purchaseLine3.getQuatinty(), purchaseLine3.getProduct().getPrice())).build();
-        purchase4 = Purchase.builder().totalPrice(purchaseLine4.getTotal(purchaseLine4.getQuatinty(), purchaseLine4.getProduct().getPrice())).build();
+        purchase1 = Purchase.builder().totalPrice(20.50).build();
+        purchase2 = Purchase.builder().totalPrice(60.00).build();
+        purchase3 = Purchase.builder().totalPrice(40.00).build();
+        purchase4 = Purchase.builder().totalPrice(50.00).build();
         purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 

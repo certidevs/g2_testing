@@ -27,8 +27,4 @@ public class PurchaseLine {
     @ToString.Exclude
     @ManyToOne
     Product product;
-
-    public double getTotal(int quantity, double price){
-        return quantity * price; // Method to calculate the total price of one product * quantity
-    }
 }

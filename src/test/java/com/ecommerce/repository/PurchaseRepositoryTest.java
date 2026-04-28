@@ -32,7 +32,7 @@ class PurchaseRepositoryTest {
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
                 .purchaseStatus(PurchaseStatus.TERMINADO)
                 .shippingMode(ShippingMode.STANDARD)
-                .totalPrice(20.50)
+                .totalPrice(purchase1.getTotalPrice())
                 .userComment("Me han llegado los productos en mal estado")
                 .build();
         purchase2 = Purchase.builder()
