@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table (name = "reviews")
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"product","category"})
+@ToString(exclude = {"product"})
 public class Reviews {
 
     // Reviews  uuid
@@ -39,9 +39,6 @@ public class Reviews {
 
     // Review's really verificated?
     private Boolean verified;
-
-    // Review's product id
-    private UUID productId;
 
     // Creation date
     private LocalDateTime creationDate;
