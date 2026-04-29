@@ -49,10 +49,18 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Ordenado por fecha de creación descendente
     List<Purchase> findAllByOrderByCreationDateDesc();
 
+    // Ordenado por fecha de creación ascendente¿?
+
+    // Ordenado por precio total descendente¿?
+
+    // Ordenador por precio total ascendente¿?
+
     // -------- COMPLEJOS --------
 
     // Compras terminadas en rango de fechas y ordenadas por precio total
     List<Purchase> findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
             LocalDateTime start, LocalDateTime end, PurchaseStatus status);
+
+    // Compras asociadas a un producto concreto y comentario del usuario (palabra clave)¿?
 
 }
