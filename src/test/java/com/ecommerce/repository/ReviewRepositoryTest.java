@@ -3,9 +3,8 @@ package com.ecommerce.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
-import com.ecommers.models.Reviews;
-import com.ecommers.models.Product;
-import com.ecommers.repository.ProductRepository;
+import com.ecommerce.model.Reviews;
+import com.ecommerce.model.Product;
 
 @DataJpaTest
 public class ReviewRepositoryTest {
