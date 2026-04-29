@@ -13,14 +13,13 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
     // -------- SIMPLES --------
 
+    // Compras asociadas a usuario
+
     // Status
     List<Purchase> findByPurchaseStatus(PurchaseStatus purchaseStatus);
 
     // Modo de envío
     List<Purchase> findByShippingMode(ShippingMode shippingMode);
-
-    // Producto asociado
-    List<Purchase> findByProduct(Product product);
 
     // --------- RANGOS --------
 
@@ -62,5 +61,4 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
             LocalDateTime start, LocalDateTime end, PurchaseStatus status);
 
     // Compras asociadas a un producto concreto y comentario del usuario (palabra clave)¿?
-
 }

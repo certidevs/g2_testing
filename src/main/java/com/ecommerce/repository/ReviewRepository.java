@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public interface ReviewRepository extends JpaRepository<Reviews, Long> {
+public interface ReviewRepository extends JpaRepository<Reviews, UUID> {
     // Conultas personalizadas
 
     // Traer review por producto

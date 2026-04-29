@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Entity
-@Table (name = "Carrito")
+@Table (name = "purchase_line")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class PurchaseLine {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id; // Id de la línea de compre
 
-    private int quatinty; // Cantidad del producto comprado
+    private int quantity; // Cantidad del producto comprado
 
     @ToString.Exclude
     @ManyToOne
