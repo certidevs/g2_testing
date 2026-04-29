@@ -36,7 +36,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByTotalPriceGreaterThan(Double totalPrice);
 
     // Precio total menor a un valor
-    List<Purchase> finByTotalPriceLessThan(Double totalPrice);
+    List<Purchase> findByTotalPriceLessThan(Double totalPrice);
 
     // -------- ESPECÍFICOS --------
 
