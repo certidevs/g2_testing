@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table (name = "Compras")
+@Table (name = "purchases")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,10 +35,6 @@ public class Purchase {
     private Double totalPrice; // Precio total de compra
 
     private String userComment; // Requisitos especificados por el comprador a la hora de la entrega
-
-    @ToString.Exclude
-    @ManyToOne
-    private Product product;
 
     @PrePersist // Esto garantiza valores por defecto al crear el registro de la compra
     public void prePersist()
