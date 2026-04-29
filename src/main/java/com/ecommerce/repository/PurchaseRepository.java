@@ -2,7 +2,6 @@ package com.ecommerce.repository;
 
 import com.ecommerce.model.enums.PurchaseStatus;
 import com.ecommerce.model.enums.ShippingMode;
-import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,9 +10,10 @@ import java.util.List;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
-    // -------- SIMPLES --------
+    // LATER: Buscar compra asociada a Id de User **[SIMPLE]**
+    // LATER: Buscar compras asociadas a un producto concreto y comentario del usuario (palabra clave) **[COMPLEX]**
 
-    // Compras asociadas a usuario
+    // -------- SIMPLES --------
 
     // Status
     List<Purchase> findByPurchaseStatus(PurchaseStatus purchaseStatus);
@@ -21,10 +21,9 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Modo de envío
     List<Purchase> findByShippingMode(ShippingMode shippingMode);
 
-    // --------- RANGOS --------
+    // --------- RANGES --------
 
-    // Rango de fecha de creación
-    List<Purchase> findByCreationDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    List<Purchase> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
 
     // Rango de fecha de finalización
     List<Purchase> findByFinishedDateBetween(LocalDateTime finishedDateAfter, LocalDateTime finishedDateBefore);
@@ -38,27 +37,22 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // Precio total menor a un valor
     List<Purchase> findByTotalPriceLessThan(Double totalPrice);
 
-    // -------- ESPECÍFICOS --------
+    // -------- SPECIFICS --------
 
     // Comentario del usuario (palabra clave)
     List<Purchase> findByUserCommentContaining(String keyword);
 
-    // -------- ORDENACIÓN --------
+    // -------- ORDER --------
 
     // Ordenado por fecha de creación descendente
     List<Purchase> findAllByOrderByCreationDateDesc();
 
     // Ordenado por fecha de creación ascendente¿?
+    List<Purchase> findAllByOrderByCreationDateAsc();
 
-    // Ordenado por precio total descendente¿?
-
-    // Ordenador por precio total ascendente¿?
-
-    // -------- COMPLEJOS --------
+    // -------- COMPLEX --------
 
     // Compras terminadas en rango de fechas y ordenadas por precio total
     List<Purchase> findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
             LocalDateTime start, LocalDateTime end, PurchaseStatus status);
-
-    // Compras asociadas a un producto concreto y comentario del usuario (palabra clave)¿?
 }

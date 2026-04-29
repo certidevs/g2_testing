@@ -12,10 +12,11 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @DataJpaTest
 class PurchaseRepositoryTest {
 
-    // @Autowired de los repositorios a utilizar
     @Autowired
     PurchaseRepository purchaseRepository;
 
@@ -32,8 +33,8 @@ class PurchaseRepositoryTest {
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
                 .purchaseStatus(PurchaseStatus.TERMINADO)
                 .shippingMode(ShippingMode.STANDARD)
-                .totalPrice(purchase1.getTotalPrice())
-                .userComment("Me han llegado los productos en mal estado")
+                .totalPrice(50.00)
+                .userComment("Me han llegado el producto en mal estado")
                 .build();
         purchase2 = Purchase.builder()
                 .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
@@ -62,51 +63,131 @@ class PurchaseRepositoryTest {
         purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 
+    // -------- SIMPLES --------
+
     @Test
     void findByPurchaseStatus() {
+        List<Purchase> finishedPurchases = purchaseRepository.findByPurchaseStatus(PurchaseStatus.TERMINADO);
+        System.out.println("-----------------------------------");
+        System.out.println(finishedPurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, finishedPurchases.size());
     }
 
     @Test
     void findByShippingMode() {
+        List<Purchase> standardPurchases = purchaseRepository.findByShippingMode(ShippingMode.STANDARD);
+        System.out.println("-----------------------------------");
+        System.out.println(standardPurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, standardPurchases.size());
     }
 
-    @Test
-    void findByProduct() {
-    }
+    // --------- RANGES --------
 
     @Test
     void findByCreationDateBetween() {
+        List<Purchase> containsCreationDatePurchases = purchaseRepository.findByCreationDateBetween(
+                LocalDateTime.of(2026, Month.JANUARY, 1, 0, 0),
+                LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59)
+        );
+        System.out.println("-----------------------------------");
+        System.out.println(containsCreationDatePurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsCreationDatePurchases.size());
     }
 
     @Test
     void findByFinishedDateBetween() {
-    }
-
-    @Test
-    void findByUnitPriceBetween() {
+        List<Purchase> containsFinishedDatePurchases = purchaseRepository.findByFinishedDateBetween
+                (LocalDateTime.of(2026, Month.JANUARY, 1, 0, 0),
+                LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59));
+        System.out.println("-----------------------------------");
+        System.out.println(containsFinishedDatePurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(1, containsFinishedDatePurchases.size());
     }
 
     @Test
     void findByTotalPriceBetween() {
+        List<Purchase> containsTotalPricePurchases = purchaseRepository.findByTotalPriceBetween(50.00, 100.00);
+        System.out.println("-----------------------------------");
+        System.out.println(containsTotalPricePurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsTotalPricePurchases.size());
     }
 
     @Test
     void findByTotalPriceGreaterThan() {
+        List<Purchase> greaterThanTotalPricePurchases = purchaseRepository.findByTotalPriceGreaterThan(50.00);
+        System.out.println("-----------------------------------");
+        System.out.println(greaterThanTotalPricePurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, greaterThanTotalPricePurchases.size());
     }
 
     @Test
     void finByTotalPriceLessThan() {
+        List<Purchase> lessThanTotalPricePurchases = purchaseRepository.findByTotalPriceLessThan(50.00);
+        System.out.println("-----------------------------------");
+        System.out.println(lessThanTotalPricePurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(1, lessThanTotalPricePurchases.size());
     }
+
+    // -------- SPECIFICS --------
 
     @Test
     void findByUserCommentContaining() {
+        List<Purchase> containsCommentPurchase = purchaseRepository.findByUserCommentContaining("producto");
+        System.out.println("-----------------------------------");
+        System.out.println(containsCommentPurchase);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsCommentPurchase.size());
     }
+
+    // -------- ORDER --------
 
     @Test
     void findAllByOrderByCreationDateDesc() {
+        List<Purchase> creationDateDesc = purchaseRepository.findAllByOrderByCreationDateDesc();
+        System.out.println("-----------------------------------");
+        System.out.println(creationDateDesc);
+        System.out.println("-----------------------------------");
+        assertEquals(4, creationDateDesc.size());
+        for (int i = 0; i < creationDateDesc.size() - 1; i++) {
+            assertTrue(creationDateDesc.get(i).getCreationDate().isAfter(creationDateDesc.get(i + 1).getCreationDate())
+                    || creationDateDesc.get(i).getCreationDate().isEqual(creationDateDesc.get(i + 1).getCreationDate()));
+        }
     }
 
     @Test
+    void findAllByOrderByCreationDateAsc(){
+        List<Purchase> creationDateAsc = purchaseRepository.findAllByOrderByCreationDateAsc();
+        System.out.println("-----------------------------------");
+        System.out.println(creationDateAsc);
+        System.out.println("-----------------------------------");
+        assertEquals(4, creationDateAsc.size());
+        for (int i = 0; i < creationDateAsc.size() - 1; i++) {
+            assertTrue(creationDateAsc.get(i).getCreationDate().isBefore(creationDateAsc.get(i + 1).getCreationDate())
+                    || creationDateAsc.get(i).getCreationDate().isEqual(creationDateAsc.get(i + 1).getCreationDate()));
+        }
+    }
+
+    // -------- COMPLEX --------
+
+    @Test
     void findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice() {
+        List<Purchase> finishedDateAndPurchaseStatusOrdered = purchaseRepository.findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
+                (LocalDateTime.of(2026, Month.JANUARY, 1, 0, 0)),
+                LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59),
+                PurchaseStatus.TERMINADO);
+        System.out.println("-----------------------------------");
+        System.out.println(finishedDateAndPurchaseStatusOrdered);
+        System.out.println("-----------------------------------");
+        assertEquals(1, finishedDateAndPurchaseStatusOrdered.size());
+        for (int i = 0; i < finishedDateAndPurchaseStatusOrdered.size() - 1; i++) {
+            assertTrue(finishedDateAndPurchaseStatusOrdered.get(i).getTotalPrice() <= finishedDateAndPurchaseStatusOrdered.get(i + 1).getTotalPrice());
+        }
     }
 }
