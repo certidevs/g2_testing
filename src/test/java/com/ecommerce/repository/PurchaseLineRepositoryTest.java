@@ -47,22 +47,22 @@ class PurchaseLineRepositoryTest {
         productRepository.saveAll(List.of(product1, product2, product3, product4));
 
         purchaseLine1 = PurchaseLine.builder()
-                .quatinty(1)
+                .quantity(1)
                 .product(product1)
                 .purchase(purchase1)
                 .build();
         purchaseLine2 = PurchaseLine.builder()
-                .quatinty(2)
+                .quantity(2)
                 .product(product2)
                 .purchase(purchase2)
                 .build();
         purchaseLine3 = PurchaseLine.builder()
-                .quatinty(4)
+                .quantity(4)
                 .product(product3)
                 .purchase(purchase3)
                 .build();
         purchaseLine4 = PurchaseLine.builder()
-                .quatinty(10)
+                .quantity(10)
                 .product(product4)
                 .purchase(purchase4)
                 .build();
@@ -84,19 +84,19 @@ class PurchaseLineRepositoryTest {
     }
 
     @Test
-    void findByQuatintyGreaterThan() {
+    void findByQuantityGreaterThan() {
     }
 
     @Test
-    void findByQuatintyLessThan() {
+    void findByQuantityLessThan() {
     }
 
     @Test
-    void findByQuatintyBetween() {
+    void findByQuantityBetween() {
     }
 
     @Test
-    void findByPurchaseOrderByQuatintyDesc() {
+    void findByPurchaseOrderByQuantityDesc() {
     }
 
     @Test

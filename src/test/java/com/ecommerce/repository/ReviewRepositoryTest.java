@@ -1,5 +1,6 @@
 package com.ecommerce.repository;
 
+<<<<<<< HEAD
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,6 +21,16 @@ import java.util.List;
     includeFilters = @Filter(type = FilterType.ASSIGNABLE_TYPE, 
     classes = {ReviewRepository.class, ProductRepository.class}))
 public class ReviewRepositoryTest{
+=======
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import com.ecommerce.model.Reviews;
+import com.ecommerce.model.Product;
+
+@DataJpaTest
+public class ReviewRepositoryTest {
+>>>>>>> 04cc565ca1d179029a379811cad941a85fcd02ee
 
     @Autowired
     private ReviewRepository reviewRepository;
@@ -35,7 +46,7 @@ public class ReviewRepositoryTest{
     Reviews review1;
     Reviews review2;
 
-    @BeforeEach
+@BeforeEach
     // Initialize data
     void setUp() {
         // Create and save products
@@ -46,7 +57,6 @@ public class ReviewRepositoryTest{
         review1 = reviewRepository.save(Reviews.builder().product(product1).rating(5).verified(true).build());
         review2 = reviewRepository.save(Reviews.builder().product(product2).rating(3).verified(false).build());
     }
-
 
     @Test
     void findByProductId() {

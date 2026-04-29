@@ -57,11 +57,10 @@ public class Product {
     @JoinColumn(name = "purchase_id")
     private Purchase purchase;
 
-//    @ToString.Exclude
-//    @ManyToOne
-//    @JoinColumn(name = "category_id")
-//    private Category category;
-//
+    // Relación al nivel de subcategoría
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subcategory_id", nullable = false)
+    private Category subcategory;
 
 
 }
