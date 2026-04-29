@@ -85,7 +85,6 @@ class PurchaseRepositoryTest {
 
     // --------- RANGES --------
 
-    /*                                         | Need to fix | DONT TOUCH |
     @Test
     void findByCreationDateBetween() {
         List<Purchase> containsCreationDatePurchases = purchaseRepository.findByCreationDateBetween(
@@ -97,7 +96,6 @@ class PurchaseRepositoryTest {
         System.out.println("-----------------------------------");
         assertEquals(2, containsCreationDatePurchases.size());
     }
-    */
 
     @Test
     void findByFinishedDateBetween() {
@@ -150,8 +148,6 @@ class PurchaseRepositoryTest {
 
     // -------- ORDER --------
 
-    /*
-                                                | Need to fix | DONT TOUCH |
     @Test
     void findAllByOrderByCreationDateDesc() {
         List<Purchase> creationDateDesc = purchaseRepository.findAllByOrderByCreationDateDesc();
@@ -164,7 +160,7 @@ class PurchaseRepositoryTest {
                     || creationDateDesc.get(i).getCreationDate().isEqual(creationDateDesc.get(i + 1).getCreationDate()));
         }
     }
-                                                | Need to fix | DONT TOUCH |
+
     @Test
     void findAllByOrderByCreationDateAsc(){
         List<Purchase> creationDateAsc = purchaseRepository.findAllByOrderByCreationDateAsc();
@@ -180,18 +176,18 @@ class PurchaseRepositoryTest {
 
     // -------- COMPLEX --------
 
-                                                | Need to fix | DONT TOUCH |
     @Test
     void findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice() {
-        List<Purchase> finishedDateAndPurchaseStatusOrdered = purchaseRepository.findAllByTotalPriceAsc();
+        List<Purchase> finishedDateAndPurchaseStatusOrdered = purchaseRepository.findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
+                (LocalDateTime.of(2026, Month.JANUARY, 1, 0, 0)),
+                LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59),
+                PurchaseStatus.TERMINADO);
         System.out.println("-----------------------------------");
         System.out.println(finishedDateAndPurchaseStatusOrdered);
         System.out.println("-----------------------------------");
-        assertEquals(4, finishedDateAndPurchaseStatusOrdered.size());
+        assertEquals(1, finishedDateAndPurchaseStatusOrdered.size());
         for (int i = 0; i < finishedDateAndPurchaseStatusOrdered.size() - 1; i++) {
             assertTrue(finishedDateAndPurchaseStatusOrdered.get(i).getTotalPrice() <= finishedDateAndPurchaseStatusOrdered.get(i + 1).getTotalPrice());
         }
     }
-
-     */
 }
