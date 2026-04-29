@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public interface CategoryRepository extends JpaRepository<Category, UUID>
 {
+    // Trae categorías raíz y sus hijos en una sola consulta
     @Query("select c from Category c left join fetch c.children where c.parent is null")
     List<Category> findAllRootWithChildren();
 }
