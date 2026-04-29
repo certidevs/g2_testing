@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @ToString
-@Table(name = "Productos")
+@Table(name = "products")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID) //Delegar el ID a la Base de Datos.
@@ -49,17 +49,16 @@ public class Product {
 
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "brand_id")
+
     private Brand brand;
 
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "purchase_id")
     private Purchase purchase;
 
     // Relación al nivel de subcategoría
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subcategory_id", nullable = false)
+
     private Category subcategory;
 
 
