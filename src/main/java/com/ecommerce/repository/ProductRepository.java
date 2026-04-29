@@ -16,6 +16,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // Buscar productos por categoría
     //List<Product> findByCategoryId(UUID categoryId);
 
+    // Buscar productos por disponibilidad con paginacion -
+    List<Product> findByTitleContainsIgnoreCase(String nombre);
+
+
     //FILTRAR
 
     //Filtrar por rango de precio
