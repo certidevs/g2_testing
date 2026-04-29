@@ -3,6 +3,7 @@ package com.ecommerce.repository;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
+import com.ecommerce.model.enums.ShippingMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,11 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 class PurchaseLineRepositoryTest {
 
-    // @Autowired de los repositorios a utilizar
     @Autowired
     PurchaseRepository purchaseRepository;
 
@@ -40,11 +40,18 @@ class PurchaseLineRepositoryTest {
 
     @BeforeEach
     void setUp(){
-        product1 = Product.builder().price(20.50).build();
-        product2 = Product.builder().price(30.00).build();
-        product3 = Product.builder().price(10.00).build();
-        product4 = Product.builder().price(5.00).build();
+
+        product1 = Product.builder().title("pr1").price(20.50).build();
+        product2 = Product.builder().title("pr2").price(30.00).build();
+        product3 = Product.builder().title("pr3").price(10.00).build();
+        product4 = Product.builder().title("pr4").price(5.00).build();
         productRepository.saveAll(List.of(product1, product2, product3, product4));
+
+        purchase1 = Purchase.builder().totalPrice(20.50).build();
+        purchase2 = Purchase.builder().totalPrice(60.00).build();
+        purchase3 = Purchase.builder().totalPrice(40.00).build();
+        purchase4 = Purchase.builder().totalPrice(50.00).build();
+        purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
 
         purchaseLine1 = PurchaseLine.builder()
                 .quantity(1)
@@ -67,16 +74,15 @@ class PurchaseLineRepositoryTest {
                 .purchase(purchase4)
                 .build();
         purchaseLineRepository.saveAll(List.of(purchaseLine1, purchaseLine2, purchaseLine3, purchaseLine4));
-
-        purchase1 = Purchase.builder().totalPrice(20.50).build();
-        purchase2 = Purchase.builder().totalPrice(60.00).build();
-        purchase3 = Purchase.builder().totalPrice(40.00).build();
-        purchase4 = Purchase.builder().totalPrice(50.00).build();
-        purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 
     @Test
     void findByPurchase() {
+        List<PurchaseLine> specificPurchase = purchaseLineRepository.findByPurchase(purchase1);
+        System.out.println("-----------------------------------");
+        System.out.println(specificPurchase);
+        System.out.println("-----------------------------------");
+        assertEquals(1, specificPurchase.size());
     }
 
     @Test
