@@ -1,11 +1,13 @@
 package com.ecommerce.model;
 
 
+import com.ecommerce.model.enums.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import lombok.*;
 import java.time.LocalDateTime;
+import com.ecommerce.model.Category;
 
 import java.util.UUID;
 
@@ -51,12 +53,13 @@ public class Reviews {
     @ManyToOne
     private Product product;
 
-    // Tostring para categories
-    // @ToString.Exclude
-    // @ManyToOne
-    // private Category category;
+    // Review status
+    @Enumerated(EnumType.STRING)
+    private ReviewStatus status;
 
-    // Vamos a integrar una aprobación de la review? es decir, en función de su status
+    // User
+    @ManyToOne
+    private Users users;
+
     // Listado de reviews para admin para aprobar o desaprobar con estados
-    // Estados de la reseña:approved, pending approval, rejected
 }
