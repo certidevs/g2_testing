@@ -27,5 +27,7 @@ public class Message {
         private LocalDateTime sentAt;
 
         private Boolean isRead = false;
-
+        @ManyToOne
+        @JoinColumn(name = "conversation_id")
+        private Conversation conversation;
 }
