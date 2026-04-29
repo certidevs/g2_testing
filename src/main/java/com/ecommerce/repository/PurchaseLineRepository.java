@@ -34,10 +34,16 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
     // Compras ordenadas por cantidad descendente
     List<PurchaseLine> findByPurchaseOrderByQuatintyDesc(Purchase purchase);
 
+    // Compras ordenadas por cantidad descendente¿?
+
     // -------- COMPLEJOS --------
 
     // Compra y producto
     List<PurchaseLine> findByPurchaseAndProduct(Purchase purchase, Product product);
+
+    // Producto y quantity¿?
+
+    // Buscar compras con cantidad igual o mayor de un producto concreto¿?
 
 
 }
