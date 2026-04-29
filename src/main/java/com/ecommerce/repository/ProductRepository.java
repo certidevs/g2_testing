@@ -1,8 +1,7 @@
-package com.ecommers.repository;
+package com.ecommerce.repository;
 
-import com.ecommers.models.Product;
+import com.ecommerce.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +15,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByTitle(String name);
     // Buscar productos por categoría
     //List<Product> findByCategoryId(UUID categoryId);
+
+    // Buscar productos por disponibilidad con paginacion -
+    List<Product> findByTitleContainsIgnoreCase(String nombre);
+
 
     //FILTRAR
 

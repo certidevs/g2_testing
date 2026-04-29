@@ -1,7 +1,7 @@
-package com.ecommers.models;
+package com.ecommerce.model;
 
-import com.ecommers.enums.PurchaseStatus;
-import com.ecommers.enums.ShippingMode;
+import com.ecommerce.model.enums.PurchaseStatus;
+import com.ecommerce.model.enums.ShippingMode;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,9 +18,10 @@ import java.util.UUID;
 public class Purchase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID productId; // ID del producto comprado
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id; // ID del producto comprado
 
+    @Column(nullable = false)
     private LocalDateTime creationDate; // Fecha y hora de inicio de la compra
 
     private LocalDateTime finishedDate; // Fecha y hora de finalización de la compra
@@ -31,13 +32,24 @@ public class Purchase {
     @Enumerated(EnumType.STRING) // Tipo de envío: STANDARD, EXPRESS, PREMIUM
     private ShippingMode shippingMode;
 
-    private Double unitPrice; // Precio por unidad
-
     private Double totalPrice; // Precio total de compra
 
     private String userComment; // Requisitos especificados por el comprador a la hora de la entrega
 
-    // @ToString.Exclude
-    // @ManyToOne
-    // private PurchaseLine purchaseLine;
+    @ToString.Exclude
+    @ManyToOne
+    private Product product;
+
+    @PrePersist // Esto garantiza valores por defecto al crear el registro de la compra
+    public void prePersist()
+    {
+        this.creationDate = LocalDateTime.now();
+    }
+
+    @PreUpdate //Para llevar un registro de la ultima modificación.
+    public void preUpdate() {
+        if(purchaseStatus == PurchaseStatus.TERMINADO){
+            this.finishedDate = LocalDateTime.now(); //Actualiza la fecha de finalización si el estado es TERMINADO
+        }
+    }
 }

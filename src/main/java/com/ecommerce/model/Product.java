@@ -1,5 +1,5 @@
-package com.ecommers.models;
-import com.ecommers.enums.ProductStockStatus;
+package com.ecommerce.model;
+import com.ecommerce.model.enums.ProductStockStatus;
 import jakarta.validation.constraints.NotBlank;
 // importado de jakarta.validation para validar que el
 // título del producto no esté en blanco
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Table(name = "Productos")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //Delegar el ID a la Base de Datos.
+    @GeneratedValue(strategy = GenerationType.UUID) //Delegar el ID a la Base de Datos.
     private UUID id;
 
     @NotBlank //El titulos del producto Obligatorio y no puede estar en blanco
@@ -54,9 +54,14 @@ public class Product {
 
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
 
+//    @ToString.Exclude
+//    @ManyToOne
+//    @JoinColumn(name = "category_id")
+//    private Category category;
+//
 
 
 }

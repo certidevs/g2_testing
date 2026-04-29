@@ -1,6 +1,6 @@
-package com.ecommers.repository;
+package com.ecommerce.repository;
 
-import com.ecommers.models.Reviews;
+import com.ecommerce.model.Reviews;
 //import com.ecommers.models.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
