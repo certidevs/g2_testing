@@ -1,7 +1,7 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Reviews;
-//import com.ecommers.models.Category;
+import com.ecommerce.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
@@ -33,7 +33,7 @@ public interface ReviewRepository extends JpaRepository<Reviews, UUID> {
     Long countByProductId(UUID productId);
 
     // Filtrar mejores reviews por categoría
-    // List<Reviews> findByProductCategory(Category category);
+    List<Reviews> findByProductSubcategory(Category category);
 
 
 }
