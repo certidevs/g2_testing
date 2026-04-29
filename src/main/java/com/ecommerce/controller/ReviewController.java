@@ -1,7 +1,7 @@
-package com.ecommers.controllers;
+package com.ecommerce.controller;
 
-import com.ecommers.models.Reviews;
-import com.ecommers.repository.ReviewRepository;
+import com.ecommerce.model.Reviews;
+import com.ecommerce.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
