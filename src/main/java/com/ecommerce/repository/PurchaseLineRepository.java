@@ -21,18 +21,18 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
     // --------- RANGOS --------
 
     // Cantidad mayor a un valor
-    List<PurchaseLine> findByQuatintyGreaterThan(int quantity);
+    List<PurchaseLine> findByQuantityGreaterThan(int quantity);
 
     // Cantidad menor a un valor
-    List<PurchaseLine> findByQuatintyLessThan(int quantity);
+    List<PurchaseLine> findByQuantityLessThan(int quantity);
 
     // Rango de cantidad
-    List<PurchaseLine> findByQuatintyBetween(int minQuantity, int maxQuantity);
+    List<PurchaseLine> findByQuantityBetween(int minQuantity, int maxQuantity);
 
     // -------- ORDENACIÓN --------
 
     // Compras ordenadas por cantidad descendente
-    List<PurchaseLine> findByPurchaseOrderByQuatintyDesc(Purchase purchase);
+    List<PurchaseLine> findByPurchaseOrderByQuantityDesc(Purchase purchase);
 
     // Compras ordenadas por cantidad descendente¿?
 
