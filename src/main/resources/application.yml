@@ -2,7 +2,7 @@ spring:
   application:
     name: g2_testing
   datasource:
-    url: jdbc:h2:mem:ecommers_db
+    url: jdbc:h2:mem:ecommerce_db
     driver-class-name: org.h2.Driver
   jpa:
     hibernate:
