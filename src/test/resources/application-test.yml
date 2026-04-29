@@ -12,5 +12,5 @@ spring:
   h2:
     console:
       enabled: true
-  profile:
+  profiles:
     active: true
