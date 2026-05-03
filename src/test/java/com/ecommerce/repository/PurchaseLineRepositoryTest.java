@@ -3,7 +3,6 @@ package com.ecommerce.repository;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
-import com.ecommerce.model.enums.ShippingMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
