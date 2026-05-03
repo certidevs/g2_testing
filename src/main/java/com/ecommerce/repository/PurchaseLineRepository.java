@@ -12,38 +12,45 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
 
     // -------- SIMPLES --------
 
-    // Compra concreta
+    // Specific purchase
     List<PurchaseLine> findByPurchase(Purchase purchase);
 
-    // Producto concreto
+    // Specific product
     List<PurchaseLine> findByProduct(Product product);
 
     // --------- RANGE --------
 
-    // Cantidad mayor a un valor
+    // Quantity greater than a value
     List<PurchaseLine> findByQuantityGreaterThan(int quantity);
 
-    // Cantidad menor a un valor
+    // Quantity less than a value
     List<PurchaseLine> findByQuantityLessThan(int quantity);
 
-    // Rango de cantidad
+    // Quantity range
     List<PurchaseLine> findByQuantityBetween(int minQuantity, int maxQuantity);
 
     // -------- ORDER --------
 
-    // Compras ordenadas por cantidad descendente
+    // Sort by quantity in descending order
     List<PurchaseLine> findByPurchaseOrderByQuantityDesc(Purchase purchase);
 
-    // Compras ordenadas por cantidad descendente¿?
+    // Sort by quantity in ascending order
+    List<PurchaseLine> findByPurchaseOrderByQuantityAsc(Purchase purchase);
 
     // -------- COMPLEX --------
 
-    // Compra y producto
+    // Purchase & product
     List<PurchaseLine> findByPurchaseAndProduct(Purchase purchase, Product product);
 
-    // Producto y quantity¿?
+    // Product & quantity
+    List<PurchaseLine> findByProductAndQuantity(Product product, int quantity);
 
-    // Buscar compras con cantidad igual o mayor de un producto concreto¿?
+    // Product & quantity greater than a value
+    List<PurchaseLine> findByProductAndQuantityGreaterThan(Product product, int quantity);
 
+    // Product & quantity less than a value
+    List<PurchaseLine> findByProductAndQuantityLessThan(Product product, int quantity);
 
+    // Product & quantity between values
+    List<PurchaseLine> findByProductAndQuantityBetween(Product product, int minQuantity, int maxQuantity);
 }
