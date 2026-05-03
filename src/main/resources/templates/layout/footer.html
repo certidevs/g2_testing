@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html xmlns:th="http://www.thymeleaf.org">
 <body>
-
+<footer th:fragment="footer" class="bg-white border-top mt-5 py-4">
+    <div class="container text-center small text-muted">
+        <p class="mb-0">
+            <i class="fa-regular fa-copyright"></i> 2026 Restaurantes — Adecco
+        </p>
+    </div>
+</footer>
+<script th:fragment="scripts" th:src="@{/webjars/bootstrap/5.3.8/dist/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>
