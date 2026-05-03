@@ -16,15 +16,15 @@ public class PurchaseLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id; // Id de la línea de compre
+    private UUID id; // ID Purchase line
 
-    private int quantity; // Cantidad del producto comprado
-
-    @ToString.Exclude
-    @ManyToOne
-    Purchase purchase; // Compra a la que pertenece la línea de compra
+    private int quantity; // Quantity of product purchased
 
     @ToString.Exclude
     @ManyToOne
-    Product product; // Producto comprado
+    Purchase purchase; // Purchase to which the purchase line belongs
+
+    @ToString.Exclude
+    @ManyToOne
+    Product product; // Product purchased
 }
