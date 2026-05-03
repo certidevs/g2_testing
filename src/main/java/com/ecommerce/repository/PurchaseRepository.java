@@ -1,58 +1,79 @@
 package com.ecommerce.repository;
 
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.model.enums.*;
 import com.ecommerce.model.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
 
-    // LATER: Buscar compra asociada a Id de User **[SIMPLE]**
-    // LATER: Buscar compras asociadas a un producto concreto y comentario del usuario (palabra clave) **[COMPLEX]**
-
     // -------- SIMPLES --------
 
-    // Status
+    // Specific user
+    List<Purchase> findByUsersId(UUID users_id);
+
+    // Specific purchase
+    List<Purchase> findById(UUID purchaseId);
+
+    // Purchase status
     List<Purchase> findByPurchaseStatus(PurchaseStatus purchaseStatus);
 
-    // Modo de envío
+    // Payment status
+    List<Purchase> findByPaymentStatus(PaymentStatus paymentStatus);
+
+    // Process status
+    List<Purchase> findByProcessStatus(ProcessStatus processStatus);
+
+    // Shipping status
+    List<Purchase> findByShippingStatus(ShippingStatus shippingStatus);
+
+    // Shipping mode
     List<Purchase> findByShippingMode(ShippingMode shippingMode);
 
     // --------- RANGES --------
 
     List<Purchase> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
 
-    // Rango de fecha de finalización
+    // Finished data between
     List<Purchase> findByFinishedDateBetween(LocalDateTime finishedDateAfter, LocalDateTime finishedDateBefore);
 
-    // Rango precio total
+    // Total price between
     List<Purchase> findByTotalPriceBetween(Double minTotalPrice, Double maxTotalPrice);
 
-    // Precio total mayor a un valor
+    // Total price greater than a value
     List<Purchase> findByTotalPriceGreaterThan(Double totalPrice);
 
-    // Precio total menor a un valor
+    // Total price less than a value
     List<Purchase> findByTotalPriceLessThan(Double totalPrice);
 
     // -------- SPECIFICS --------
 
-    // Comentario del usuario (palabra clave)
+    // Specific purchase & user comment (key word)
+    List<Purchase> findByIdAndUserCommentContaining(UUID id, String userComment);
+
+    // Specific user & user comment (key word)
+    List<Purchase> findByUsersIdAndUserCommentContaining(UUID users_id, String userComment);
+
+    // User comment (key word)
     List<Purchase> findByUserCommentContaining(String keyword);
 
     // -------- ORDER --------
 
-    // Ordenado por fecha de creación descendente
+    // Sort by creation date descendent
     List<Purchase> findAllByOrderByCreationDateDesc();
 
-    // Ordenado por fecha de creación ascendente¿?
+    // Sort by creation date ascendant
     List<Purchase> findAllByOrderByCreationDateAsc();
 
     // -------- COMPLEX --------
 
-    // Compras terminadas en rango de fechas y ordenadas por precio total
+    // Purchases finished on range date and sort by total price
     List<Purchase> findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
             LocalDateTime start, LocalDateTime end, PurchaseStatus status);
+
+     // Specific purchase & shipping mode
+    List<Purchase> findByIdAndShippingMode(UUID id, ShippingMode shippingMode);
 }
