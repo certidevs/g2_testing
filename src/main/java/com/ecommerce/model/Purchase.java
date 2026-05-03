@@ -1,7 +1,6 @@
 package com.ecommerce.model;
 
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.model.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,36 +19,34 @@ public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id; // ID del producto comprado
+    private UUID id; // ID Purchase
 
     @Builder.Default
     @Column(nullable = false)
-    private LocalDateTime creationDate = LocalDateTime.now(); // Fecha y hora de inicio de la compra
+    private LocalDateTime creationDate = LocalDateTime.now(); // Date & time the purchase started
 
-
-    private LocalDateTime finishedDate; // Fecha y hora de finalización de la compra
+    private LocalDateTime finishedDate; // Date & time the purchase finished
 
     @Builder.Default
-    @Enumerated(EnumType.STRING) // Estado de la compra: INICIADO, INACTIVO, TERMINADO
-    private PurchaseStatus purchaseStatus = PurchaseStatus.INICIADO;
+    @Enumerated(EnumType.STRING) // Status of purchase: INITIATED INACTIVE, FINISHED
+    private PurchaseStatus purchaseStatus = PurchaseStatus.INITIATED;
 
-    @Enumerated(EnumType.STRING) // Tipo de envío: STANDARD, EXPRESS, PREMIUM
+    @Enumerated(EnumType.STRING) // Shipping mode: STANDARD, EXPRESS, PREMIUM
     private ShippingMode shippingMode;
 
-    private Double totalPrice; // Precio total de compra
+    @Enumerated(EnumType.STRING) // Shipping status: SHIPPED, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED
+    private ShippingStatus shippingStatus;
 
-    private String userComment; // Requisitos especificados por el comprador a la hora de la entrega
+    @Enumerated(EnumType.STRING) // Payment status: PENDING, PAID, FAILED
+    private PaymentStatus paymentStatus;
 
-//    @PrePersist // Esto garantiza valores por defecto al crear el registro de la compra
-//    public void prePersist()
-//    {
-//        this.creationDate = LocalDateTime.now();
-//    }
-//
-//    @PreUpdate //Para llevar un registro de la ultima modificación.
-//    public void preUpdate() {
-//        if(purchaseStatus == PurchaseStatus.TERMINADO){
-//            this.finishedDate = LocalDateTime.now(); //Actualiza la fecha de finalización si el estado es TERMINADO
-//        }
-//    }
+    @Enumerated(EnumType.STRING) // Process status: PROCESSING, ON_HOLD, COMPLETED, CANCELLED
+    private ProcessStatus processStatus;
+
+    private Double totalPrice; // Total purchase price
+
+    private String userComment; // Requirements specified by the buyer at the time of delivery
+
+    @ManyToOne
+    private Users users;
 }
