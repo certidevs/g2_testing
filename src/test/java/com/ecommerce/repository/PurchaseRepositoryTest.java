@@ -1,8 +1,8 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Purchase;
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
+import com.ecommerce.model.Users;
+import com.ecommerce.model.enums.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +20,12 @@ class PurchaseRepositoryTest {
     @Autowired
     PurchaseRepository purchaseRepository;
 
+    @Autowired
+    UsersRepository usersRepository;
+
+    Users user1;
+    Users user2;
+
     Purchase purchase1;
     Purchase purchase2;
     Purchase purchase3;
@@ -28,50 +34,140 @@ class PurchaseRepositoryTest {
     @BeforeEach
     void setUp(){
 
+        user1 = Users.builder()
+                .name("User 1")
+                .lastName("Last Name 1")
+                .email("user1@gmail.com")
+                .phone("123456789")
+                .password("password1")
+                .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
+                .gender(Gender.MALE)
+                .role(Role.CUSTOMER)
+                .build();
+
+        user2 = Users.builder()
+                .name("User 2")
+                .lastName("Last Name 2")
+                .email("user2@gmail.com")
+                .phone("987654321")
+                .password("password2")
+                .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
+                .gender(Gender.FEMALE)
+                .role(Role.CUSTOMER)
+                .build();
+
+        usersRepository.saveAll(List.of(user1, user2));
+
         purchase1 = Purchase.builder()
+                .users(user1)
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
-                .purchaseStatus(PurchaseStatus.TERMINADO)
+                .purchaseStatus(PurchaseStatus.FINISHED)
+                .paymentStatus(PaymentStatus.PAID)
+                .processStatus(ProcessStatus.COMPLETED)
+                .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.STANDARD)
                 .totalPrice(50.00)
-                .userComment("Me han llegado el producto en mal estado")
+                .userComment("Me ha llegado el producto en mal estado")
                 .build();
+
         purchase2 = Purchase.builder()
+                .users(user2)
                 .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
                 .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
-                .purchaseStatus(PurchaseStatus.TERMINADO)
+                .purchaseStatus(PurchaseStatus.FINISHED)
+                .paymentStatus(PaymentStatus.PAID)
+                .processStatus(ProcessStatus.COMPLETED)
+                .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.EXPRESS)
                 .totalPrice(15.45)
                 .userComment("El producto ha llegado bien pero he tardado mucho más de lo esperado teniendo en cuenta que era EXPRESS")
                 .build();
+
         purchase3 = Purchase.builder()
+                .users(user1)
                 .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
                 .finishedDate(null)
-                .purchaseStatus(PurchaseStatus.INICIADO)
+                .purchaseStatus(PurchaseStatus.INITIATED)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.PENDING)
+                .shippingStatus(ShippingStatus.PENDING)
                 .shippingMode(ShippingMode.PREMIUM)
                 .totalPrice(150.75)
                 .userComment(null)
                 .build();
+
         purchase4 = Purchase.builder()
+                .users(user2)
                 .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
                 .finishedDate(null)
-                .purchaseStatus(PurchaseStatus.INACTIVO)
+                .purchaseStatus(PurchaseStatus.INACTIVE)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.PENDING)
+                .shippingStatus(ShippingStatus.PENDING)
                 .shippingMode(ShippingMode.STANDARD)
                 .totalPrice(73.00)
                 .userComment(null)
                 .build();
+
         purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 
-    // -------- SIMPLES --------
+    // -------- SIMPLE --------
+
+    @Test
+    void findByUsersId(){
+        List<Purchase> specificUserPurchases = purchaseRepository.findByUsersId(user1.getId());
+        System.out.println("-----------------------------------");
+        System.out.println(specificUserPurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(2, specificUserPurchases.size());
+    }
+
+    @Test
+    void findById(){
+
+        List<Purchase> specificPurchase = purchaseRepository.findById(purchase1.getId());
+        System.out.println("-----------------------------------");
+        System.out.println(specificPurchase);
+        System.out.println("-----------------------------------");
+        assertEquals(1, specificPurchase.size());
+    }
 
     @Test
     void findByPurchaseStatus() {
-        List<Purchase> finishedPurchases = purchaseRepository.findByPurchaseStatus(PurchaseStatus.TERMINADO);
+        List<Purchase> finishedPurchases = purchaseRepository.findByPurchaseStatus(PurchaseStatus.FINISHED);
         System.out.println("-----------------------------------");
         System.out.println(finishedPurchases);
         System.out.println("-----------------------------------");
         assertEquals(2, finishedPurchases.size());
+    }
+
+    @Test
+    void findByPaymentStatus(){
+        List<Purchase> containsPaymentStatus = purchaseRepository.findByPaymentStatus(PaymentStatus.PAID);
+        System.out.println("-----------------------------------");
+        System.out.println(containsPaymentStatus);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsPaymentStatus.size());
+    }
+
+    @Test
+    void findByProcessStatus(){
+        List<Purchase> containsProcessStatus = purchaseRepository.findByProcessStatus(ProcessStatus.PENDING);
+        System.out.println("-----------------------------------");
+        System.out.println(containsProcessStatus);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsProcessStatus.size());
+    }
+
+    @Test
+    void findByShippingStatus(){
+        List<Purchase> containsShippingStatus = purchaseRepository.findByShippingStatus(ShippingStatus.DELIVERED);
+        System.out.println("-----------------------------------");
+        System.out.println(containsShippingStatus);
+        System.out.println("-----------------------------------");
+        assertEquals(2, containsShippingStatus.size());
     }
 
     @Test
@@ -83,7 +179,7 @@ class PurchaseRepositoryTest {
         assertEquals(2, standardPurchases.size());
     }
 
-    // --------- RANGES --------
+    // --------- RANGE --------
 
     @Test
     void findByCreationDateBetween() {
@@ -135,7 +231,16 @@ class PurchaseRepositoryTest {
         assertEquals(1, lessThanTotalPricePurchases.size());
     }
 
-    // -------- SPECIFICS --------
+    // -------- SPECIFIC --------
+
+    @Test
+    void findByUsersIdAndUserCommentContaining(){
+        List<Purchase> containsUserIdAndCommentPurchases = purchaseRepository.findByUsersIdAndUserCommentContaining(purchase1.getUsers().getId(), "mal estado");
+        System.out.println("-----------------------------------");
+        System.out.println(containsUserIdAndCommentPurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(1, containsUserIdAndCommentPurchases.size());
+    }
 
     @Test
     void findByUserCommentContaining() {
@@ -181,7 +286,7 @@ class PurchaseRepositoryTest {
         List<Purchase> finishedDateAndPurchaseStatusOrdered = purchaseRepository.findByFinishedDateBetweenAndPurchaseStatusOrderByTotalPrice(
                 (LocalDateTime.of(2026, Month.JANUARY, 1, 0, 0)),
                 LocalDateTime.of(2026, Month.DECEMBER, 31, 23, 59),
-                PurchaseStatus.TERMINADO);
+                PurchaseStatus.FINISHED);
         System.out.println("-----------------------------------");
         System.out.println(finishedDateAndPurchaseStatusOrdered);
         System.out.println("-----------------------------------");
@@ -189,5 +294,23 @@ class PurchaseRepositoryTest {
         for (int i = 0; i < finishedDateAndPurchaseStatusOrdered.size() - 1; i++) {
             assertTrue(finishedDateAndPurchaseStatusOrdered.get(i).getTotalPrice() <= finishedDateAndPurchaseStatusOrdered.get(i + 1).getTotalPrice());
         }
+    }
+
+    @Test
+    void findByIdAndUserCommentContaining(){
+     List<Purchase> idAndUserComment = purchaseRepository.findByIdAndUserCommentContaining(purchase2.getId(), "ha llegado bien");
+        System.out.println("-----------------------------------");
+        System.out.println(idAndUserComment);
+        System.out.println("-----------------------------------");
+        assertEquals(1, idAndUserComment.size());
+    }
+
+    @Test
+    void findByIdAndShippingMode() {
+        List<Purchase> idAndShippingMode = purchaseRepository.findByIdAndShippingMode(purchase3.getId(), ShippingMode.PREMIUM);
+        System.out.println("-----------------------------------");
+        System.out.println(idAndShippingMode);
+        System.out.println("-----------------------------------");
+        assertEquals(1, idAndShippingMode.size());
     }
 }
