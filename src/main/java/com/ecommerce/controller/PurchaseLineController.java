@@ -12,9 +12,9 @@ public class PurchaseLineController {
 
     private final PurchaseLineRepository purchaseLineRepository;
 
-    @GetMapping
+    @GetMapping("purchase_lines")
     public String listPurchaseLines(Model model) {
         model.addAttribute("purchaseLines", purchaseLineRepository.findAll());
-        return "purchase_line/purchase_line-list";
+        return "purchase_lines/purchase_line-list";
     }
 }
