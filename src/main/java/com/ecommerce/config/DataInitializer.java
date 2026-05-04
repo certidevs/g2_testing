@@ -4,6 +4,8 @@ import com.ecommerce.model.Brand;
 import com.ecommerce.model.Product;
 import com.ecommerce.repository.BrandRepository;
 import com.ecommerce.repository.ProductRepository;
+import com.ecommerce.repository.PurchaseLineRepository;
+import com.ecommerce.repository.PurchaseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Component;
 public class DataInitializer  implements CommandLineRunner {
     private ProductRepository productRepo;
     private BrandRepository brandRepo;
+    private PurchaseRepository purchaseRepo;
+    private PurchaseLineRepository purchaseLineRepo;
 
     @Override
     public void run(String... args) throws Exception{
