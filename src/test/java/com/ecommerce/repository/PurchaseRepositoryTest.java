@@ -11,6 +11,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -127,11 +128,12 @@ class PurchaseRepositoryTest {
     @Test
     void findById(){
 
-        List<Purchase> specificPurchase = purchaseRepository.findById(purchase1.getId());
+        Optional<Purchase> specificPurchase = purchaseRepository.findById(purchase1.getId());
         System.out.println("-----------------------------------");
         System.out.println(specificPurchase);
         System.out.println("-----------------------------------");
-        assertEquals(1, specificPurchase.size());
+        assertTrue(specificPurchase.isPresent());
+        assertEquals(purchase1.getId(), specificPurchase.get().getId());
     }
 
     @Test
