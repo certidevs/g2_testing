@@ -20,12 +20,26 @@
 <!--                        <i class="fa-solid fa-store me-1"></i> Category-->
 <!--                    </a>-->
 <!--                </li>-->
-              <li class="nav-item">
-                   <a class="nav-link" th:href="@{/products}">
+<!--              <li class="nav-item">-->
+<!--                   <a class="nav-link" th:href="@{/products}">-->
+<!--                        <i class="fa-solid fa-bowl-food me-1"></i> Products-->
+<!--                    </a>-->
+<!--               </li>-->
+                <div class="dropdown">
+                    <a class="nav-link dropdown-toggle"
+                       th:href="@{/products}"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
                         <i class="fa-solid fa-bowl-food me-1"></i> Products
                     </a>
-               </li>
-<!--                <li class="nav-item">-->
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Moda</a></li>
+                        <li><a class="dropdown-item" href="#">Tecnologia</a></li>
+                    </ul>
+                </div>
+
+                <!--                <li class="nav-item">-->
 <!--                    <a class="nav-link" th:href="@{/reviews}">-->
 <!--                        <i class="fa-solid fa-star me-1"></i> Reviews-->
 <!--                    </a>-->

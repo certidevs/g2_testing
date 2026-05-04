@@ -57,7 +57,8 @@ public class Product {
     private Purchase purchase;
 
     // Relación al nivel de subcategoría
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne//(fetch = FetchType.LAZY)
+    @ToString.Exclude
 
     private Category subcategory;
 

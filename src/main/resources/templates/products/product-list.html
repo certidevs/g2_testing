@@ -4,6 +4,64 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
-<h1>Productos</h1>
+<main class="container flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0" th:text="${saludo}">Productos</h1>
+    <span class="badge bg-secondary fs-6"
+
+          th:text="|${#lists.size(products)} resultados|">0 resultados</span>
+    </div>
+
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                <div class="col" th:each="product : ${products}">
+                    <div class="card card-restaurant h-100 shadow-sm">
+                        <div class="card-img-top" style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
+                            <img th:src="${product.imageUrl}"
+                                 th:alt="${product.title}"
+                                 class="w-100 h-100 object-fit-cover"
+                                 style="object-fit: cover;">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fa-solid fa-store text-primary me-2"></i>
+                                <span th:text="${product.title}">Nombre</span>
+                            </h5>
+                            <p class="card-text">
+                                <span class="badge bg-success">
+                                    <i class="fa-solid fa-euro-sign me-1"></i>
+                                    <span th:text="${product.price}">0</span>
+                                </span>
+                                <span class="badge bg-success">
+                                    <span th:text="${product.brand.name}">NotFound</span>
+                                </span>
+                                <span class="badge bg-info">
+                                <i class="fa-solid fa-shopping-bag me-1"></i>
+                                <span th:text="${product.purchase != null ? product.purchase.id : 'No comprado'}">Sin compra</span>
+                                </span>
+
+                                <a th:href="@{/purchase/add/{id}(id=${product.id})}"
+                                   class="btn btn-success btn-sm">
+                                    <i class="fa-solid fa-shopping-cart me-1"></i> Comprar
+                                </a>
+
+
+
+                        </div>
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                            <a th:href="@{/product/{id}(id=${product.id})}"
+                               class="btn btn-outline-primary btn-sm w-100">
+                                <i class="fa-regular fa-eye me-1"></i> Ver Producto
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+</div>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script th:replace="~{layout/footer :: scripts}"></script>
+</main>
 </body>
 </html>
