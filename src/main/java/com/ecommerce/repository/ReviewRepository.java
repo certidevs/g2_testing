@@ -10,6 +10,9 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Reviews, UUID> {
     // Conultas personalizadas
+    static List<Reviews> findByProduct_idOrderByCreationDateDesc(UUID id) {
+        return null;
+    }
 
     // Traer review por producto
     List<Reviews> findByProductId(UUID productId);
