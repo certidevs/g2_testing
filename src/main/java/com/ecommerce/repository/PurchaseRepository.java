@@ -78,4 +78,12 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
      // Specific purchase & shipping mode
     List<Purchase> findByIdAndShippingMode(UUID id, ShippingMode shippingMode);
 
+    // -------- METHODS --------
+
+    // Method to delete a purchase by ID, if the purchase does not exist, it does nothing
+    default void deleteById(UUID id){
+        if (findById(id).isPresent()) {
+            deleteById(id);
+        }
+    }
 }
