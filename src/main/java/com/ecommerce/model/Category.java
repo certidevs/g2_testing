@@ -25,13 +25,14 @@ public class Category
     private String name;
 
     @Column(nullable = false, unique = true, length = 120)
-    private String slug;
+    private String slug; // parte final de una URL que identifica de forma legible una pagina
 
     @Column(length = 500)
     private String description;
 
+    @Builder.Default
     @Column(nullable = false)
-    private Boolean active;
+    private Boolean active = true;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -44,7 +45,12 @@ public class Category
     private Category parent;
 
     //Coleccion de subcategorias
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            mappedBy = "parent",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+
     @Builder.Default
     private Set<Category> children = new HashSet<>();
 
