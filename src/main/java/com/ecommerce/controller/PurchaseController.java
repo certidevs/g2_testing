@@ -1,12 +1,10 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.repository.PurchaseRepository;
-import com.ecommerce.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @AllArgsConstructor
@@ -15,14 +13,14 @@ public class PurchaseController {
     private final PurchaseRepository purchaseRepository;
 
     @GetMapping("purchases")
-    public String purchases(Model model) {
+    public String listPurchases(Model model) {
         model.addAttribute("purchases", purchaseRepository.findAll());
-        return "purchases/purchase-detail";
+        return "purchases/purchases-list";
     }
 
-    @GetMapping("orders/{id}")
-    public String purchase(Model model, @PathVariable Long id) {
-        model.addAttribute("order", purchaseRepository.findById(id).orElseThrow());
-        return "purchases/purchase-detail";
+    @GetMapping("purchases/{id}")
+    public String detailPurchase(Model model, @PathVariable Long id) {
+        model.addAttribute("purchase", purchaseRepository.findById(id).orElseThrow());
+        return "purchases/purchases-detail";
     }
 }
