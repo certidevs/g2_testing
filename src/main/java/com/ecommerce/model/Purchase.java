@@ -52,7 +52,6 @@ public class Purchase {
     @ManyToOne
     private Users users;
 
-    @JoinColumn(name = "purchase_lines")
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private java.util.List<PurchaseLine> lines = new java.util.ArrayList<>();
