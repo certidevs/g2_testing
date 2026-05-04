@@ -21,10 +21,12 @@ public class PurchaseLine {
     private int quantity; // Quantity of product purchased
 
     @ToString.Exclude
+    @JoinColumn(name = "purchase_id")
     @ManyToOne
     Purchase purchase; // Purchase to which the purchase line belongs
 
     @ToString.Exclude
+    @JoinColumn(name = "product_id")
     @ManyToOne
     Product product; // Product purchased
 }
