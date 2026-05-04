@@ -21,6 +21,6 @@ public class PurchaseController {
     @GetMapping("purchases/{id}")
     public String detailPurchase(Model model, @PathVariable Long id) {
         model.addAttribute("purchase", purchaseRepository.findById(id).orElseThrow());
-        return "purchases/purchases-detail";
+        return "purchases/purchase-detail";
     }
 }
