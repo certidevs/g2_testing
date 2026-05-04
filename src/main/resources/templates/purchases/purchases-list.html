@@ -1,10 +1,51 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
+<head th:replace="~{layout/head :: head('Purchases')}"><title>Purchases</title></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="container flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Purchases</h1>
+        <span class="badge bg-secondary fs-6"
+              th:text="|${#lists.size(purchases)} resultados|">0 results</span>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+
+        <div class="col" th:each="purchase : ${purchases}">
+            <div class="card h-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">
+                        <i class="fa-solid fa-receipt text-primary me-2"></i>
+                        Purchase
+                        <span th:text="${purchase.id}">0</span>
+                    </h5>
+
+                </div>
+
+                <div class="card-footer bg-transparent border-0 pt-0">
+
+                    <a th:href="@{/purchases/{id}(id=${purchase.id})}"
+                       class="btn btn-outline-primary btn-sm w-100">
+
+                        <i class="fa-regular fa-eye me-1"></i>
+                        Details
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script th:replace="~{layout/footer :: scripts}"></script>
+
+</main>
 </body>
 </html>
