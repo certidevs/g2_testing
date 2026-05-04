@@ -1,6 +1,8 @@
 package com.ecommerce.model;
 
 import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.PurchaseLineRepository;
+import com.ecommerce.repository.PurchaseRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -49,4 +51,27 @@ public class Purchase {
 
     @ManyToOne
     private Users users;
+
+    @JoinColumn(name = "purchase_lines")
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private java.util.List<PurchaseLine> lines = new java.util.ArrayList<>();
+
+    // Returns the purchase lines as an array, if there are no lines, it returns an empty array
+    public PurchaseLine[] getPurchaseLines() {
+        if (this.lines == null) {
+            return new PurchaseLine[0];
+        }
+        return this.lines.toArray(new PurchaseLine[0]);
+    }
+
+    // Establishes the total amount of the purchase by summing the total of each line (price * quantity)
+    public void setTotalAmount(double total) {
+        this.totalPrice = total;
+    }
+
+    // Establishes the purchase date to the current date and time when the purchase is created
+    public void setPurchaseDate(LocalDateTime now) {
+        this.creationDate = now;
+    }
 }

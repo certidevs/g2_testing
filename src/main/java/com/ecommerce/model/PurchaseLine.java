@@ -29,4 +29,9 @@ public class PurchaseLine {
     @JoinColumn(name = "product_id")
     @ManyToOne
     Product product; // Product purchased
+
+    // Returns the price of the product, if the product does not exist, it returns 0.0
+    public double getPrice() {
+        return product.getPrice();
+    }
 }
