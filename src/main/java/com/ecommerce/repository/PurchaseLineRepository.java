@@ -3,6 +3,7 @@ package com.ecommerce.repository;
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.Product;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,6 +15,9 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
 
     // Specific purchase
     List<PurchaseLine> findByPurchase(Purchase purchase);
+
+    // Find by purchase ID
+    List<PurchaseLine> findByPurchaseId(UUID purchaseId);
 
     // Specific product
     List<PurchaseLine> findByProduct(Product product);
@@ -53,4 +57,5 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
 
     // Product & quantity between values
     List<PurchaseLine> findByProductAndQuantityBetween(Product product, int minQuantity, int maxQuantity);
+
 }
