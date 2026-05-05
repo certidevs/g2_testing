@@ -3,6 +3,7 @@ package com.ecommerce.config;
 import com.ecommerce.model.Brand;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
+import com.ecommerce.model.Reviews;
 import com.ecommerce.model.Users;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.*;
@@ -24,6 +25,7 @@ public class DataInitializer  implements CommandLineRunner {
     private PurchaseRepository purchaseRepo;
     private PurchaseLineRepository purchaseLineRepo;
     private UsersRepository userRepo;
+    private ReviewRepository reviewRepo;
 
     @Override
     public void run(String... args) throws Exception{
@@ -119,5 +121,56 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
+
+        // Reseñas de ejemplo
+        var review1 = Reviews.builder()
+                .title("Camiseta de muy buena calidad")
+                .message("Estoy muy contento con la compra. El tejido es suave y resistente, y la talla es exacta. La recomiendo totalmente.")
+                .rating(5)
+                .verified(true)
+                .status(ReviewStatus.APPROVED)
+                .creationDate(LocalDateTime.of(2026, Month.APRIL, 10, 10, 30))
+                .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 10, 10, 30))
+                .product(product1)
+                .users(user1)
+                .build();
+
+        var review2 = Reviews.builder()
+                .title("Pantalón correcto pero talla grande")
+                .message("El pantalón es cómodo para hacer deporte, pero la talla es bastante grande. Recomendaría pedir una talla menos de lo habitual.")
+                .rating(3)
+                .verified(true)
+                .status(ReviewStatus.APPROVED)
+                .creationDate(LocalDateTime.of(2026, Month.MARCH, 20, 15, 0))
+                .modifiedDate(LocalDateTime.of(2026, Month.MARCH, 22, 9, 0))
+                .product(product2)
+                .users(user2)
+                .build();
+
+        var review3 = Reviews.builder()
+                .title("Zapatillas increíbles para correr")
+                .message("Las mejores zapatillas que he tenido. Muy cómodas desde el primer día, sin necesidad de adaptación. El amortiguamiento es excelente.")
+                .rating(5)
+                .verified(false)
+                .status(ReviewStatus.PENDING_APPROVAL)
+                .creationDate(LocalDateTime.of(2026, Month.MAY, 1, 8, 0))
+                .modifiedDate(LocalDateTime.of(2026, Month.MAY, 1, 8, 0))
+                .product(product3)
+                .users(user1)
+                .build();
+
+        var review4 = Reviews.builder()
+                .title("Calcetines flojos, se deforman rápido")
+                .message("Después de unas pocas lavadas los calcetines pierden la forma. No son malos del todo pero esperaba más durabilidad para el precio.")
+                .rating(2)
+                .verified(true)
+                .status(ReviewStatus.REJECTED)
+                .creationDate(LocalDateTime.of(2025, Month.DECEMBER, 5, 18, 45))
+                .modifiedDate(LocalDateTime.of(2025, Month.DECEMBER, 6, 11, 0))
+                .product(product4)
+                .users(user2)
+                .build();
+
+        reviewRepo.saveAll(List.of(review1, review2, review3, review4));
     }
 }

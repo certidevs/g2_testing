@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Reseñas')}">
+    <meta charset="UTF-8">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<main class="container flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="fa-solid fa-star text-warning me-2"></i>Reseñas
+        </h1>
+        <span class="badge bg-secondary fs-6" th:text="|${#lists.size(reviews)} resultados|">0 resultados</span>
+    </div>
+
+    <div class="alert alert-info" th:if="${#lists.isEmpty(reviews)}">
+        No hay reseñas disponibles por ahora.
+    </div>
+
+    <div class="card shadow-sm" th:unless="${#lists.isEmpty(reviews)}">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Título</th>
+                    <th class="text-center">Rating</th>
+                    <th>Producto</th>
+                    <th>Usuario</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Verificación</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="review : ${reviews}">
+                    <td>
+                        <div class="fw-semibold" th:text="${review.title}">Título de reseña</div>
+                        <small class="text-muted" th:text="${#temporals.format(review.creationDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</small>
+                    </td>
+                    <td class="text-center">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}"
+                              th:class="${i <= review.rating ? 'fa-solid fa-star text-warning' : 'fa-regular fa-star text-muted'}"
+                              class="me-1"></span>
+                    </td>
+                    <td>
+                        <span th:if="${review.product != null}" th:text="${review.product.title}">Producto</span>
+                        <span th:unless="${review.product != null}" class="text-muted">Sin producto</span>
+                    </td>
+                    <td>
+                        <span th:if="${review.users != null}" th:text="${review.users.name}">Usuario</span>
+                        <span th:unless="${review.users != null}" class="text-muted">Anónimo</span>
+                    </td>
+                    <td class="text-center">
+                        <span th:if="${review.status != null}"
+                              th:class="|badge ${review.status.name() == 'APPROVED' ? 'bg-success' : (review.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning')}|"
+                              th:text="${review.status.name()}">PENDING_APPROVAL</span>
+                        <span th:unless="${review.status != null}" class="badge bg-secondary">SIN_ESTADO</span>
+                    </td>
+                    <td class="text-center">
+                        <span th:if="${review.verified}" class="badge bg-info">Verificada</span>
+                        <span th:unless="${review.verified}" class="badge bg-secondary">No verificada</span>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/reviews/{id}(id=${review.id})}" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-regular fa-eye me-1"></i>Detalle
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script th:replace="~{layout/footer :: scripts}"></script>
+</main>
+</body>
+</html>
+
