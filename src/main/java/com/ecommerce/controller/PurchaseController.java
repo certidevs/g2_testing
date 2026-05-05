@@ -30,7 +30,7 @@ public class PurchaseController {
     @GetMapping("purchases/{id}")
     public String detailPurchase(Model model, @PathVariable UUID id) {
         model.addAttribute("purchase", purchaseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
-        model.addAttribute("purchaseLines", purchaseLineRepository.findByPurchase(purchaseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))));
+        model.addAttribute("purchaseLines", purchaseLineRepository.findByPurchaseId(id));
         return "purchases/purchase-detail";
     }
 
