@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Entity
@@ -72,5 +73,12 @@ public class Purchase {
     // Establishes the purchase date to the current date and time when the purchase is created
     public void setPurchaseDate(LocalDateTime now) {
         this.creationDate = now;
+    }
+
+    // Method to add purchase lines
+    public void addLine(PurchaseLine line) {
+        if (this.lines == null) this.lines = new ArrayList<>();
+        this.lines.add(line);
+        line.setPurchase(this);
     }
 }
