@@ -1,51 +1,78 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layout/head :: head('Purchases')}"><title>Purchases</title></head>
+<head th:replace="~{layout/head :: head('Purchases')}"></head>
 
 <body class="d-flex flex-column min-vh-100">
 
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <main class="container flex-grow-1">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Purchases</h1>
-        <span class="badge bg-secondary fs-6"
-              th:text="|${#lists.size(purchases)} resultados|">0 results</span>
-    </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+    <h1 class="mb-3">Purchases</h1>
 
-        <div class="col" th:each="purchase : ${purchases}">
-            <div class="card h-100 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle table-bordered border-success">
+            <thead class="table-dark">
+            <tr>
+                <th>Id</th>
+                <th>
+                    <i class="fa-solid fa-calendar"></i>
+                    Creation Date</th>
+                <th>
+                    <i class="fa-solid fa-calendar"></i>
+                    Finished Date</th>
 
-                <div class="card-body">
+                <th>Shipping Mode</th>
 
-                    <h5 class="card-title">
-                        <i class="fa-solid fa-receipt text-primary me-2"></i>
-                        Purchase
-                        <span th:text="${purchase.id}">0</span>
-                    </h5>
+                <th>Process Status</th>
 
-                </div>
+                <th>Shipping Status</th>
 
-                <div class="card-footer bg-transparent border-0 pt-0">
+                <th>Payment Status</th>
 
+                <th>
+                    <i class="fa-solid fa-euro"></i>
+                    Total Price</th>
+
+                <th>Purchase Status</th>
+
+                <th>User Comment</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="purchase : ${purchases}">
+                <td th:text="${purchase.id}"></td>
+                <td class="fw-semibold" th:text="${#temporals.format(purchase.creationDate, 'dd/MM/yy HH:mm')}"></td>
+                <td class="fw-semibold" th:text="${#temporals.format(purchase.finishedDate, 'dd/MM/yy HH:mm')}"></td>
+                <td th:text="${purchase.getShippingMode()}"></td>
+                <td th:text="${purchase.getProcessStatus()}"></td>
+                <td th:text="${purchase.getShippingStatus()}"></td>
+                <td th:text="${purchase.getPaymentStatus()}"></td>
+                <td class="text-muted small" th:text="${#numbers.formatDecimal(purchase.getTotalPrice, 1, 2)}"></td>
+                <td th:text="${purchase.getPurchaseStatus()}"></td>
+                <td th:text="${purchase.getUserComment()}"></td>
+
+                <td>
                     <a th:href="@{/purchases/{id}(id=${purchase.id})}"
-                       class="btn btn-outline-primary btn-sm w-100">
-
-                        <i class="fa-regular fa-eye me-1"></i>
-                        Details
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="fa-regular fa-eye me-1"></i> See purchase
                     </a>
-
-                </div>
-            </div>
-        </div>
+                    <!--                            <a>Finalizar pedido</a>-->
+                    <!--                            <a>Editar pedido</a>-->
+                    <!--                            <a>Borrar pedido</a>-->
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    <footer th:replace="~{layout/footer :: footer}"></footer>
-    <script th:replace="~{layout/footer :: scripts}"></script>
 
 </main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>

@@ -2,14 +2,18 @@ package com.ecommerce.config;
 
 import com.ecommerce.model.Brand;
 import com.ecommerce.model.Product;
-import com.ecommerce.repository.BrandRepository;
-import com.ecommerce.repository.ProductRepository;
-import com.ecommerce.repository.PurchaseLineRepository;
-import com.ecommerce.repository.PurchaseRepository;
+import com.ecommerce.model.Purchase;
+import com.ecommerce.model.Users;
+import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.List;
 
 @Component
 @AllArgsConstructor
@@ -19,11 +23,36 @@ public class DataInitializer  implements CommandLineRunner {
     private BrandRepository brandRepo;
     private PurchaseRepository purchaseRepo;
     private PurchaseLineRepository purchaseLineRepo;
+    private UsersRepository userRepo;
 
     @Override
     public void run(String... args) throws Exception{
         System.out.println("HOLA DESDE DATA INITIALIZER");
         //if (productRepo.count() > 0) return;
+
+        var user1 = Users.builder()
+                .name("User 1")
+                .lastName("Last Name 1")
+                .email("user1@gmail.com")
+                .phone("123456789")
+                .password("password1")
+                .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
+                .gender(Gender.MALE)
+                .role(Role.CUSTOMER)
+                .build();
+
+        var user2 = Users.builder()
+                .name("User 2")
+                .lastName("Last Name 2")
+                .email("user2@gmail.com")
+                .phone("987654321")
+                .password("password2")
+                .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
+                .gender(Gender.FEMALE)
+                .role(Role.CUSTOMER)
+                .build();
+        userRepo.saveAll(List.of(user1,user2));
+
         var brand1 = brandRepo.save(Brand.builder().name("Nike").nif("123456789").build());
 
         var product1 = productRepo.save(Product.builder().title("Camiseta Blanca")
@@ -36,5 +65,59 @@ public class DataInitializer  implements CommandLineRunner {
                 .price(110.00).brand(brand1).build());
         var product4 = productRepo.save(Product.builder().title("Calzetines Run").imageUrl("https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRLO_S61-_IXWE6l0J4WiBdUcnglzV7e9ZBYwEPKLQ2whre7AdR-7K8D0MxyEYo-EqsivQma9grEEiWiZEnvPx7W0Q8z5mnyy0oLR7HsXAQQnEtNe8CsRLVdbSDUD3xxZngN83U6efJ&usqp=CAc")
                 .price(10.00).brand(brand1).build());
+
+        var purchase1 = Purchase.builder()
+                .users(user1)
+                .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
+                .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
+                .purchaseStatus(PurchaseStatus.FINISHED)
+                .paymentStatus(PaymentStatus.PAID)
+                .processStatus(ProcessStatus.COMPLETED)
+                .shippingStatus(ShippingStatus.DELIVERED)
+                .shippingMode(ShippingMode.STANDARD)
+                .totalPrice(50.00)
+                .userComment("Me ha llegado el producto en mal estado")
+                .build();
+
+        var purchase2 = Purchase.builder()
+                .users(user2)
+                .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
+                .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
+                .purchaseStatus(PurchaseStatus.FINISHED)
+                .paymentStatus(PaymentStatus.PAID)
+                .processStatus(ProcessStatus.COMPLETED)
+                .shippingStatus(ShippingStatus.DELIVERED)
+                .shippingMode(ShippingMode.EXPRESS)
+                .totalPrice(15.45)
+                .userComment("El producto ha llegado bien pero he tardado mucho más de lo esperado teniendo en cuenta que era EXPRESS")
+                .build();
+
+        var purchase3 = Purchase.builder()
+                .users(user1)
+                .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
+                .finishedDate(null)
+                .purchaseStatus(PurchaseStatus.INITIATED)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.PENDING)
+                .shippingStatus(ShippingStatus.PENDING)
+                .shippingMode(ShippingMode.PREMIUM)
+                .totalPrice(150.75)
+                .userComment(null)
+                .build();
+
+        var purchase4 = Purchase.builder()
+                .users(user2)
+                .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
+                .finishedDate(null)
+                .purchaseStatus(PurchaseStatus.INACTIVE)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.PENDING)
+                .shippingStatus(ShippingStatus.PENDING)
+                .shippingMode(ShippingMode.STANDARD)
+                .totalPrice(73.00)
+                .userComment(null)
+                .build();
+
+        purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 }
