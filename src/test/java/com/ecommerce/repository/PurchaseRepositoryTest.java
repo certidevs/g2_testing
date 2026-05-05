@@ -118,7 +118,7 @@ class PurchaseRepositoryTest {
 
     @Test
     void findByUsersId(){
-        List<Purchase> specificUserPurchases = purchaseRepository.findByUsersId(user1.getId());
+        List<Purchase> specificUserPurchases = purchaseRepository.findByUserId(user1.getId());
         System.out.println("-----------------------------------");
         System.out.println(specificUserPurchases);
         System.out.println("-----------------------------------");

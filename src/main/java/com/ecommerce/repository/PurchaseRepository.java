@@ -14,7 +14,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // -------- SIMPLES --------
 
     // Specific user
-    List<Purchase> findByUsersId(UUID users_id);
+    List<Purchase> findByUserId(UUID user_id);
 
     // Specific purchase
     Optional<Purchase> findById(UUID purchaseId);
@@ -86,4 +86,6 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
             deleteById(id);
         }
     }
+
+    //List<Purchase> findByUserIdAndUserCommentContaining(UUID userId, String userComment);
 }

@@ -2,9 +2,7 @@ package com.ecommerce.controller;
 
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
-import com.ecommerce.service.PurchaseService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
