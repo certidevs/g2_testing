@@ -11,7 +11,15 @@
                      <div>
                          <h1 class="mb-2" th:text="${'Producto: ' + products.title}">Producto</h1>
                          <p class="mb-2 fs-5" th:text="${products.longDescription != null ? products.longDescription : 'Sin descripción'}">Descripción</p>
+                         <a class="btn btn-danger btn-sm" th:href="@{/products/deactivate/{id}(id=${products.id})}">
+                             <i class="fa-solid fa-ban"></i> Desactivar
+                         </a>
+                         <a class="btn btn-success btn-sm" th:href="@{/products/activate/{id}(id=${products.id})}">
+                             <i class="fa-solid fa-ban"></i> Activar
+                         </a>
+
                          <span class="badge bg-success me-1" style="font-size: 1.5rem; padding: 10px 15px;">
+
                          <i class="fa-solid fa-euro-sign me-1"></i>
                          <span th:text="${products.price != null ? products.price  : 'GRATIS'}"></span>
                        </span>
@@ -44,7 +52,7 @@
                  <div th:if="${reviews != null and !reviews.isEmpty()}" th:each="review : ${reviews}">
                      <div class="card mb-2">
                          <div class="card-body">
-                             <p th:text="${review.comment}">Comentario</p>
+                             <p th:text="${review.message}">Comentario</p>
                              <small th:text="${review.rating + '/5'}">Valoración</small>
                          </div>
                      </div>

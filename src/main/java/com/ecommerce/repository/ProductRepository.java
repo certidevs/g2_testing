@@ -4,10 +4,9 @@ import com.ecommerce.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, UUID> {
     //  Conultas personalizadas
 
     //BUSCAR findAll
@@ -36,7 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByAvailableTrueOrderByPriceDesc();
 
 
-    Optional<Product> findById(UUID id);
+
 
     List<Product> findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(String query, String query1);
 }

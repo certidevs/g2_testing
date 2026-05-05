@@ -52,4 +52,20 @@ public class ProductControler {
             model.addAttribute("saludo", "Resultados para: " + query);
             return "products/product-list";
         }
+    @GetMapping("products/deactivate/{id}")
+    public String deactivateRestaurant(@PathVariable UUID id, Model model) {
+        productRepository.findById(id).ifPresent(product -> {
+            product.setAvailable(false);
+            productRepository.save(product);
+        });
+        return "redirect:/products";
+    }
+         @GetMapping("products/activate/{id}")
+         public String activateProduct(@PathVariable UUID id, Model model) {
+             productRepository.findById(id).ifPresent(product -> {
+                 product.setAvailable(true);
+                 productRepository.save(product);
+             });
+             return "redirect:/products";
+         }
 }
