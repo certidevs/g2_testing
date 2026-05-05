@@ -1,5 +1,6 @@
 package com.ecommerce.config;
 
+import com.ecommerce.model.Address;
 import com.ecommerce.model.Brand;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
@@ -26,6 +27,7 @@ public class DataInitializer  implements CommandLineRunner {
     private PurchaseLineRepository purchaseLineRepo;
     private UsersRepository userRepo;
     private ReviewRepository reviewRepo;
+    private AddressRepository addressRepo;
 
     @Override
     public void run(String... args) throws Exception{
@@ -54,6 +56,55 @@ public class DataInitializer  implements CommandLineRunner {
                 .role(Role.CUSTOMER)
                 .build();
         userRepo.saveAll(List.of(user1,user2));
+
+        // Crear direcciones de prueba
+        var address1 = Address.builder()
+                .street("Calle Mayor")
+                .number("123")
+                .city("Madrid")
+                .state("Madrid")
+                .zipCode("28001")
+                .country("España")
+                .addressType(AddressType.PRIMARY)
+                .user(user1)
+                .build();
+
+        var address2 = Address.builder()
+                .street("Avenida Diagonal")
+                .number("456")
+                .city("Barcelona")
+                .state("Cataluña")
+                .zipCode("08019")
+                .country("España")
+                .addressType(AddressType.SHIPPING)
+                .user(user1)
+                .complement("Piso 2º Puerta A")
+                .build();
+
+        var address3 = Address.builder()
+                .street("Gran Via")
+                .number("789")
+                .city("Bilbao")
+                .state("País Vasco")
+                .zipCode("48001")
+                .country("España")
+                .addressType(AddressType.BILLING)
+                .user(user2)
+                .complement("Bajo Interior")
+                .build();
+
+        var address4 = Address.builder()
+                .street("Calle Luna")
+                .number("321")
+                .city("Valencia")
+                .state("Comunidad Valenciana")
+                .zipCode("46001")
+                .country("España")
+                .addressType(AddressType.SECONDARY)
+                .user(user2)
+                .build();
+
+        addressRepo.saveAll(List.of(address1, address2, address3, address4));
 
         var brand1 = brandRepo.save(Brand.builder().name("Nike").nif("123456789").build());
 
@@ -171,6 +222,54 @@ public class DataInitializer  implements CommandLineRunner {
                 .users(user2)
                 .build();
 
-        reviewRepo.saveAll(List.of(review1, review2, review3, review4));
+        var review5 = Reviews.builder()
+                .title("Camiseta muy bonita pero se arruga")
+                .message("El diseño es bonito y la calidad del tejido es buena, pero se arruga bastante al lavarla. Hay que plancharla siempre.")
+                .rating(4)
+                .verified(true)
+                .status(ReviewStatus.APPROVED)
+                .creationDate(LocalDateTime.of(2026, Month.APRIL, 15, 9, 0))
+                .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 15, 9, 0))
+                .product(product1)
+                .users(user2)
+                .build();
+
+        var review6 = Reviews.builder()
+                .title("Camiseta decepcionante")
+                .message("Esperaba más por el precio. El color se fue a la primera lavada y talla muy pequeño para la talla indicada.")
+                .rating(1)
+                .verified(false)
+                .status(ReviewStatus.PENDING_APPROVAL)
+                .creationDate(LocalDateTime.of(2026, Month.MAY, 2, 11, 15))
+                .modifiedDate(LocalDateTime.of(2026, Month.MAY, 2, 11, 15))
+                .product(product1)
+                .users(user1)
+                .build();
+
+        var review7 = Reviews.builder()
+                .title("Zapatillas cómodas pero poco duraderas")
+                .message("Son muy cómodas al principio pero la suela empezó a despegarse después de dos meses de uso regular.")
+                .rating(3)
+                .verified(true)
+                .status(ReviewStatus.APPROVED)
+                .creationDate(LocalDateTime.of(2026, Month.APRIL, 20, 14, 30))
+                .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 20, 14, 30))
+                .product(product3)
+                .users(user2)
+                .build();
+
+        var review8 = Reviews.builder()
+                .title("Las mejores zapatillas del mercado")
+                .message("He probado muchas marcas y estas sin duda son las mejores. Ligeras, transpirables y con un agarre excelente en todo tipo de superficies.")
+                .rating(5)
+                .verified(true)
+                .status(ReviewStatus.APPROVED)
+                .creationDate(LocalDateTime.of(2026, Month.MARCH, 10, 16, 0))
+                .modifiedDate(LocalDateTime.of(2026, Month.MARCH, 10, 16, 0))
+                .product(product3)
+                .users(user1)
+                .build();
+
+        reviewRepo.saveAll(List.of(review1, review2, review3, review4, review5, review6, review7, review8));
     }
 }

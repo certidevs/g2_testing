@@ -30,7 +30,17 @@ public class ReviewController {
     // @GetMapping("reviews/{id}")
     @GetMapping(value = "reviews/{id}", produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     public String reviewDetail(Model model, @PathVariable UUID id) {
-        model.addAttribute("review", reviewService.getReviewById(id).orElseThrow());
+        var review = reviewService.getReviewById(id).orElseThrow();
+        model.addAttribute("review", review);
+
+        if (review.getProduct() != null) {
+            var related = reviewService.getReviewsByProduct(review.getProduct().getId())
+                    .stream()
+                    .filter(r -> !r.getId().equals(id))
+                    .toList();
+            model.addAttribute("relatedReviews", related);
+        }
+
         return "reviews/reviews-detail";
     }
 

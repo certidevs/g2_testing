@@ -142,8 +142,38 @@
                         <i class="fa-solid fa-star text-warning me-1"></i>
                         Otras reseñas de este producto
                     </h6>
-                    <div class="text-center text-muted py-3">
-                        <small>Función de reseñas relacionadas no implementada aún</small>
+
+                    <!-- Sin reseñas relacionadas -->
+                    <div class="text-center text-muted py-3"
+                         th:if="${relatedReviews == null or #lists.isEmpty(relatedReviews)}">
+                        <i class="fa-regular fa-comment-dots fa-2x mb-2"></i>
+                        <p class="mb-0"><small>No hay otras reseñas para este producto</small></p>
+                    </div>
+
+                    <!-- Listado de reseñas relacionadas -->
+                    <div th:unless="${relatedReviews == null or #lists.isEmpty(relatedReviews)}">
+                        <div th:each="related : ${relatedReviews}"
+                             class="border-bottom pb-2 mb-2">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <small class="fw-semibold text-truncate me-2"
+                                       th:text="${related.title}">Título</small>
+                                <span th:class="|badge ${related.status != null and related.status.name() == 'APPROVED' ? 'bg-success' : (related.status != null and related.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning')} text-nowrap|"
+                                      style="font-size:0.65rem"
+                                      th:text="${related.status != null ? related.status.name() : ''}">Estado</span>
+                            </div>
+                            <div class="my-1">
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                      th:class="${i <= related.rating ? 'fa-solid fa-star text-warning' : 'fa-regular fa-star text-muted'}"
+                                      style="font-size:0.75rem"></span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted"
+                                       th:text="${related.users != null ? related.users.name : 'Anónimo'}">Usuario</small>
+                                <a th:href="@{/reviews/{id}(id=${related.id})}"
+                                   class="btn btn-outline-secondary btn-sm py-0 px-1"
+                                   style="font-size:0.7rem">Ver</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
