@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,16 +31,25 @@ public class ProductControler {
 
     }
     //agregar el numero de compras en el productos
-    @GetMapping("products/{id}")
-    public String productsDetail(@PathVariable UUID id, Model model) {
-        Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isPresent()){
-            Product product = productOptional.get();
-            model.addAttribute("products");
-            List<Reviews> reviews = ReviewRepository.findByProduct_idOrderByCreationDateDesc(id);
-            model.addAttribute("reviews", reviews);
-
+   @GetMapping("products/{id}")
+   public String productsDetail(@PathVariable UUID id, Model model) {
+       Optional<Product> productOptional = productRepository.findById(id);
+       if (productOptional.isPresent()) {
+           Product product = productOptional.get();
+           model.addAttribute("products", product);  // Agrega el producto al modelo con el nombre "products"
+           List<Reviews> reviews = reviewRepository.findByProductId(id);  // Usa la instancia y el método correcto
+           model.addAttribute("reviews", reviews);
+       } else {
+           // Manejo si el producto no existe: redirige a la lista para evitar error 500
+           return "redirect:/products";
+       }
+       return "products/product-detail";
+   }
+        @GetMapping("/products/search")
+        public String searchProducts(@RequestParam String query, Model model) {
+            List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(query, query);
+            model.addAttribute("products", products);
+            model.addAttribute("saludo", "Resultados para: " + query);
+            return "products/product-list";
         }
-        return "products/product-detail";
-    }
 }

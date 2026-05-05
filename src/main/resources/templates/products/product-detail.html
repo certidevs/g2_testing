@@ -1,10 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+     <!DOCTYPE html>
+     <html lang="es" xmlns:th="http://www.thymeleaf.org">
+     <head th:replace="~{layout/head :: head('Detalle de Producto')}">
+     </head>
+     <body class="d-flex flex-column min-vh-100">
+     <nav th:replace="~{layout/navbar :: navbar}"></nav>
+     <main class="container flex-grow-1">
+         <div th:if="${products != null}" class="row">
+             <div class="col-md-8">
+                 <div class="d-flex justify-content-between align-items-start mb-3">
+                     <div>
+                         <h1 class="mb-2" th:text="${'Producto: ' + products.title}">Producto</h1>
+                         <p class="mb-2 fs-5" th:text="${products.longDescription != null ? products.longDescription : 'Sin descripción'}">Descripción</p>
+                         <span class="badge bg-success me-1" style="font-size: 1.5rem; padding: 10px 15px;">
+                         <i class="fa-solid fa-euro-sign me-1"></i>
+                         <span th:text="${products.price != null ? products.price  : 'GRATIS'}"></span>
+                       </span>
+                         <span class="badge bg-light text-dark border me-1"
+                               th:text="${products.stockStatus != null ? products.stockStatus.name() : 'Sin definir'}"></span>
+                         <p th:if="${products.brand != null}" class="mt-2">
+                             <strong>Marca:</strong> <span th:text="${products.brand.name}">Sin marca</span>
+                         </p>
+                     </div>
+                 </div>
 
-</body>
-</html>
+                 <div th:if="${products.imageUrl != null}" class="mb-3">
+                     <img th:src="${products.imageUrl}" alt="Imagen del producto" class="img-fluid rounded">
+                 </div>
+
+                 <p th:if="${products.shortDescription != null}" th:text="${products.shortDescription}"></p>
+             </div>
+             <div class="col-md-4">
+
+                      <div class="mt-3">
+                          <a th:href="@{/purchase/add/{id}(id=${products.id})}" class="btn btn-success me-2">
+                              <i class="fa-solid fa-shopping-cart me-1"></i> Comprar ahora
+                          </a>
+                          <a th:href="@{/purchase/add/{id}(id=${products.id})}" class="btn btn-outline-primary">
+                              <i class="fa-solid fa-cart-plus me-1"></i> Añadir al carrito
+                          </a>
+                      </div>
+
+                 <h3>Reseñas</h3>
+                 <div th:if="${reviews != null and !reviews.isEmpty()}" th:each="review : ${reviews}">
+                     <div class="card mb-2">
+                         <div class="card-body">
+                             <p th:text="${review.comment}">Comentario</p>
+                             <small th:text="${review.rating + '/5'}">Valoración</small>
+                         </div>
+                     </div>
+                 </div>
+                 <p th:if="${reviews == null or reviews.isEmpty()}">No hay reseñas disponibles.</p>
+             </div>
+         </div>
+         <div th:if="${products == null}" class="alert alert-danger">
+             Producto no encontrado.
+         </div>
+     </main>
+     <footer th:replace="~{layout/footer :: footer}"></footer>
+     <script th:replace="~{layout/footer :: scripts}"></script>
+     </body>
+     </html>
