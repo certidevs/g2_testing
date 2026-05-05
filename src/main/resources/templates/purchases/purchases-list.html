@@ -15,7 +15,6 @@
         <table class="table table-hover align-middle table-bordered border-success">
             <thead class="table-dark">
             <tr>
-                <th>Id</th>
                 <th>
                     <i class="fa-solid fa-calendar"></i>
                     Creation Date</th>
@@ -37,13 +36,12 @@
 
                 <th>Purchase Status</th>
 
-                <th>User Comment</th>
+                <th></th>
 
             </tr>
             </thead>
             <tbody>
             <tr th:each="purchase : ${purchases}">
-                <td th:text="${purchase.id}"></td>
                 <td class="fw-semibold" th:text="${#temporals.format(purchase.creationDate, 'dd/MM/yy HH:mm')}"></td>
                 <td class="fw-semibold" th:text="${#temporals.format(purchase.finishedDate, 'dd/MM/yy HH:mm')}"></td>
                 <td th:text="${purchase.getShippingMode()}"></td>
@@ -52,7 +50,6 @@
                 <td th:text="${purchase.getPaymentStatus()}"></td>
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(purchase.getTotalPrice, 1, 2)}"></td>
                 <td th:text="${purchase.getPurchaseStatus()}"></td>
-                <td th:text="${purchase.getUserComment()}"></td>
 
                 <td>
                     <a th:href="@{/purchases/{id}(id=${purchase.id})}"
