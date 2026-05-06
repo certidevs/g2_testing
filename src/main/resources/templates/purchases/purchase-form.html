@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/head :: head('Create Purchase')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="container flex-grow-1">
+
+    <h1 class="mb-3">Create New Purchase</h1>
+
+    <form th:action="@{/purchases/create}" method="post" th:object="${purchase}">
+        <div class="mb-3">
+            <label for="user" class="form-label">User</label>
+            <select class="form-select" id="user" th:field="*{user}">
+                <option value="">Select User</option>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.name}"></option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="shippingMode" class="form-label">Shipping Mode</label>
+            <select class="form-select" id="shippingMode" th:field="*{shippingMode}">
+                <option value="">Select Shipping Mode</option>
+                <option value="STANDARD">Standard</option>
+                <option value="EXPRESS">Express</option>
+                <option value="PREMIUM">Premium</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="userComment" class="form-label">User Comment</label>
+            <textarea class="form-control" id="userComment" th:field="*{userComment}" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Purchase</button>
+        <a href="/purchases" class="btn btn-secondary">Cancel</a>
+    </form>
+
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+
+</body>
+</html>
