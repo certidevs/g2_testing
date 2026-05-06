@@ -1,7 +1,10 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.model.Purchase;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
+import com.ecommerce.repository.UserRepository;
+import com.ecommerce.service.PurchaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -18,11 +21,13 @@ public class PurchaseController {
 
     private final PurchaseRepository purchaseRepository;
     private final PurchaseLineRepository purchaseLineRepository;
+    private final PurchaseService purchaseService;
+    private final UserRepository userRepository;
 
     @GetMapping("purchases")
     public String listPurchases(Model model) {
         model.addAttribute("purchases", purchaseRepository.findAll());
-        return "purchases/purchases-list";
+        return "purchases/purchase-list";
     }
 
     @GetMapping("purchases/{id}")
@@ -34,8 +39,21 @@ public class PurchaseController {
 
     @GetMapping("purchases/delete/{id}")
     public String deletePurchase(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
-        purchaseRepository.deleteById(id);
+        purchaseService.deletePurchase(id);
         redirectAttributes.addFlashAttribute("message", "Purchase deleted successfully");
         return "redirect:/purchases";
+    }
+
+    @PostMapping("purchases/create")
+    public String createPurchase(@ModelAttribute Purchase newPurchase) {
+        purchaseService.createPurchase(newPurchase);
+        return "redirect:/purchases";
+    }
+
+    @GetMapping("purchases/create")
+    public String showCreatePurchaseForm(Model model) {
+        model.addAttribute("purchase", new Purchase());
+        model.addAttribute("users", userRepository.findAll());
+        return "purchases/purchase-form";
     }
 }
