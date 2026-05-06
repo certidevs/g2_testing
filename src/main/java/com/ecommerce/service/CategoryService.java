@@ -4,6 +4,7 @@ import com.ecommerce.dto.CategoryRequestDto;
 import com.ecommerce.dto.CategoryResponseDto;
 import com.ecommerce.model.Category;
 import com.ecommerce.repository.CategoryRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,13 @@ public class CategoryService
 
     /**
      * Obtiene todas las categorías sin cargar sus hijos.
-     * Se usa para listados simples donde no se necesita el árbol completo.
+     * Se usa para listados planos donde no se necesita la jerarquía completa.
      *
      * @return lista de CategoryResponseDto sin información de children
      */
     public List<CategoryResponseDto> findAll()
     {
+        // Recupera todas las entidades y las mapea a DTOs sin children
         return categoryRepository.findAll()
                 .stream()
                 .map(this::toResponseDtoWithoutChildren)// convierte cada Category a CategoryResponseDto
@@ -39,39 +41,44 @@ public class CategoryService
      */
     public List<CategoryResponseDto> findRootCategories()
     {
+        // Busca las categorias cuyo parent es null y mapea recursivamente
         return categoryRepository.findByParentIsNull()
                 .stream()
-                .map(this::toResponseDtoWithChildren)
+                .map(this::toResponseDtoWithChildren)// inclute children recursivamente
                 .toList();
     }
 
     /**
-     * Busca una categoría por su ID y devuelve su estructura completa.
+     * Busca una categoría por su ID y devuelve su estructura completa (con hijos).
      *
      * @param id UUID de la categoría
      * @return CategoryResponseDto con hijos incluidos
-     * @throws RuntimeException si la categoría no existe
+     * @throws RuntimeException si la categoría no existe (recomendar excepción específica)
      */
     public CategoryResponseDto findById(UUID id)
     {
+        // Reutiliza el metodo auxiliar para obtener la entidad y convertirla
         Category category = findCategoryEntityById(id);
         return toResponseDtoWithChildren(category);
     }
 
     /**
-     * Crea una nueva categoría validando:
-     * - Si tiene parentId, el padre debe existir.
-     * - No puede existir otra categoría con el mismo slug bajo el mismo padre.
-     * - Si es categoría raíz, no puede existir otra raíz con el mismo slug.
+     * Crea una nueva categoría validando reglas de unicidad y existencia de padre:
+     * - Si dto.parentId != null, el padre debe existir.
+     * - No puede existir otra subcategoría con el mismo slug bajo el mismo padre.
+     * - Si es categoría raíz (parentId == null), no puede existir otra raíz con el mismo slug.
      *
      * @param dto datos de creación
-     * @return categoría creada convertida a DTO con hijos
+     * @return categoría creada convertida a DTO con hijos (vacío inicialmente)
      */
-    public CategoryResponseDto create(CategoryRequestDto dto) {
+    @Transactional
+    public CategoryResponseDto create(CategoryRequestDto dto)
+    {
         Category parent = null;
 
         if (dto.getParentId() != null)
         {
+            // Si se especifica parentId, verificar que exista
             parent = findCategoryEntityById(dto.getParentId());
 
             // Validación: slug único dentro del mismo padre
@@ -81,13 +88,14 @@ public class CategoryService
             }
             else
             {
-                // Validación: slug único entre categorías raíz
+                // Validación adicional: si existe una raíz con ese slug, evitar conflicto (según regla de negocio)
                 if (categoryRepository.existsByParentIsNullAndSlug(dto.getSlug()))
                 {
                     throw new RuntimeException("Ya existe una categoria raiz con ese slug");
                 }
             }
         }
+        //Construccion de la entidad a partir del DTO
         Category category = Category.builder()
                 .name(dto.getName())
                 .slug(dto.getSlug())
@@ -96,6 +104,7 @@ public class CategoryService
                 .parent(parent)
                 .build();
 
+        //Persistir y devolver DTO con children (vacio)
         return toResponseDtoWithChildren(categoryRepository.save(category));
     }
 
@@ -109,36 +118,45 @@ public class CategoryService
      * @param dto datos nuevos
      * @return categoría actualizada convertida a DTO con hijos
      */
-    public CategoryResponseDto update(UUID id, CategoryRequestDto dto) {
+    @Transactional
+    public CategoryResponseDto update(UUID id, CategoryRequestDto dto)
+    {
+        //Recuperar la entidad; lanzar exepcion si no existe
         Category category = findCategoryEntityById(id);
 
         Category parent = null;
 
         if (dto.getParentId() != null)
         {
+            //Evitar asignar la misma categoria como su propio padre
             if (dto.getParentId().equals(id))
             {
                 throw new RuntimeException("Una categoria no puede ser padre de si misma");
             }
 
+            // verificar la existencia del nuevo padre
             parent = findCategoryEntityById(dto.getParentId());
         }
 
+        // Aplicar cambios
         category.setName(dto.getName());
         category.setSlug(dto.getSlug());
         category.setDescription(dto.getDescription());
         category.setActive(dto.getActive());
         category.setParent(parent);
 
+        //Guardar y devolver DTO con children actualizados
         return toResponseDtoWithChildren(categoryRepository.save(category));
     }
 
     /**
      * Elimina una categoría por su ID.
-     * Si no existe, lanza excepción.
+     * Lanza excepción si la categoría no existe.
+     * Nota: considerar reglas de negocio antes de eliminar (p. ej. reubicar hijos o impedir eliminación si tiene productos).
      *
      * @param id UUID de la categoría a eliminar
      */
+    @Transactional
     public void delete(UUID id)
     {
         Category category = findCategoryEntityById(id);
@@ -159,10 +177,10 @@ public class CategoryService
 
     /**
      * Convierte una categoría a DTO sin cargar hijos.
-     * Útil para listados planos.
+     * Útil para listados planos donde no se necesita la jerarquía.
      *
      * @param category entidad Category
-     * @return DTO sin children
+     * @return DTO sin children (children = lista vacía)
      */
     private CategoryResponseDto toResponseDtoWithoutChildren(Category category) {
         return CategoryResponseDto.builder()
@@ -179,10 +197,10 @@ public class CategoryService
 
     /**
      * Convierte una categoría a DTO incluyendo recursivamente todos sus hijos.
-     * Construye un árbol completo de categorías.
+     * Construye un árbol completo de categorías (recursión).
      *
      * @param category entidad Category
-     * @return DTO con children anidados
+     * @return DTO con children anidados (puede ser lista vacía si no tiene hijos)
      */
     private CategoryResponseDto toResponseDtoWithChildren(Category category) {
         return CategoryResponseDto.builder()
@@ -194,9 +212,9 @@ public class CategoryService
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)
                 .children(
-                        category.getChildren()
+                        category.getChildren()// obtener hijos desde la entidad
                                 .stream()
-                                .map(this::toResponseDtoWithChildren)
+                                .map(this::toResponseDtoWithChildren) // mapeo recursivo
                                 .toList()
                 )
                 .build();
