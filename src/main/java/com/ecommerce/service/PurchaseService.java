@@ -136,10 +136,9 @@ public class PurchaseService {
         return purchaseRepository.findByIdAndUserCommentContaining(id, userComment);
     }
 
-    // Search user purchases with comment [I HAVE TO CREATE THIS METHOD IN THE REPOSITORY]
-//    public List<Purchase> getPurchasesByUserIdAndComment(UUID userId, String userComment) {
-//        return purchaseRepository.findByUserIdAndUserCommentContaining(userId, userComment);
-//    }
+    public List<Purchase> getPurchasesByUserIdAndComment(UUID userId, String userComment) {
+        return purchaseRepository.findByUserIdAndUserCommentContaining(userId, userComment);
+    }
 
     // Order by creation date descending
     public List<Purchase> getPurchasesOrderByCreationDateDesc() {

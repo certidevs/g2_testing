@@ -1,6 +1,6 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.model.Reviews;
+import com.ecommerce.model.Review;
 import com.ecommerce.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -47,14 +47,14 @@ public class ReviewController {
     // @GetMapping("reviews/product/{id}")
     @GetMapping(value = "reviews/product/{id}", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     @ResponseBody
-    public List<Reviews> findByProductId(@PathVariable UUID id) {
+    public List<Review> findByProductId(@PathVariable UUID id) {
         return reviewService.getReviewsByProduct(id);
     }
 
     // @GetMapping("reviews/rating/{rating}")
     @GetMapping(value = "reviews/rating/{rating}", produces = MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8")
     @ResponseBody
-    public List<Reviews> findByRating(@PathVariable Integer rating) {
+    public List<Review> findByRating(@PathVariable Integer rating) {
         return reviewService.getReviewsByRating(rating);
     }
 

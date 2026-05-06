@@ -30,6 +30,6 @@ public class ReviewsRequestDto {
     private UUID productId;
 
     @NotNull
-    private UUID usersId;
+    private UUID userId;
 }
 

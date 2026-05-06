@@ -1,11 +1,7 @@
 package com.ecommerce.config;
 
-import com.ecommerce.model.Address;
-import com.ecommerce.model.Brand;
-import com.ecommerce.model.Product;
-import com.ecommerce.model.Purchase;
-import com.ecommerce.model.Reviews;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.*;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +21,7 @@ public class DataInitializer  implements CommandLineRunner {
     private BrandRepository brandRepo;
     private PurchaseRepository purchaseRepo;
     private PurchaseLineRepository purchaseLineRepo;
-    private UsersRepository userRepo;
+    private UserRepository userRepo;
     private ReviewRepository reviewRepo;
     private AddressRepository addressRepo;
 
@@ -34,7 +30,7 @@ public class DataInitializer  implements CommandLineRunner {
         System.out.println("HOLA DESDE DATA INITIALIZER");
         //if (productRepo.count() > 0) return;
 
-        var user1 = Users.builder()
+        var user1 = User.builder()
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -45,7 +41,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .role(Role.CUSTOMER)
                 .build();
 
-        var user2 = Users.builder()
+        var user2 = User.builder()
                 .name("User 2")
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
@@ -120,7 +116,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .price(10.00).brand(brand1).build());
 
         var purchase1 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -133,7 +129,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         var purchase2 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
                 .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -146,7 +142,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         var purchase3 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INITIATED)
@@ -159,7 +155,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         var purchase4 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INACTIVE)
@@ -174,7 +170,7 @@ public class DataInitializer  implements CommandLineRunner {
         purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
 
         // Reseñas de ejemplo
-        var review1 = Reviews.builder()
+        var review1 = Review.builder()
                 .title("Camiseta de muy buena calidad")
                 .message("Estoy muy contento con la compra. El tejido es suave y resistente, y la talla es exacta. La recomiendo totalmente.")
                 .rating(5)
@@ -183,10 +179,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.APRIL, 10, 10, 30))
                 .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 10, 10, 30))
                 .product(product1)
-                .users(user1)
+                .user(user1)
                 .build();
 
-        var review2 = Reviews.builder()
+        var review2 = Review.builder()
                 .title("Pantalón correcto pero talla grande")
                 .message("El pantalón es cómodo para hacer deporte, pero la talla es bastante grande. Recomendaría pedir una talla menos de lo habitual.")
                 .rating(3)
@@ -195,10 +191,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 20, 15, 0))
                 .modifiedDate(LocalDateTime.of(2026, Month.MARCH, 22, 9, 0))
                 .product(product2)
-                .users(user2)
+                .user(user2)
                 .build();
 
-        var review3 = Reviews.builder()
+        var review3 = Review.builder()
                 .title("Zapatillas increíbles para correr")
                 .message("Las mejores zapatillas que he tenido. Muy cómodas desde el primer día, sin necesidad de adaptación. El amortiguamiento es excelente.")
                 .rating(5)
@@ -207,10 +203,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.MAY, 1, 8, 0))
                 .modifiedDate(LocalDateTime.of(2026, Month.MAY, 1, 8, 0))
                 .product(product3)
-                .users(user1)
+                .user(user1)
                 .build();
 
-        var review4 = Reviews.builder()
+        var review4 = Review.builder()
                 .title("Calcetines flojos, se deforman rápido")
                 .message("Después de unas pocas lavadas los calcetines pierden la forma. No son malos del todo pero esperaba más durabilidad para el precio.")
                 .rating(2)
@@ -219,10 +215,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2025, Month.DECEMBER, 5, 18, 45))
                 .modifiedDate(LocalDateTime.of(2025, Month.DECEMBER, 6, 11, 0))
                 .product(product4)
-                .users(user2)
+                .user(user2)
                 .build();
 
-        var review5 = Reviews.builder()
+        var review5 = Review.builder()
                 .title("Camiseta muy bonita pero se arruga")
                 .message("El diseño es bonito y la calidad del tejido es buena, pero se arruga bastante al lavarla. Hay que plancharla siempre.")
                 .rating(4)
@@ -231,10 +227,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.APRIL, 15, 9, 0))
                 .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 15, 9, 0))
                 .product(product1)
-                .users(user2)
+                .user(user2)
                 .build();
 
-        var review6 = Reviews.builder()
+        var review6 = Review.builder()
                 .title("Camiseta decepcionante")
                 .message("Esperaba más por el precio. El color se fue a la primera lavada y talla muy pequeño para la talla indicada.")
                 .rating(1)
@@ -243,10 +239,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.MAY, 2, 11, 15))
                 .modifiedDate(LocalDateTime.of(2026, Month.MAY, 2, 11, 15))
                 .product(product1)
-                .users(user1)
+                .user(user1)
                 .build();
 
-        var review7 = Reviews.builder()
+        var review7 = Review.builder()
                 .title("Zapatillas cómodas pero poco duraderas")
                 .message("Son muy cómodas al principio pero la suela empezó a despegarse después de dos meses de uso regular.")
                 .rating(3)
@@ -255,10 +251,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.APRIL, 20, 14, 30))
                 .modifiedDate(LocalDateTime.of(2026, Month.APRIL, 20, 14, 30))
                 .product(product3)
-                .users(user2)
+                .user(user2)
                 .build();
 
-        var review8 = Reviews.builder()
+        var review8 = Review.builder()
                 .title("Las mejores zapatillas del mercado")
                 .message("He probado muchas marcas y estas sin duda son las mejores. Ligeras, transpirables y con un agarre excelente en todo tipo de superficies.")
                 .rating(5)
@@ -267,7 +263,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 10, 16, 0))
                 .modifiedDate(LocalDateTime.of(2026, Month.MARCH, 10, 16, 0))
                 .product(product3)
-                .users(user1)
+                .user(user1)
                 .build();
 
         reviewRepo.saveAll(List.of(review1, review2, review3, review4, review5, review6, review7, review8));

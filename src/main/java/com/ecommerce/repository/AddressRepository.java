@@ -1,7 +1,8 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Address;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -12,7 +13,7 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     // Consultas personalizadas para direcciones
     
     // Find addresses by user
-    List<Address> findByUser(Users user);
+    List<Address> findByUser(User user);
     
     // Find addresses by city
     List<Address> findByCity(String city);
@@ -27,17 +28,17 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     List<Address> findByZipCode(String zipCode);
     
     // Find addresses by user and city
-    List<Address> findByUserAndCity(Users user, String city);
+    List<Address> findByUserAndCity(User user, String city);
     
     // Find addresses by user and country
-    List<Address> findByUserAndCountry(Users user, String country);
+    List<Address> findByUserAndCountry(User user, String country);
     
     // Count addresses by user
-    Long countByUser(Users user);
+    Long countByUser(User user);
     
     // Find addresses by type
     List<Address> findByAddressType(AddressType addressType);
     
     // Find addresses by user and type
-    List<Address> findByUserAndAddressType(Users user, AddressType addressType);
+    List<Address> findByUserAndAddressType(User user, AddressType addressType);
 }

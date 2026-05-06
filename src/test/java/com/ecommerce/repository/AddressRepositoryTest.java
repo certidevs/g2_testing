@@ -1,7 +1,7 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Address;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
 import com.ecommerce.model.enums.Gender;
 import com.ecommerce.model.enums.Role;
@@ -24,10 +24,10 @@ public class AddressRepositoryTest {
     private AddressRepository addressRepository;
     
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
-    Users user1;
-    Users user2;
+    User user1;
+    User user2;
     Address address1;
     Address address2;
     Address address3;
@@ -36,7 +36,7 @@ public class AddressRepositoryTest {
     @BeforeEach
     void setUp() {
         // Create test users
-        user1 = usersRepository.save(Users.builder()
+        user1 = userRepository.save(User.builder()
             .name("John")
             .lastName("Doe")
             .email("john.doe@example.com")
@@ -47,7 +47,7 @@ public class AddressRepositoryTest {
             .addresses(new ArrayList<>())
             .build());
 
-        user2 = usersRepository.save(Users.builder()
+        user2 = userRepository.save(User.builder()
             .name("Jane")
             .lastName("Smith")
             .email("jane.smith@example.com")
@@ -137,7 +137,7 @@ public class AddressRepositoryTest {
 
     @Test
     void findByUser_NotFound() {
-        Users nonExistentUser = Users.builder()
+        User nonExistentUser = User.builder()
             .id(UUID.randomUUID())
             .name("Non")
             .lastName("Existent")
@@ -275,7 +275,7 @@ public class AddressRepositoryTest {
 
     @Test
     void countByUser_NoAddresses() {
-        Users userWithoutAddresses = usersRepository.save(Users.builder()
+        User userWithoutAddresses = userRepository.save(User.builder()
             .name("Alice")
             .lastName("Johnson")
             .email("alice.johnson@example.com")

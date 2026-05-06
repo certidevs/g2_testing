@@ -1,8 +1,6 @@
 package com.ecommerce.model;
 
 import com.ecommerce.model.enums.*;
-import com.ecommerce.repository.PurchaseLineRepository;
-import com.ecommerce.repository.PurchaseRepository;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,7 +49,7 @@ public class Purchase {
     private String userComment; // Requirements specified by the buyer at the time of delivery
 
     @ManyToOne
-    private Users users;
+    private User user;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

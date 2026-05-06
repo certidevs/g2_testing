@@ -1,6 +1,6 @@
 package com.ecommerce.repository;
 
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Gender;
 import com.ecommerce.model.enums.Role;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @DataJpaTest
-public class UsersRepositoryTest {
+public class UserRepositoryTest {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
-    Users user1;
-    Users user2;
-    Users user3;
+    User user1;
+    User user2;
+    User user3;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +33,7 @@ public class UsersRepositoryTest {
         LocalDateTime twoWeeksAgo = now.minusWeeks(2);
         LocalDateTime oneMonthAgo = now.minusMonths(1);
         
-        user1 = usersRepository.save(Users.builder()
+        user1 = userRepository.save(User.builder()
             .name("John")
             .lastName("Doe")
             .email("john.doe@example.com")
@@ -44,7 +44,7 @@ public class UsersRepositoryTest {
             .addresses(new ArrayList<>()) // Inicializar para evitar null
             .build());
 
-        user2 = usersRepository.save(Users.builder()
+        user2 = userRepository.save(User.builder()
             .name("Jane")
             .lastName("Smith")
             .email("jane.smith@example.com")
@@ -55,7 +55,7 @@ public class UsersRepositoryTest {
             .addresses(new ArrayList<>()) // Inicializar para evitar null
             .build());
 
-        user3 = usersRepository.save(Users.builder()
+        user3 = userRepository.save(User.builder()
             .name("Alice")
             .lastName("Johnson")
             .email("alice.johnson@example.com")
@@ -71,7 +71,7 @@ public class UsersRepositoryTest {
     void findById() {
         UUID userId = user1.getId();
 
-        Optional<Users> foundUser = usersRepository.findById(userId);
+        Optional<User> foundUser = userRepository.findById(userId);
         
 
         assertTrue(foundUser.isPresent());
@@ -84,7 +84,7 @@ public class UsersRepositoryTest {
     void findById_NotFound() {
         UUID nonExistentId = UUID.randomUUID();
 
-        Optional<Users> foundUser = usersRepository.findById(nonExistentId);
+        Optional<User> foundUser = userRepository.findById(nonExistentId);
 
         assertFalse(foundUser.isPresent());
     }
@@ -93,7 +93,7 @@ public class UsersRepositoryTest {
     void findByName() {
         String name = "John";
 
-        List<Users> users = usersRepository.findByName(name);
+        List<User> users = userRepository.findByName(name);
 
         assertEquals(1, users.size());
         assertEquals("John", users.get(0).getName());
@@ -104,7 +104,7 @@ public class UsersRepositoryTest {
     void findByName_NotFound() {
         String nonExistentName = "NonExistent";
 
-        List<Users> users = usersRepository.findByName(nonExistentName);
+        List<User> users = userRepository.findByName(nonExistentName);
 
         assertEquals(0, users.size());
     }
@@ -113,7 +113,7 @@ public class UsersRepositoryTest {
     void findByEmail() {
         String email = "jane.smith@example.com";
 
-        List<Users> users = usersRepository.findByEmail(email);
+        List<User> users = userRepository.findByEmail(email);
 
         assertEquals(1, users.size());
         assertEquals(email, users.get(0).getEmail());
@@ -124,7 +124,7 @@ public class UsersRepositoryTest {
     void findByEmail_NotFound() {
         String nonExistentEmail = "nonexistent@example.com";
 
-        List<Users> users = usersRepository.findByEmail(nonExistentEmail);
+        List<User> users = userRepository.findByEmail(nonExistentEmail);
 
         assertEquals(0, users.size());
     }
@@ -133,7 +133,7 @@ public class UsersRepositoryTest {
     void findByPhone() {
         String phone = "555555555";
 
-        List<Users> users = usersRepository.findByPhone(phone);
+        List<User> users = userRepository.findByPhone(phone);
 
         assertEquals(1, users.size());
         assertEquals(phone, users.get(0).getPhone());
@@ -144,7 +144,7 @@ public class UsersRepositoryTest {
     void findByPhone_NotFound() {
         String nonExistentPhone = "000000000";
 
-        List<Users> users = usersRepository.findByPhone(nonExistentPhone);
+        List<User> users = userRepository.findByPhone(nonExistentPhone);
 
         assertEquals(0, users.size());
     }
@@ -153,10 +153,10 @@ public class UsersRepositoryTest {
     void findByGender() {
         Gender gender = Gender.FEMALE;
 
-        List<Users> users = usersRepository.findByGender(gender);
+        List<User> users = userRepository.findByGender(gender);
 
         assertEquals(2, users.size()); // Jane and Alice
-        for (Users user : users) {
+        for (User user : users) {
             assertEquals(Gender.FEMALE, user.getGender());
         }
     }
@@ -165,7 +165,7 @@ public class UsersRepositoryTest {
     void findByGender_NotFound() {
         Gender gender = Gender.OTHER;
 
-        List<Users> users = usersRepository.findByGender(gender);
+        List<User> users = userRepository.findByGender(gender);
 
         assertEquals(0, users.size());
     }
@@ -174,10 +174,10 @@ public class UsersRepositoryTest {
     void findByRole() {
         Role role = Role.CUSTOMER;
 
-        List<Users> users = usersRepository.findByRole(role);
+        List<User> users = userRepository.findByRole(role);
 
         assertEquals(2, users.size()); // John and Alice
-        for (Users user : users) {
+        for (User user : users) {
             assertEquals(Role.CUSTOMER, user.getRole());
         }
     }
@@ -186,7 +186,7 @@ public class UsersRepositoryTest {
     void findByRole_NotFound() {
         Role role = Role.ADMIN; // Solo hay 1 admin (Jane)
 
-        List<Users> users = usersRepository.findByRole(role);
+        List<User> users = userRepository.findByRole(role);
 
         assertEquals(1, users.size()); // Solo Jane es ADMIN
     }
@@ -196,11 +196,11 @@ public class UsersRepositoryTest {
         LocalDateTime startDate = LocalDateTime.now().minusWeeks(3);
         LocalDateTime endDate = LocalDateTime.now();
 
-        List<Users> users = usersRepository.findByCreationDateBetween(startDate, endDate);
+        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
 
         assertEquals(2, users.size());
 
-        for (Users user : users) {
+        for (User user : users) {
             assertTrue(user.getCreationDate().isAfter(startDate));
             assertTrue(user.getCreationDate().isBefore(endDate));
         }
@@ -211,7 +211,7 @@ public class UsersRepositoryTest {
         LocalDateTime startDate = LocalDateTime.now().plusDays(1);
         LocalDateTime endDate = LocalDateTime.now().plusDays(7);
 
-        List<Users> users = usersRepository.findByCreationDateBetween(startDate, endDate);
+        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
 
         assertEquals(0, users.size());
     }
@@ -222,7 +222,7 @@ public class UsersRepositoryTest {
         LocalDateTime startDate = LocalDateTime.now().minusMonths(2);
         LocalDateTime endDate = LocalDateTime.now().plusDays(1);
 
-        List<Users> users = usersRepository.findByCreationDateBetween(startDate, endDate);
+        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
 
         assertEquals(3, users.size()); // All users
     }

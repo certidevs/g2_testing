@@ -27,7 +27,7 @@ class ProductRepositoryTest {
                 .build();
         brandNike = brandRepository.save(brandNike);
 
-        var produc1 = Product.builder()
+        var product1 = Product.builder()
                 .title("Camiseta Deporte")
 
                 .price(32.0)
@@ -35,7 +35,7 @@ class ProductRepositoryTest {
                 .stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
-        var produc2 = Product.builder()
+        var product2 = Product.builder()
                 .title("Pantalon deporte")
 
                 .price(43.0)
@@ -43,14 +43,14 @@ class ProductRepositoryTest {
                 .stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
-        var produc3 = Product.builder()
+        var product3 = Product.builder()
                 .title("Zapatillas deporte")
                 .price(80.0)
                 .available(true)
                 .stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
-        var produc4 = Product.builder()
+        var product4 = Product.builder()
                 .title("Calcetines deporte")
 
                 .price(8.0)
@@ -58,7 +58,7 @@ class ProductRepositoryTest {
                 .stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
-        productRepository.saveAll(List.of(produc1, produc2, produc3, produc4));
+        productRepository.saveAll(List.of(product1, product2, product3, product4));
     }
 
     @Test

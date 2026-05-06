@@ -27,7 +27,7 @@ public class ReviewsResponseDto {
     private String productTitle;
 
     // Solo el id y nombre del usuario, no el objeto completo
-    private UUID usersId;
-    private String usersName;
+    private UUID userId;
+    private String userName;
 }
 

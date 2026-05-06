@@ -1,5 +1,5 @@
 package com.ecommerce.model.enums;
 
-public enum PaymentMethods {
+public enum PaymentMethod{
 CREDIT_CARD, PAYPAL, CASH, BIZUM;
 }

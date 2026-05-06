@@ -1,7 +1,7 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Purchase;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,10 +22,10 @@ class PurchaseRepositoryTest {
     PurchaseRepository purchaseRepository;
 
     @Autowired
-    UsersRepository usersRepository;
+    UserRepository userRepository;
 
-    Users user1;
-    Users user2;
+    User user1;
+    User user2;
 
     Purchase purchase1;
     Purchase purchase2;
@@ -35,7 +35,7 @@ class PurchaseRepositoryTest {
     @BeforeEach
     void setUp(){
 
-        user1 = Users.builder()
+        user1 = User.builder()
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -46,7 +46,7 @@ class PurchaseRepositoryTest {
                 .role(Role.CUSTOMER)
                 .build();
 
-        user2 = Users.builder()
+        user2 = User.builder()
                 .name("User 2")
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
@@ -57,10 +57,10 @@ class PurchaseRepositoryTest {
                 .role(Role.CUSTOMER)
                 .build();
 
-        usersRepository.saveAll(List.of(user1, user2));
+        userRepository.saveAll(List.of(user1, user2));
 
         purchase1 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -73,7 +73,7 @@ class PurchaseRepositoryTest {
                 .build();
 
         purchase2 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
                 .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -86,7 +86,7 @@ class PurchaseRepositoryTest {
                 .build();
 
         purchase3 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INITIATED)
@@ -99,7 +99,7 @@ class PurchaseRepositoryTest {
                 .build();
 
         purchase4 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INACTIVE)
@@ -236,8 +236,8 @@ class PurchaseRepositoryTest {
     // -------- SPECIFIC --------
 
     @Test
-    void findByUsersIdAndUserCommentContaining(){
-        List<Purchase> containsUserIdAndCommentPurchases = purchaseRepository.findByUsersIdAndUserCommentContaining(purchase1.getUsers().getId(), "mal estado");
+    void findByIdAndUserCommentContaining(){
+        List<Purchase> containsUserIdAndCommentPurchases = purchaseRepository.findByUserIdAndUserCommentContaining(purchase1.getUser().getId(), "mal estado");
         System.out.println("-----------------------------------");
         System.out.println(containsUserIdAndCommentPurchases);
         System.out.println("-----------------------------------");
@@ -251,6 +251,15 @@ class PurchaseRepositoryTest {
         System.out.println(containsCommentPurchase);
         System.out.println("-----------------------------------");
         assertEquals(2, containsCommentPurchase.size());
+    }
+
+    @Test
+    void findByUserIdAndUserCommentContaining(){
+        List<Purchase> containsUserIdAndCommentPurchases = purchaseRepository.findByUserIdAndUserCommentContaining(purchase1.getUser().getId(), "mal estado");
+        System.out.println("-----------------------------------");
+        System.out.println(containsUserIdAndCommentPurchases);
+        System.out.println("-----------------------------------");
+        assertEquals(1, containsUserIdAndCommentPurchases.size());
     }
 
     // -------- ORDER --------
@@ -296,15 +305,6 @@ class PurchaseRepositoryTest {
         for (int i = 0; i < finishedDateAndPurchaseStatusOrdered.size() - 1; i++) {
             assertTrue(finishedDateAndPurchaseStatusOrdered.get(i).getTotalPrice() <= finishedDateAndPurchaseStatusOrdered.get(i + 1).getTotalPrice());
         }
-    }
-
-    @Test
-    void findByIdAndUserCommentContaining(){
-     List<Purchase> idAndUserComment = purchaseRepository.findByIdAndUserCommentContaining(purchase2.getId(), "ha llegado bien");
-        System.out.println("-----------------------------------");
-        System.out.println(idAndUserComment);
-        System.out.println("-----------------------------------");
-        assertEquals(1, idAndUserComment.size());
     }
 
     @Test

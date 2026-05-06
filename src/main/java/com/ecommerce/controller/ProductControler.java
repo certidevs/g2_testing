@@ -1,7 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
-import com.ecommerce.model.Reviews;
+import com.ecommerce.model.Review;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import lombok.AllArgsConstructor;
@@ -37,7 +37,7 @@ public class ProductControler {
        if (productOptional.isPresent()) {
            Product product = productOptional.get();
            model.addAttribute("products", product);  // Agrega el producto al modelo con el nombre "products"
-           List<Reviews> reviews = reviewRepository.findByProductId(id);  // Usa la instancia y el método correcto
+           List<Review> reviews = reviewRepository.findByProductId(id);  // Usa la instancia y el método correcto
            model.addAttribute("reviews", reviews);
        } else {
            // Manejo si el producto no existe: redirige a la lista para evitar error 500

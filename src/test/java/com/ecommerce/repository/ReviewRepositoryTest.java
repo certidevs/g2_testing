@@ -1,5 +1,6 @@
 package com.ecommerce.repository;
 
+import com.ecommerce.model.Review;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,7 +9,6 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
-import com.ecommerce.model.Reviews;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Category;
 import java.time.LocalDateTime;
@@ -37,8 +37,8 @@ public class ReviewRepositoryTest{
 
     Product product1;
     Product product2;
-    Reviews review1;
-    Reviews review2;
+    Review review1;
+    Review review2;
 
     @BeforeEach
     // Initialize data
@@ -56,40 +56,40 @@ public class ReviewRepositoryTest{
         LocalDateTime twoMonthsAgo = now.minusMonths(2);
         
         // Create and save reviews with varied ratings and specific dates
-        review1 = reviewRepository.save(Reviews.builder().product(product1).rating(5).verified(true)
+        review1 = reviewRepository.save(Review.builder().product(product1).rating(5).verified(true)
             .creationDate(now).build());
-        review2 = reviewRepository.save(Reviews.builder().product(product2).rating(3).verified(false)
+        review2 = reviewRepository.save(Review.builder().product(product2).rating(3).verified(false)
             .creationDate(twoWeeksAgo).build());
         
         // Create additional reviews with different ratings and dates for comprehensive tests
-        Reviews review3 = reviewRepository.save(Reviews.builder().product(product1).rating(1).verified(false)
+        Review review3 = reviewRepository.save(Review.builder().product(product1).rating(1).verified(false)
             .creationDate(now.minusDays(5)).build());
-        Reviews review4 = reviewRepository.save(Reviews.builder().product(product2).rating(2).verified(true)
+        Review review4 = reviewRepository.save(Review.builder().product(product2).rating(2).verified(true)
             .creationDate(now.minusWeeks(5)).build());
-        Reviews review5 = reviewRepository.save(Reviews.builder().product(product1).rating(4).verified(false)
+        Review review5 = reviewRepository.save(Review.builder().product(product1).rating(4).verified(false)
             .creationDate(twoMonthsAgo).build());
-        Reviews review6 = reviewRepository.save(Reviews.builder().product(product2).rating(5).verified(true)
+        Review review6 = reviewRepository.save(Review.builder().product(product2).rating(5).verified(true)
             .creationDate(now.minusDays(10)).build());
     }
 
     @Test
     void findByProductId() {
         // Given
-        List<Reviews> reviews = reviewRepository.findByProductId(product1.getId());
+        List<Review> reviews = reviewRepository.findByProductId(product1.getId());
         assertEquals(3, reviews.size());
     }
 
     @Test
     void findByRating() {
         // Given
-        List<Reviews> reviews = reviewRepository.findByRating(5);
+        List<Review> reviews = reviewRepository.findByRating(5);
         assertEquals(2, reviews.size());
     }
 
     @Test
     void findAllByOrderByRatingDesc() {
         // Given
-        List<Reviews> reviews = reviewRepository.findAllByOrderByRatingDesc();
+        List<Review> reviews = reviewRepository.findAllByOrderByRatingDesc();
         assertEquals(6, reviews.size());
         assertEquals(5, reviews.get(0).getRating());
         assertEquals(5, reviews.get(1).getRating());
@@ -101,7 +101,7 @@ public class ReviewRepositoryTest{
 
     @Test
     void findAllByOrderByRatingAsc() {
-        List<Reviews> reviews = reviewRepository.findAllByOrderByRatingAsc();
+        List<Review> reviews = reviewRepository.findAllByOrderByRatingAsc();
         assertEquals(6, reviews.size());
         assertEquals(1, reviews.get(0).getRating());
         assertEquals(2, reviews.get(1).getRating());
@@ -118,7 +118,7 @@ public class ReviewRepositoryTest{
         LocalDateTime endDate = LocalDateTime.now();
         
         // When
-        List<Reviews> reviews = reviewRepository.findByCreationDateBetween(startDate, endDate);
+        List<Review> reviews = reviewRepository.findByCreationDateBetween(startDate, endDate);
         
         // Then - Should find reviews created within last month (review1, review2, review3, review6)
         assertEquals(4, reviews.size());
@@ -127,7 +127,7 @@ public class ReviewRepositoryTest{
     @Test
     void findByVerified() {
         // Given
-        List<Reviews> reviews = reviewRepository.findByVerified(true);
+        List<Review> reviews = reviewRepository.findByVerified(true);
         assertEquals(3, reviews.size());
     }
 
@@ -143,13 +143,13 @@ public class ReviewRepositoryTest{
         Category category = product1.getSubcategory();
         
         // When
-        List<Reviews> reviews = reviewRepository.findByProductSubcategory(category);
+        List<Review> reviews = reviewRepository.findByProductSubcategory(category);
         
         // Then - Should find all reviews for products in this category (6 reviews total)
         assertEquals(6, reviews.size());
         
         // Verify all reviews belong to products in the same category
-        for (Reviews review : reviews) {
+        for (Review review : reviews) {
             assertEquals(category, review.getProduct().getSubcategory());
         }
     }

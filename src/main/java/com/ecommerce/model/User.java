@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.List;
 import java.util.ArrayList;
-import com.ecommerce.model.enums.PaymentMethods;
+import com.ecommerce.model.enums.PaymentMethod;
 import com.ecommerce.model.enums.Gender;
 import com.ecommerce.model.enums.Role;
 
@@ -19,7 +19,7 @@ import com.ecommerce.model.enums.Role;
 @AllArgsConstructor
 @Builder
 
-public class Users {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -56,7 +56,7 @@ public class Users {
 
     // Payment method enum
     @Enumerated(EnumType.STRING)
-    private PaymentMethods paymentMethod;
+    private PaymentMethod paymentMethod;
 
     // Un usuario tiene MUCHAS direcciones
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

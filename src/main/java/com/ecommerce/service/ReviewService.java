@@ -1,6 +1,6 @@
 package com.ecommerce.service;
 
-import com.ecommerce.model.Reviews;
+import com.ecommerce.model.Review;
 import com.ecommerce.model.enums.ReviewStatus;
 import com.ecommerce.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +21,10 @@ public class ReviewService {
      * Crea una nueva reseña con la fecha de creación actual
      * y estado PENDING_APPROVAL por defecto.
      *
-     * @param review objeto Reviews con los datos de la reseña
+     * @param review objeto Review con los datos de la reseña
      * @return reseña guardada con fecha de creación y estado asignados
      */
-    public Reviews createReview(Reviews review) {
+    public Review createReview(Review review) {
         review.setCreationDate(LocalDateTime.now());
         review.setModifiedDate(LocalDateTime.now());
         
@@ -44,7 +44,7 @@ public class ReviewService {
      *
      * @return lista de todas las reseñas
      */
-    public List<Reviews> getAllReviews() {
+    public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
@@ -54,7 +54,7 @@ public class ReviewService {
      * @param id UUID de la reseña
      * @return Optional con la reseña encontrada o vacío si no existe
      */
-    public Optional<Reviews> getReviewById(UUID id) {
+    public Optional<Review> getReviewById(UUID id) {
         return reviewRepository.findById(id);
     }
 
@@ -66,7 +66,7 @@ public class ReviewService {
      * @throws RuntimeException si la reseña no existe
      */
     public void deleteReview(UUID id) {
-        Reviews review = findReviewEntityById(id);
+        Review review = findReviewEntityById(id);
         reviewRepository.delete(review);
     }
 
@@ -76,7 +76,7 @@ public class ReviewService {
      * @param productId UUID del producto
      * @return lista de reseñas del producto
      */
-    public List<Reviews> getReviewsByProduct(UUID productId) {
+    public List<Review> getReviewsByProduct(UUID productId) {
         return reviewRepository.findByProductId(productId);
     }
 
@@ -86,7 +86,7 @@ public class ReviewService {
      * @param rating valoración del 1 al 5
      * @return lista de reseñas con esa valoración
      */
-    public List<Reviews> getReviewsByRating(Integer rating) {
+    public List<Review> getReviewsByRating(Integer rating) {
         return reviewRepository.findByRating(rating);
     }
 
@@ -95,7 +95,7 @@ public class ReviewService {
      *
      * @return lista de reseñas ordenadas por rating descendente
      */
-    public List<Reviews> getReviewsBestRated() {
+    public List<Review> getReviewsBestRated() {
         return reviewRepository.findAllByOrderByRatingDesc();
     }
 
@@ -104,7 +104,7 @@ public class ReviewService {
      *
      * @return lista de reseñas ordenadas por rating ascendente
      */
-    public List<Reviews> getReviewsWorstRated() {
+    public List<Review> getReviewsWorstRated() {
         return reviewRepository.findAllByOrderByRatingAsc();
     }
 
@@ -115,7 +115,7 @@ public class ReviewService {
      * @param endDate fecha de fin
      * @return lista de reseñas en ese rango de fechas
      */
-    public List<Reviews> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<Review> getReviewsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return reviewRepository.findByCreationDateBetween(startDate, endDate);
     }
 
@@ -125,7 +125,7 @@ public class ReviewService {
      * @param verified true para verificadas, false para no verificadas
      * @return lista de reseñas según estado de verificación
      */
-    public List<Reviews> getReviewsByVerificationStatus(Boolean verified) {
+    public List<Review> getReviewsByVerificationStatus(Boolean verified) {
         return reviewRepository.findByVerified(verified);
     }
 
@@ -146,8 +146,8 @@ public class ReviewService {
      * @return reseña aprobada
      * @throws RuntimeException si la reseña no existe
      */
-    public Reviews approveReview(UUID id) {
-        Reviews review = findReviewEntityById(id);
+    public Review approveReview(UUID id) {
+        Review review = findReviewEntityById(id);
         review.setStatus(ReviewStatus.APPROVED);
         review.setModifiedDate(LocalDateTime.now());
         return reviewRepository.save(review);
@@ -160,8 +160,8 @@ public class ReviewService {
      * @return reseña rechazada
      * @throws RuntimeException si la reseña no existe
      */
-    public Reviews rejectReview(UUID id) {
-        Reviews review = findReviewEntityById(id);
+    public Review rejectReview(UUID id) {
+        Review review = findReviewEntityById(id);
         review.setStatus(ReviewStatus.REJECTED);
         review.setModifiedDate(LocalDateTime.now());
         return reviewRepository.save(review);
@@ -174,8 +174,8 @@ public class ReviewService {
      * @return reseña verificada
      * @throws RuntimeException si la reseña no existe
      */
-    public Reviews verifyReview(UUID id) {
-        Reviews review = findReviewEntityById(id);
+    public Review verifyReview(UUID id) {
+        Review review = findReviewEntityById(id);
         review.setVerified(true);
         review.setModifiedDate(LocalDateTime.now());
         return reviewRepository.save(review);
@@ -186,21 +186,21 @@ public class ReviewService {
      *
      * @return lista de reseñas con estado PENDING_APPROVAL
      */
-    public List<Reviews> getPendingReviews() {
+    public List<Review> getPendingReviews() {
         return reviewRepository.findAll().stream()
                 .filter(review -> ReviewStatus.PENDING_APPROVAL.equals(review.getStatus()))
                 .toList();
     }
 
     /**
-     * Recupera una entidad Reviews por ID o lanza excepción.
+     * Recupera una entidad Review por ID o lanza excepción.
      * Método auxiliar para validaciones internas.
      *
      * @param id UUID de la reseña
-     * @return entidad Reviews existente
+     * @return entidad Review existente
      * @throws RuntimeException si la reseña no existe
      */
-    private Reviews findReviewEntityById(UUID id) {
+    private Review findReviewEntityById(UUID id) {
         return reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
     }

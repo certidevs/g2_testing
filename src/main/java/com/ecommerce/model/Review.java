@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import lombok.*;
 import java.time.LocalDateTime;
-import com.ecommerce.model.Category;
 
 import java.util.UUID;
 
@@ -19,9 +18,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"product"})
-public class Reviews {
+public class Review {
 
-    // Reviews  uuid
+    // Review  uuid
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -59,7 +58,7 @@ public class Reviews {
 
     // User
     @ManyToOne
-    private Users users;
+    private User user;
 
     // Listado de reviews para admin para aprobar o desaprobar con estados
 }

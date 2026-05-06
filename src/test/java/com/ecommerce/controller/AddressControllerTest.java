@@ -1,12 +1,12 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.Address;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
 import com.ecommerce.model.enums.Gender;
 import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.AddressRepository;
-import com.ecommerce.repository.UsersRepository;
+import com.ecommerce.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,19 +33,19 @@ class AddressControllerTest {
     AddressRepository addressRepository;
 
     @Autowired
-    UsersRepository usersRepository;
+    UserRepository userRepository;
 
     @Autowired
     MockMvc mockMvc;
 
-    Users user1;
+    User user1;
     Address address1;
     Address address2;
     Address address3;
 
     @BeforeEach
     void setUp() {
-        user1 = usersRepository.save(Users.builder()
+        user1 = userRepository.save(User.builder()
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")

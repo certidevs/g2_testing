@@ -2,11 +2,11 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
-import com.ecommerce.model.Users;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseRepository;
-import com.ecommerce.repository.UsersRepository;
+import com.ecommerce.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,13 +39,13 @@ class PurchaseControllerTest {
     ProductRepository productRepository;
 
     @Autowired
-    UsersRepository usersRepository;
+    UserRepository userRepository;
 
     @Autowired
     MockMvc mockMvc;
 
-    Users user1;
-    Users user2;
+    User user1;
+    User user2;
 
     Product product1;
     Product product2;
@@ -58,7 +58,7 @@ class PurchaseControllerTest {
     @BeforeEach
     void setUp(){
 
-        user1 = Users.builder()
+        user1 = User.builder()
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -69,7 +69,7 @@ class PurchaseControllerTest {
                 .role(Role.CUSTOMER)
                 .build();
 
-        user2 = Users.builder()
+        user2 = User.builder()
                 .name("User 2")
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
@@ -80,7 +80,7 @@ class PurchaseControllerTest {
                 .role(Role.CUSTOMER)
                 .build();
 
-        usersRepository.saveAll(List.of(user1, user2));
+        userRepository.saveAll(List.of(user1, user2));
 
         product1 = Product.builder()
                 .title("Product 1")
@@ -101,7 +101,7 @@ class PurchaseControllerTest {
         productRepository.saveAll(List.of(product1, product2));
 
         purchase1 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
                 .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -114,7 +114,7 @@ class PurchaseControllerTest {
                 .build();
 
         purchase2 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
                 .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
                 .purchaseStatus(PurchaseStatus.FINISHED)
@@ -127,7 +127,7 @@ class PurchaseControllerTest {
                 .build();
 
         purchase3 = Purchase.builder()
-                .users(user1)
+                .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INITIATED)
@@ -140,7 +140,7 @@ class PurchaseControllerTest {
                 .build();
 
         purchase4 = Purchase.builder()
-                .users(user2)
+                .user(user2)
                 .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
                 .finishedDate(null)
                 .purchaseStatus(PurchaseStatus.INACTIVE)

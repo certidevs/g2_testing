@@ -32,5 +32,5 @@ public class Address {
     private AddressType addressType;
 
     @ManyToOne
-    private Users user;
+    private User user;
 }
