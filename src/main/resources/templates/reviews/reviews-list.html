@@ -47,8 +47,8 @@
                         <span th:unless="${review.product != null}" class="text-muted">Sin producto</span>
                     </td>
                     <td>
-                        <span th:if="${review.users != null}" th:text="${review.users.name}">Usuario</span>
-                        <span th:unless="${review.users != null}" class="text-muted">Anónimo</span>
+                        <span th:if="${review.user != null}" th:text="${review.user.name}">Usuario</span>
+                        <span th:unless="${review.user != null}" class="text-muted">Anónimo</span>
                     </td>
                     <td class="text-center">
                         <span th:if="${review.status != null}"

@@ -88,11 +88,11 @@
                                    class="text-decoration-none">Nombre del producto</a>
                             </small>
                         </div>
-                        <div class="col-md-6" th:if="${review.users}">
+                        <div class="col-md-6" th:if="${review.user}">
                             <small class="text-muted">
                                 <i class="fa-solid fa-user me-1"></i>
                                 <strong>Usuario:</strong>
-                                <span th:text="${review.users.name}">Nombre de usuario</span>
+                                <span th:text="${review.user.name}">Nombre de usuario</span>
                             </small>
                         </div>
                     </div>
@@ -168,7 +168,7 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted"
-                                       th:text="${related.users != null ? related.users.name : 'Anónimo'}">Usuario</small>
+                                       th:text="${related.user != null ? related.user.name : 'Anónimo'}">Usuario</small>
                                 <a th:href="@{/reviews/{id}(id=${related.id})}"
                                    class="btn btn-outline-secondary btn-sm py-0 px-1"
                                    style="font-size:0.7rem">Ver</a>
