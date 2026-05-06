@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Mis Favoritos')}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<main class="container flex-grow-1 py-4">
+    <h1 class="mb-4">Mis Favoritos</h1>
+
+    <div th:if="${favoriteProducts != null and !favoriteProducts.isEmpty()}" class="row">
+        <div th:each="product : ${favoriteProducts}" class="col-md-4 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}"
+                     class="card-img-top" alt="Producto" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${product.title}">Título</h5>
+                    <p class="card-text text-muted text-truncate" th:text="${product.shortDescription}"></p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-success" th:text="${'€' + product.price}">Precio</span>
+                        <span class="badge" th:classappend="${product.available ? 'bg-success' : 'bg-danger'}"
+                              th:text="${product.available ? 'Disponible' : 'No disponible'}"></span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top d-flex gap-2">
+                    <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-sm btn-info flex-grow-1">
+                        <i class="fa-solid fa-eye me-1"></i> Ver
+                    </a>
+                    <form th:action="@{/favorites/remove/{id}(id=${product.id})}" method="post" class="flex-grow-1">
+                        <button type="submit" class="btn btn-sm btn-danger w-100"
+                                onclick="return confirm('¿Eliminar de favoritos?')">
+                            <i class="fa-solid fa-trash me-1"></i> Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${favoriteProducts == null or favoriteProducts.isEmpty()}" class="alert alert-info text-center py-5">
+        <i class="fa-solid fa-heart-broken fa-2x mb-3"></i>
+        <p class="fs-5">No tienes productos favoritos aún</p>
+        <a th:href="@{/products}" class="btn btn-primary">
+            <i class="fa-solid fa-shopping-bag me-1"></i> Explorar productos
+        </a>
+    </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>
