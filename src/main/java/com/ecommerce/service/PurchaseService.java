@@ -19,7 +19,7 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
 
     // Create purchase with automatic total calculation
-    public Purchase createPurchase(Purchase purchase) {
+    public void createPurchase(Purchase purchase) {
         double total = 0.0;
         for (PurchaseLine line : purchase.getPurchaseLines()) {
             line.setPurchase(purchase);
@@ -27,7 +27,7 @@ public class PurchaseService {
         }
         purchase.setTotalAmount(total);
         purchase.setPurchaseDate(LocalDateTime.now());
-        return purchaseRepository.save(purchase);
+        purchaseRepository.save(purchase);
     }
 
     // Get all purchases
