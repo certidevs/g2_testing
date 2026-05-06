@@ -2,8 +2,11 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Review;
+import com.ecommerce.model.User;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
+import com.ecommerce.repository.FavoriteRepository;
+import com.ecommerce.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +23,8 @@ import java.util.UUID;
 public class ProductControler {
     private ProductRepository productRepository;
     private ReviewRepository  reviewRepository;
+    private FavoriteRepository favoriteRepository;
+    private UserRepository userRepository;
 
 
     @GetMapping("/products")
@@ -31,20 +36,20 @@ public class ProductControler {
 
     }
     //agregar el numero de compras en el productos
-   @GetMapping("products/{id}")
-   public String productsDetail(@PathVariable UUID id, Model model) {
-       Optional<Product> productOptional = productRepository.findById(id);
-       if (productOptional.isPresent()) {
-           Product product = productOptional.get();
-           model.addAttribute("products", product);  // Agrega el producto al modelo con el nombre "products"
-           List<Review> reviews = reviewRepository.findByProductId(id);  // Usa la instancia y el método correcto
-           model.addAttribute("reviews", reviews);
-       } else {
-           // Manejo si el producto no existe: redirige a la lista para evitar error 500
-           return "redirect:/products";
-       }
-       return "products/product-detail";
-   }
+    @GetMapping("products/{id}")
+    public String productsDetail(@PathVariable UUID id, Model model) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isPresent()) {
+            Product product = productOptional.get();
+            model.addAttribute("products", product);
+            List<Review> reviews = reviewRepository.findByProductId(id);
+            model.addAttribute("reviews", reviews);
+
+        } else {
+            return "redirect:/products";
+        }
+        return "products/product-detail";
+    }
         @GetMapping("/products/search")
         public String searchProducts(@RequestParam String query, Model model) {
             List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(query, query);

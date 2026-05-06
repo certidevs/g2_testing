@@ -45,7 +45,7 @@ public class Product {
     @Enumerated(EnumType.STRING)
     private ProductStockStatus stockStatus;
 
-    private String imageUrl; //URL de la imagen del producto
+     String imageUrl; //URL de la imagen del producto
 
     @ToString.Exclude
     @ManyToOne

@@ -46,6 +46,12 @@
                           <a th:href="@{/purchase/add/{id}(id=${products.id})}" class="btn btn-outline-primary">
                               <i class="fa-solid fa-cart-plus me-1"></i> Añadir al carrito
                           </a>
+                          <form th:action="@{/favorites/add/{id}(id=${products.id})}" method="post" style="display: inline;">
+                              <button type="submit" class="btn btn-outline-danger"
+                                      onclick="return confirm('¿Añadir a favoritos?')">
+                                  <i class="fa-solid fa-heart me-1"></i> Favorito
+                              </button>
+                          </form>
                       </div>
 
                  <h3>Reseñas</h3>
