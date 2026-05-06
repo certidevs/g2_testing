@@ -82,23 +82,23 @@ public class PurchaseService {
     }
 
     // Filter by payment status
-    public List<Purchase> getPurchasesByPaymentStatus(PaymentStatus status) {
-        return purchaseRepository.findByPaymentStatus(status);
+    public List<Purchase> getPurchasesByPaymentStatus(PaymentStatus paymentStatus) {
+        return purchaseRepository.findByPaymentStatus(paymentStatus);
     }
 
     // Filter by process status
-    public List<Purchase> getPurchasesByProcessStatus(ProcessStatus status) {
-        return purchaseRepository.findByProcessStatus(status);
+    public List<Purchase> getPurchasesByProcessStatus(ProcessStatus processStatus) {
+        return purchaseRepository.findByProcessStatus(processStatus);
     }
 
     // Filter by shipping status
-    public List<Purchase> getPurchasesByShippingStatus(ShippingStatus status) {
-        return purchaseRepository.findByShippingStatus(status);
+    public List<Purchase> getPurchasesByShippingStatus(ShippingStatus shippingStatus) {
+        return purchaseRepository.findByShippingStatus(shippingStatus);
     }
 
     // Filter by shipping mode
-    public List<Purchase> getPurchasesByShippingMode(ShippingMode mode) {
-        return purchaseRepository.findByShippingMode(mode);
+    public List<Purchase> getPurchasesByShippingMode(ShippingMode shippingMode) {
+        return purchaseRepository.findByShippingMode(shippingMode);
     }
 
     // Purchases in creation date range
@@ -132,8 +132,8 @@ public class PurchaseService {
     }
 
     // Search specific purchase with comment
-    public List<Purchase> getPurchasesByIdAndUserComment(UUID id, String userComment) {
-        return purchaseRepository.findByIdAndUserCommentContaining(id, userComment);
+    public List<Purchase> getPurchasesByIdAndUserComment(UUID purchaseId, String userComment) {
+        return purchaseRepository.findByIdAndUserCommentContaining(purchaseId, userComment);
     }
 
     public List<Purchase> getPurchasesByUserIdAndComment(UUID userId, String userComment) {
@@ -162,37 +162,37 @@ public class PurchaseService {
     }
 
     // Update purchase status
-    public Purchase updatePurchaseStatus(UUID id, PurchaseStatus status) {
+    public Purchase updatePurchaseStatus(UUID id, PurchaseStatus purchaseStatus) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setPurchaseStatus(status);
+        purchase.setPurchaseStatus(purchaseStatus);
         return purchaseRepository.save(purchase);
     }
 
     // Update payment status
-    public Purchase updatePaymentStatus(UUID id, PaymentStatus status) {
+    public Purchase updatePaymentStatus(UUID id, PaymentStatus paymentStatus) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setPaymentStatus(status);
+        purchase.setPaymentStatus(paymentStatus);
         return purchaseRepository.save(purchase);
     }
 
     // Update process status
-    public Purchase updateProcessStatus(UUID id, ProcessStatus status) {
+    public Purchase updateProcessStatus(UUID id, ProcessStatus processStatus) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setProcessStatus(status);
+        purchase.setProcessStatus(processStatus);
         return purchaseRepository.save(purchase);
     }
 
     // Update shipping status
-    public Purchase updateShippingStatus(UUID id, ShippingStatus status) {
+    public Purchase updateShippingStatus(UUID id, ShippingStatus shippingStatus) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setShippingStatus(status);
+        purchase.setShippingStatus(shippingStatus);
         return purchaseRepository.save(purchase);
     }
 
     // Update shipping mode
-    public Purchase updateShippingMode(UUID id, ShippingMode mode) {
+    public Purchase updateShippingMode(UUID id, ShippingMode shippingMode) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setShippingMode(mode);
+        purchase.setShippingMode(shippingMode);
         return purchaseRepository.save(purchase);
     }
 
