@@ -9,5 +9,14 @@ import java.util.UUID;
 public interface BrandRepository extends JpaRepository<Brand, UUID>
 {
     Optional<Brand> findByName(String name);
+
     boolean existsByName(String name);
+
+    Optional<Brand> findByNif(String nif);
+
+    boolean existsByNif(String nif);
+
+    boolean existsByNameAndIdNot(String name, UUID id);
+
+    boolean existsByNifAndIdNot(String nif, UUID id);
 }
