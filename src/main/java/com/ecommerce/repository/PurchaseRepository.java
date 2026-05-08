@@ -3,6 +3,8 @@ package com.ecommerce.repository;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.model.Purchase;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,6 +81,14 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     List<Purchase> findByIdAndShippingMode(UUID id, ShippingMode shippingMode);
 
     // -------- METHODS --------
+
+    // Check if user has purchased a specific product through PurchaseLine
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
+           "FROM Purchase p " +
+           "JOIN p.lines pl " +
+           "JOIN pl.product pr " +
+           "WHERE p.user.id = :userId AND pr.id = :productId")
+    boolean existsByUsersIdAndProductId(@Param("userId") UUID userId, @Param("productId") UUID productId);
 
     // Method to delete a purchase by ID, if the purchase does not exist, it does nothing
     default void deleteById(UUID id){

@@ -2,6 +2,7 @@ package com.ecommerce.service;
 
 import com.ecommerce.model.Review;
 import com.ecommerce.model.enums.ReviewStatus;
+import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.ReviewRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,36 +17,59 @@ import java.util.UUID;
 public class ReviewService {
 
     private final ReviewRepository reviewRepository;
+    private final PurchaseRepository purchaseRepository;
 
     /**
      * Crea una nueva reseña con la fecha de creación actual
      * y estado PENDING_APPROVAL por defecto.
+     * La verificación depende de si el usuario ha comprado el producto.
      *
      * @param review objeto Review con los datos de la reseña
-     * @return reseña guardada con fecha de creación y estado asignados
+     * @return reseña guardada con fecha de creación, estado y verificación asignados
      */
     public Review createReview(Review review) {
         review.setCreationDate(LocalDateTime.now());
         review.setModifiedDate(LocalDateTime.now());
         
+        // Estado por defecto: pendiente de aprobación
         if (review.getStatus() == null) {
             review.setStatus(ReviewStatus.PENDING_APPROVAL);
         }
         
+        // Verificación: solo si el usuario ha comprado el producto
+        boolean hasPurchased = false;
+        if (review.getUser() != null && review.getProduct() != null) {
+            hasPurchased = purchaseRepository.existsByUsersIdAndProductId(
+                review.getUser().getId(),
+                review.getProduct().getId()
+            );
+        }
+        
         if (review.getVerified() == null) {
-            review.setVerified(false);
+            review.setVerified(hasPurchased);
         }
         
         return reviewRepository.save(review);
     }
 
     /**
-     * Obtiene todas las reseñas de la base de datos.
+     * Obtiene todas las reseñas de la base de datos (para admin).
      *
      * @return lista de todas las reseñas
      */
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
+    }
+
+    /**
+     * Obtiene solo las reseñas aprobadas (para vistas públicas).
+     *
+     * @return lista de reseñas aprobadas
+     */
+    public List<Review> getApprovedReviews() {
+        return reviewRepository.findAll().stream()
+                .filter(review -> ReviewStatus.APPROVED.equals(review.getStatus()))
+                .toList();
     }
 
     /**
@@ -71,13 +95,25 @@ public class ReviewService {
     }
 
     /**
-     * Obtiene todas las reseñas de un producto específico.
+     * Obtiene todas las reseñas de un producto específico (para admin).
      *
      * @param productId UUID del producto
      * @return lista de reseñas del producto
      */
     public List<Review> getReviewsByProduct(UUID productId) {
         return reviewRepository.findByProductId(productId);
+    }
+
+    /**
+     * Obtiene solo las reseñas aprobadas de un producto específico (para vistas públicas).
+     *
+     * @param productId UUID del producto
+     * @return lista de reseñas aprobadas del producto
+     */
+    public List<Review> getApprovedReviewsByProduct(UUID productId) {
+        return reviewRepository.findByProductId(productId).stream()
+                .filter(review -> ReviewStatus.APPROVED.equals(review.getStatus()))
+                .toList();
     }
 
     /**
@@ -141,6 +177,7 @@ public class ReviewService {
 
     /**
      * Aprueba una reseña cambiando su estado a APPROVED.
+     * Solo los administradores pueden aprobar reseñas.
      *
      * @param id UUID de la reseña a aprobar
      * @return reseña aprobada
@@ -155,6 +192,7 @@ public class ReviewService {
 
     /**
      * Rechaza una reseña cambiando su estado a REJECTED.
+     * Solo los administradores pueden rechazar reseñas.
      *
      * @param id UUID de la reseña a rechazar
      * @return reseña rechazada
