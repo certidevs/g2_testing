@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Dirección')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<main class="container flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="fa-solid fa-map-location-dot text-primary me-2"></i>
+            <span th:text="${address != null ? 'Editar Dirección' : 'Nueva Dirección'}">Dirección</span>
+        </h1>
+        <a th:href="|/user/profile?email=${email}|" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Volver al Perfil
+        </a>
+    </div>
+
+    <!-- Alertas -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-check-circle me-2"></i>
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form th:action="${address != null ? |/user/addresses/${address.id}/update?email=${email}| : '/user/addresses/create'}" 
+                  method="post" th:object="${address}">
+                
+                <input type="hidden" th:field="*{usersId}" th:value="${address != null ? address.usersId : ''}" />
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Calle *</label>
+                            <input type="text" class="form-control" id="street" th:field="*{street}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="number" class="form-label">Número *</label>
+                            <input type="text" class="form-control" id="number" th:field="*{number}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="complement" class="form-label">Complemento (opcional)</label>
+                    <input type="text" class="form-control" id="complement" th:field="*{complement}" 
+                           placeholder="Apartamento, piso, etc.">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Ciudad *</label>
+                            <input type="text" class="form-control" id="city" th:field="*{city}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="state" class="form-label">Estado/Provincia</label>
+                            <input type="text" class="form-control" id="state" th:field="*{state}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="country" class="form-label">País *</label>
+                            <input type="text" class="form-control" id="country" th:field="*{country}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="zipCode" class="form-label">Código Postal *</label>
+                            <input type="text" class="form-control" id="zipCode" th:field="*{zipCode}" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="addressType" class="form-label">Tipo de Dirección *</label>
+                    <select class="form-select" id="addressType" th:field="*{addressType}" required>
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="PRIMARY">Principal</option>
+                        <option value="BILLING">Facturación</option>
+                        <option value="SHIPPING">Envío</option>
+                    </select>
+                </div>
+
+                <input type="hidden" name="email" th:value="${email}" />
+
+                <div class="d-flex justify-content-between">
+                    <a th:href="|/user/profile?email=${email}|" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-times"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save"></i> 
+                        <span th:text="${address != null ? 'Actualizar Dirección' : 'Guardar Dirección'}">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>
