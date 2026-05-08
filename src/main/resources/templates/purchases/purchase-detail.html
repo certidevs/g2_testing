@@ -19,6 +19,8 @@
                 Purchase ID:
                 <span th:text="${purchase.id}">0</span>
             </h5>
+            <p th:text="'Precio total de compra: ' + ${purchase.totalPrice}"></p>
+            <p th:text="'Estado del pago: ' + ${purchase.paymentStatus}"></p>
 
         </div>
         <div class="card-body">
@@ -51,7 +53,7 @@
                 <td th:text="${line.product.getTitle()}"></td>
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.getPrice, 1, 2)}"></td>
                 <td th:text="${line.quantity}"></td>
-                <td class="text-muted small" th:text="${#numbers.formatDecimal(line.purchase.getTotalPrice, 1, 2)}"></td>
+                <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)}"></td>
             </tr>
             </tbody>
         </table>

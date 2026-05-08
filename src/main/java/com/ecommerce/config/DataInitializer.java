@@ -168,6 +168,19 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
+        // purchase lines asociadas a la compra 1: (el usuario añade 3 productos a la compra 1)
+        purchaseLineRepo.saveAll(List.of(
+                PurchaseLine.builder().quantity(2).product(product1).purchase(purchase1).build(),
+                PurchaseLine.builder().quantity(4).product(product2).purchase(purchase1).build(),
+                PurchaseLine.builder().quantity(1).product(product3).purchase(purchase1).build()
+        ));
+        // purchase lines asociadas a la compra 2: el usaurio añade 4 productos a la compra 2)
+        purchaseLineRepo.saveAll(List.of(
+                PurchaseLine.builder().quantity(1).product(product4).purchase(purchase2).build(),
+                PurchaseLine.builder().quantity(4).product(product1).purchase(purchase2).build(),
+                PurchaseLine.builder().quantity(6).product(product2).purchase(purchase2).build(),
+                PurchaseLine.builder().quantity(6).product(product3).purchase(purchase2).build()
+        ));
 
         // Reseñas de ejemplo
         var review1 = Review.builder()
