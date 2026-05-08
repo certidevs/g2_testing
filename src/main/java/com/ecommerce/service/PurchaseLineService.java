@@ -2,7 +2,6 @@ package com.ecommerce.service;
 
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.Purchase;
-import com.ecommerce.model.Product;
 import com.ecommerce.repository.PurchaseLineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -70,65 +69,5 @@ public class PurchaseLineService {
     // Get purchase lines by purchase
     public List<PurchaseLine> getPurchaseLinesByPurchase(Purchase purchase) {
         return purchaseLineRepository.findByPurchase(purchase);
-    }
-
-    // Get purchase lines by purchase ID
-    public List<PurchaseLine> getPurchaseLinesByPurchaseId(UUID purchaseId) {
-        return purchaseLineRepository.findByPurchaseId(purchaseId);
-    }
-
-    // Get purchase lines by product
-    public List<PurchaseLine> getPurchaseLinesByProduct(Product product) {
-        return purchaseLineRepository.findByProduct(product);
-    }
-
-    // Get purchase lines with quantity greater than
-    public List<PurchaseLine> getPurchaseLinesByQuantityGreaterThan(int quantity) {
-        return purchaseLineRepository.findByQuantityGreaterThan(quantity);
-    }
-
-    // Get purchase lines with quantity less than
-    public List<PurchaseLine> getPurchaseLinesByQuantityLessThan(int quantity) {
-        return purchaseLineRepository.findByQuantityLessThan(quantity);
-    }
-
-    // Get purchase lines in quantity range
-    public List<PurchaseLine> getPurchaseLinesByQuantityRange(int minQuantity, int maxQuantity) {
-        return purchaseLineRepository.findByQuantityBetween(minQuantity, maxQuantity);
-    }
-
-    // Order purchase lines by quantity descending
-    public List<PurchaseLine> getPurchaseLinesByPurchaseOrderByQuantityDesc(Purchase purchase) {
-        return purchaseLineRepository.findByPurchaseOrderByQuantityDesc(purchase);
-    }
-
-    // Order purchase lines by quantity ascending
-    public List<PurchaseLine> getPurchaseLinesByPurchaseOrderByQuantityAsc(Purchase purchase) {
-        return purchaseLineRepository.findByPurchaseOrderByQuantityAsc(purchase);
-    }
-
-    // Get purchase lines by purchase and product
-    public List<PurchaseLine> getPurchaseLinesByPurchaseAndProduct(Purchase purchase, Product product) {
-        return purchaseLineRepository.findByPurchaseAndProduct(purchase, product);
-    }
-
-    // Get purchase lines by product and quantity
-    public List<PurchaseLine> getPurchaseLinesByProductAndQuantity(Product product, int quantity) {
-        return purchaseLineRepository.findByProductAndQuantity(product, quantity);
-    }
-
-    // Get purchase lines by product and quantity greater than
-    public List<PurchaseLine> getPurchaseLinesByProductAndQuantityGreaterThan(Product product, int quantity) {
-        return purchaseLineRepository.findByProductAndQuantityGreaterThan(product, quantity);
-    }
-
-    // Get purchase lines by product and quantity less than
-    public List<PurchaseLine> getPurchaseLinesByProductAndQuantityLessThan(Product product, int quantity) {
-        return purchaseLineRepository.findByProductAndQuantityLessThan(product, quantity);
-    }
-
-    // Get purchase lines by product and quantity range
-    public List<PurchaseLine> getPurchaseLinesByProductAndQuantityRange(Product product, int minQuantity, int maxQuantity) {
-        return purchaseLineRepository.findByProductAndQuantityBetween(product, minQuantity, maxQuantity);
     }
 }
