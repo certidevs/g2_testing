@@ -52,7 +52,13 @@ public class User {
     private Role role;
 
     // Date of creation
-    private LocalDateTime creationDate;
+    @Builder.Default
+    @Column(nullable = false)
+    private LocalDateTime creationDate = LocalDateTime.now();
+
+    // Admin can deactivate users without removing historical data
+    @Builder.Default
+    private boolean active = true;
 
     // Payment method enum
     @Enumerated(EnumType.STRING)
@@ -60,5 +66,6 @@ public class User {
 
     // Un usuario tiene MUCHAS direcciones
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Address> addresses = new ArrayList<>();
 }

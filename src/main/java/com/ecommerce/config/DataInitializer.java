@@ -51,7 +51,18 @@ public class DataInitializer  implements CommandLineRunner {
                 .gender(Gender.FEMALE)
                 .role(Role.CUSTOMER)
                 .build();
-        userRepo.saveAll(List.of(user1,user2));
+
+        var adminUser = User.builder()
+                .name("Admin")
+                .lastName("G2")
+                .email("admin@g2store.com")
+                .phone("600000000")
+                .password("admin123")
+                .birthday(LocalDateTime.of(1988, Month.JANUARY, 10, 0, 0))
+                .gender(Gender.MALE)
+                .role(Role.ADMIN)
+                .build();
+        userRepo.saveAll(List.of(user1, user2, adminUser));
 
         // Crear direcciones de prueba
         var address1 = Address.builder()
