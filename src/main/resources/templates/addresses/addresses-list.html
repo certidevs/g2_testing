@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Direcciones')}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<main class="container flex-grow-1">
+    <h1 class="mb-3">Direcciones</h1>
+    
+    <div th:if="${addresses != null and !addresses.isEmpty()}" class="table-responsive">
+        <table class="table table-hover align-middle table-bordered border-success">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Calle</th>
+                    <th>Número</th>
+                    <th>Ciudad</th>
+                    <th>Estado</th>
+                    <th>País</th>
+                    <th>Código Postal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="address : ${addresses}">
+                    <td th:text="${address.addressType}">PRIMARY</td>
+                    <td th:text="${address.street}">Calle Principal</td>
+                    <td th:text="${address.number}">123</td>
+                    <td th:text="${address.city}">Madrid</td>
+                    <td th:text="${address.state}">Madrid</td>
+                    <td th:text="${address.country}">España</td>
+                    <td th:text="${address.zipCode}">28001</td>
+                    <td>
+                        <a th:href="@{/addresses/{id}(id=${address.id})}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-regular fa-eye me-1"></i> Ver
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <p th:if="${addresses == null or addresses.isEmpty()}" class="text-muted">
+        No hay direcciones disponibles.
+    </p>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>

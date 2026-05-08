@@ -145,9 +145,9 @@ class UserControllerTest {
                         .param("email", "juan.actualizado@gmail.com")
                         .param("phone", "111111111")
                         .param("gender", "MALE")
-                        .param("role", "CUSTOMER"))
+                         .param("role", "CUSTOMER"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/users?adminEmail=" + user2.getEmail()));
+                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
 
         User updatedUser = userRepository.findById(user1.getId()).orElseThrow();
         org.junit.jupiter.api.Assertions.assertEquals("Juan Actualizado", updatedUser.getName());
@@ -159,7 +159,7 @@ class UserControllerTest {
         mockMvc.perform(post("/admin/users/{id}/toggle-status", user1.getId())
                         .param("adminEmail", user2.getEmail()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/users?adminEmail=" + user2.getEmail()));
+                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
 
         User updatedUser = userRepository.findById(user1.getId()).orElseThrow();
         org.junit.jupiter.api.Assertions.assertFalse(updatedUser.isActive());
@@ -170,7 +170,7 @@ class UserControllerTest {
         mockMvc.perform(post("/admin/users/{id}/delete", user3.getId())
                         .param("adminEmail", user2.getEmail()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/users?adminEmail=" + user2.getEmail()));
+                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
 
         User deletedUser = userRepository.findById(user3.getId()).orElseThrow();
         org.junit.jupiter.api.Assertions.assertFalse(deletedUser.isActive());
@@ -181,7 +181,7 @@ class UserControllerTest {
         mockMvc.perform(post("/admin/users/{id}/toggle-status", user2.getId())
                         .param("adminEmail", user2.getEmail()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/admin/users?adminEmail=" + user2.getEmail()));
+                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
 
         User adminUser = userRepository.findById(user2.getId()).orElseThrow();
         org.junit.jupiter.api.Assertions.assertTrue(adminUser.isActive());

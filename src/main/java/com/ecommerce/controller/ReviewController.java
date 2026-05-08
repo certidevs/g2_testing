@@ -52,7 +52,9 @@ public class ReviewController {
     @GetMapping(value = "reviews/{id}", produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     public String reviewDetail(Model model, @PathVariable UUID id, @RequestParam(required = false) String email) {
         boolean isAdmin = isAdmin(email);
-        var review = reviewService.getReviewById(id).orElseThrow();
+        var review = reviewService.getReviewById(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.NOT_FOUND, "Review not found"));
         model.addAttribute("review", review);
 
         if (review.getProduct() != null) {
@@ -85,8 +87,12 @@ public class ReviewController {
 
     @GetMapping("reviews/delete/{id}")
     public String delete(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
-        reviewService.deleteReview(id);
-        redirectAttributes.addFlashAttribute("message", "Borrado exitosamente");
+        try {
+            reviewService.deleteReview(id);
+            redirectAttributes.addFlashAttribute("message", "Borrado exitosamente");
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", "Reseña no encontrada: " + ex.getMessage());
+        }
         return "redirect:/reviews";
     }
 
