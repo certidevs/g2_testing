@@ -1,7 +1,7 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.model.Address;
-import com.ecommerce.repository.AddressRepository;
+import com.ecommerce.dto.AddressResponseDto;
+import com.ecommerce.service.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -10,24 +10,25 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
 public class AddressController {
 
-    private final AddressRepository addressRepository;
+    private final AddressService addressService;
 
     @GetMapping("/addresses")
     public String listAddresses(Model model) {
-        model.addAttribute("addresses", addressRepository.findAll());
+        List<AddressResponseDto> addresses = addressService.findAll();
+        model.addAttribute("addresses", addresses);
         return "addresses/addresses-list";
     }
 
     @GetMapping("/addresses/{id}")
     public String detailAddress(@PathVariable UUID id, Model model) {
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        AddressResponseDto address = addressService.findById(id);
         model.addAttribute("address", address);
         return "addresses/address-detail";
     }
