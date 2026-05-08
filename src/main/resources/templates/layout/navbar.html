@@ -114,21 +114,21 @@
                             <i class="fa-solid fa-ticket me-1"></i> Compras
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/filters}">
-                            <i class="bi bi-funnel-fill me-1"></i> Filtros
-                        </a>
-                    </li>
                 </ul>
 
-                <!-- Buscador centrado -->
-                <form class="d-flex mx-auto" th:action="@{/products/search}" method="get" style="width: 40%;">
-                    <input class="form-control me-2" type="search" name="query"
-                           placeholder="Buscar productos..." aria-label="Buscar">
-                    <button class="btn btn-outline-light" type="submit">
-                        <i class="fa-solid fa-search"></i>
+                <!-- Buscador centrado con filtros -->
+                <div class="d-flex mx-auto align-items-center gap-2">
+                    <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtersPanel" aria-expanded="false" aria-controls="filtersPanel">
+                        <i class="fa-solid fa-sliders"></i>
                     </button>
-                </form>
+                    <form class="d-flex" th:action="@{/products/search}" method="get" style="flex: 1;">
+                        <input class="form-control me-2" type="search" name="query"
+                               placeholder="Buscar productos..." aria-label="Buscar">
+                        <button class="btn btn-outline-light" type="submit">
+                            <i class="fa-solid fa-search"></i>
+                        </button>
+                    </form>
+                </div>
 
                 <!-- Iconos derecha -->
                 <ul class="navbar-nav ms-auto">
@@ -156,6 +156,19 @@
             </div>
         </div>
     </nav>
+
+    <!-- Panel de Filtros Desplegable -->
+    <div class="collapse" id="filtersPanel">
+        <div class="bg-light border-bottom shadow-sm">
+            <div class="container py-4">
+                <h5 class="mb-3">
+                    <i class="fa-solid fa-sliders me-2 text-primary"></i>Filters
+                </h5>
+                <!-- The filters have to be added here -->
+                <p class="text-muted"> The filters have to be added here ...</p>
+            </div>
+        </div>
+    </div>
 
 </div>
 </body>

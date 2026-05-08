@@ -44,16 +44,16 @@ public class PurchaseController {
         return "redirect:/purchases";
     }
 
-    @PostMapping("purchases/create")
-    public String createPurchase(@ModelAttribute Purchase newPurchase) {
-        purchaseService.createPurchase(newPurchase);
-        return "redirect:/purchases";
-    }
-
-    @GetMapping("purchases/create")
+    @GetMapping("purchases/new")
     public String showCreatePurchaseForm(Model model) {
         model.addAttribute("purchase", new Purchase());
         model.addAttribute("users", userRepository.findAll());
         return "purchases/purchase-form";
+    }
+
+    @PostMapping("purchases")
+    public String createPurchase(@ModelAttribute Purchase newPurchase) {
+        purchaseService.createPurchase(newPurchase);
+        return "redirect:/purchases";
     }
 }
