@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Editar Usuario')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<main class="container flex-grow-1">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h1 class="mb-0">
+			<i class="fa-solid fa-user-gear text-primary me-2"></i>Editar Usuario
+		</h1>
+		<a th:href="@{|/admin/users?adminEmail=${adminEmail}|}" class="btn btn-secondary">
+			<i class="fa-solid fa-arrow-left"></i> Volver
+		</a>
+	</div>
+
+	<div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+	<div class="card shadow-sm">
+		<div class="card-body">
+			<form th:action="@{|/admin/users/${user.id}/edit|}" method="post" th:object="${user}">
+				<input type="hidden" name="adminEmail" th:value="${adminEmail}">
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="mb-3">
+							<label for="name" class="form-label">Nombre</label>
+							<input id="name" type="text" class="form-control" th:field="*{name}" required>
+						</div>
+						<div class="mb-3">
+							<label for="lastName" class="form-label">Apellidos</label>
+							<input id="lastName" type="text" class="form-control" th:field="*{lastName}" required>
+						</div>
+						<div class="mb-3">
+							<label for="email" class="form-label">Email</label>
+							<input id="email" type="email" class="form-control" th:field="*{email}" required>
+						</div>
+						<div class="mb-3">
+							<label for="phone" class="form-label">Telefono</label>
+							<input id="phone" type="text" class="form-control" th:field="*{phone}" required>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="mb-3">
+							<label for="gender" class="form-label">Genero</label>
+							<select id="gender" class="form-select" th:field="*{gender}">
+								<option th:each="gender : ${T(com.ecommerce.model.enums.Gender).values()}"
+										th:value="${gender}"
+										th:text="${gender.name()}"></option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label for="birthday" class="form-label">Fecha de nacimiento</label>
+							<input id="birthday" type="datetime-local" class="form-control"
+								   th:value="${user.birthday != null ? #temporals.format(user.birthday, 'yyyy-MM-dd''T''HH:mm') : ''}"
+								   name="birthday">
+						</div>
+						<div class="mb-3">
+							<label for="role" class="form-label">Rol</label>
+							<select id="role" class="form-select" th:field="*{role}">
+								<option th:each="role : ${T(com.ecommerce.model.enums.Role).values()}"
+										th:value="${role}"
+										th:text="${role.name()}"></option>
+							</select>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Estado actual</label>
+							<p class="form-control-plaintext">
+								<span class="badge"
+									  th:classappend="${user.active ? 'bg-success' : 'bg-secondary'}"
+									  th:text="${user.active ? 'ACTIVO' : 'INACTIVO'}">ACTIVO</span>
+								<small class="text-muted ms-2">(se cambia desde el listado)</small>
+							</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="mt-4 pt-4 border-top d-flex justify-content-end gap-2">
+					<a th:href="@{|/admin/users?adminEmail=${adminEmail}|}" class="btn btn-secondary">Cancelar</a>
+					<button type="submit" class="btn btn-primary">
+						<i class="fa-solid fa-save"></i> Guardar cambios
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</main>
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>
+

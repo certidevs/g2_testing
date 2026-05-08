@@ -35,6 +35,9 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
     // Contar numero total de reseñas de cada producto
     Long countByProductId(UUID productId);
 
+    // Obtener reseñas de un usuario específico
+    List<Review> findByUserId(UUID userId);
+
     // Filtrar mejores reviews por categoría
     List<Review> findByProductSubcategory(Category category);
 

@@ -176,6 +176,17 @@ public class ReviewService {
     }
 
     /**
+     * Obtiene todas las reseñas de un usuario específico.
+     * El usuario puede ver el estado de sus propias reseñas.
+     *
+     * @param userId UUID del usuario
+     * @return lista de reseñas del usuario
+     */
+    public List<Review> getReviewsByUser(UUID userId) {
+        return reviewRepository.findByUserId(userId);
+    }
+
+    /**
      * Aprueba una reseña cambiando su estado a APPROVED.
      * Solo los administradores pueden aprobar reseñas.
      *

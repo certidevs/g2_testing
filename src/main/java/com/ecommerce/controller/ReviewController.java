@@ -27,8 +27,24 @@ public class ReviewController {
     @GetMapping(value = "reviews", produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8") // CONTROLADOR
     public String reviews(Model model, @RequestParam(required = false) String email) {
         boolean isAdmin = isAdmin(email);
-        model.addAttribute("reviews", isAdmin ? reviewService.getAllReviews() : reviewService.getApprovedReviews());
+        
+        List<Review> reviews;
+        if (isAdmin) {
+            // ADMIN: Ve todas las reseñas de todos los usuarios
+            reviews = reviewService.getAllReviews();
+        } else if (email != null && !email.isBlank()) {
+            // USER: Solo ve sus propias reseñas (puede ver el status)
+            var user = usersService.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            reviews = reviewService.getReviewsByUser(user.getId());
+        } else {
+            // Sin email: No mostrar reseñas (o mostrar vacío)
+            reviews = List.of();
+        }
+        
+        model.addAttribute("reviews", reviews);
         model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("currentUserEmail", email);
         return "reviews/reviews-list"; // VISTA
     }
 

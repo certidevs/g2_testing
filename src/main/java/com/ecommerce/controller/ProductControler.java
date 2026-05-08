@@ -7,6 +7,7 @@ import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +26,7 @@ public class ProductControler {
     private ReviewRepository  reviewRepository;
     private FavoriteRepository favoriteRepository;
     private UserRepository userRepository;
+    private ReviewService reviewService;
 
 
     @GetMapping("/products")
@@ -42,7 +44,7 @@ public class ProductControler {
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             model.addAttribute("products", product);
-            List<Review> reviews = reviewRepository.findByProductId(id);
+            List<Review> reviews = reviewService.getApprovedReviewsByProduct(id);
             model.addAttribute("reviews", reviews);
 
         } else {

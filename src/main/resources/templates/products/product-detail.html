@@ -59,7 +59,12 @@
                      <div class="card mb-2">
                          <div class="card-body">
                              <p th:text="${review.message}">Comentario</p>
-                             <small th:text="${review.rating + '/5'}">Valoración</small>
+                             <div class="rating-stars">
+    <span th:each="i : ${#numbers.sequence(1, 5)}" 
+          th:class="${i <= review.rating} ? 'star-filled' : 'star-empty'"
+          class="star">★</span>
+    <span th:text="${review.rating + '/5'}">5/5</span>
+</div>
                          </div>
                      </div>
                  </div>
