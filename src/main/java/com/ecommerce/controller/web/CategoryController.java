@@ -32,7 +32,7 @@ public class CategoryController
     public String findAll(Model model)
     {
         model.addAttribute("categories", categoryService.findAll());
-        return "categories/list";
+        return "categories/category-list";
     }
 
     /**
@@ -47,7 +47,7 @@ public class CategoryController
     public String findTree(Model model)
     {
         model.addAttribute("categories", categoryService.findRootCategories());
-        return "categories/tree";
+        return "categories/category-tree";
     }
 
     /**
@@ -63,7 +63,7 @@ public class CategoryController
     {
         CategoryResponseDto category = categoryService.findById(id);
         model.addAttribute("category", category);
-        return "categories/detail";
+        return "categories/category-detail";
     }
 
     /**
@@ -81,7 +81,7 @@ public class CategoryController
         // Lista de categorías para seleccionar como padre (puede usarse para dropdown)
         model.addAttribute("parentCategories", categoryService.findAll());
 
-        return "categories/form";
+        return "categories/category-form";
     }
 
     /**
@@ -105,7 +105,7 @@ public class CategoryController
         if (bindingResult.hasErrors())
         {
             model.addAttribute("parentCategories", categoryService.findAll());
-            return "categories/form";
+            return "categories/category-form";
         }
 
         try
@@ -119,7 +119,7 @@ public class CategoryController
             //En caso de error de negocio, reinyectar parentCategories y mostrar el error
             model.addAttribute("parentCategories", categoryService.findAll());
             bindingResult.reject("category.error", ex.getMessage());
-            return "categories/form";
+            return "categories/category-form";
         }
     }
 
@@ -152,7 +152,7 @@ public class CategoryController
         // Lista de posibles padres para el select
         model.addAttribute("parentCategories", categoryService.findAll());
 
-        return "categories/form";
+        return "categories/category-form";
     }
 
     /**
@@ -177,7 +177,7 @@ public class CategoryController
         {
             model.addAttribute("categoryId", id);
             model.addAttribute("parentCategories", categoryService.findAll());
-            return "categories/form";
+            return "categories/category-form";
         }
 
         try
@@ -192,7 +192,7 @@ public class CategoryController
             model.addAttribute("categoryId", id);
             model.addAttribute("parentCategories", categoryService.findAll());
             bindingResult.reject("category.error", ex.getMessage());
-            return "categories/form";
+            return "categories/category-form";
         }
     }
 
