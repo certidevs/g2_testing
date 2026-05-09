@@ -40,7 +40,7 @@ public class BrandController
     public String findAll(Model model)
     {
         model.addAttribute("brands", brandService.findAll());
-        return "brands/list";
+        return "brands/brand-list";
     }
 
     /**
@@ -57,7 +57,7 @@ public class BrandController
     {
         BrandResponseDto brand = brandService.findById(id);
         model.addAttribute("brand", brand);
-        return "brands/detail";
+        return "brands/brand-detail";
     }
 
     /**
@@ -72,7 +72,7 @@ public class BrandController
     public String showCreateForm(Model model)
     {
         model.addAttribute("brand", new BrandRequestDto());
-        return "brands/form";
+        return "brands/brand-form";
     }
 
     /**
@@ -94,7 +94,7 @@ public class BrandController
         // Si hay errores de validación devolver el formulario con los errores
         if (bindingResult.hasErrors())
         {
-            return "brands/form";
+            return "brands/brand-form";
         }
 
         try
@@ -108,7 +108,7 @@ public class BrandController
         {
             // Añadir error global para mostrar mensaje en la vista
             bindingResult.reject("brand.error", ex.getMessage());
-            return "brands/form";
+            return "brands/brand-form";
         }
     }
 
@@ -140,7 +140,7 @@ public class BrandController
         // Añadir el id de la marca para que el formulario sepa si es edición
         model.addAttribute("brandId", id);
 
-        return "brands/form";
+        return "brands/brand-form";
     }
 
     /**
@@ -164,7 +164,7 @@ public class BrandController
         if (bindingResult.hasErrors())
         {
             model.addAttribute("brandId", id);
-            return "brands/form";
+            return "brands/brand-form";
         }
 
         try
@@ -178,7 +178,7 @@ public class BrandController
             // En caso de error de negocio reinyectar el id y mostrar el error en el formulario
             model.addAttribute("brandId", id);
             bindingResult.reject("brand.error", ex.getMessage());
-            return "brands/form";
+            return "brands/brand-form";
         }
     }
 
