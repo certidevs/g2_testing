@@ -1,10 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Marcas</title>
 </head>
 <body>
+    <div class="container">
+        <h1>Marcas</h1>
+        <div th:if="${successMessage}" class="message" th:text="${successMessage}"></div>
 
+        <div class="actions">
+            <a th:href="@{/brands/new}" class="bth-create">Crear Marca</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>NIF</th>
+                <th>País</th>
+                <th>Web</th>
+                <th>Activa</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:if="${#lists.isEmpty(brands)}">
+                <td colspan="6">No hay marcas registradas.</td>
+            </tr>
+
+            <tr th:each="brand : ${brands}">
+                <td th:text="${brand.name}">Nombre</td>
+                <td th:text="${brand.nif}">NIF</td>
+                <td th:text="${brand.country}">País</td>
+                <td>
+                    <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
+                       th:href="${brand.website}"
+                       th:text="${brand.website}"
+                       target="_blank">
+                        Web
+                    </a>
+                    <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
+                </td>
+                <td>
+                    <span th:if="${brand.active}" class="active">Sí</span>
+                    <span th:unless="${brand.active}" class="inactive">No</span>
+                </td>
+                <td>
+                    <a th:href="@{/brands/{id}(id=${brand.id})}" class="btn-detail">Ver</a>
+                    <a th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn-edit">Editar</a>
+
+                    <form th:action="@{/brands/{id}/delete(id=${brand.id})}" method="post">
+                        <button type="submit"
+                                class="btn-delete"
+                                onclick="return confirm('¿Seguro que quieres eliminar esta marca?')">
+                            Eliminar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

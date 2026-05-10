@@ -113,7 +113,14 @@ public class DataInitializer  implements CommandLineRunner {
 
         addressRepo.saveAll(List.of(address1, address2, address3, address4));
 
-        var brand1 = brandRepo.save(Brand.builder().name("Nike").nif("123456789").build());
+        var brand1 = brandRepo.save(Brand.builder()
+                .name("Nike")
+                .nif("123456789")
+                .country("US")
+                .website("https://www.nike.com")
+                .logo("nike-logo.png")
+                .active(true)
+                .build());
 
         var product1 = productRepo.save(Product.builder().title("Camiseta Blanca")
                         .longDescription("Esta camiseta blanca de Nike es perfecta para cualquier ocasión. Confeccionada con algodón de alta calidad.")

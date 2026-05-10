@@ -72,6 +72,7 @@ public class BrandController
     public String showCreateForm(Model model)
     {
         model.addAttribute("brand", new BrandRequestDto());
+        model.addAttribute("formAction", "/brands");
         return "brands/brand-form";
     }
 
@@ -89,11 +90,12 @@ public class BrandController
      * @return redirect o vista del formulario en caso de error
      */
     @PostMapping
-    public String create(@Valid @ModelAttribute("brand") BrandRequestDto dto, BindingResult bindingResult, RedirectAttributes redirectAttributes)
+    public String create(@Valid @ModelAttribute("brand") BrandRequestDto dto, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes)
     {
         // Si hay errores de validación devolver el formulario con los errores
         if (bindingResult.hasErrors())
         {
+            model.addAttribute("formAction", "/brands");
             return "brands/brand-form";
         }
 
@@ -107,6 +109,7 @@ public class BrandController
         catch (RuntimeException ex)
         {
             // Añadir error global para mostrar mensaje en la vista
+            model.addAttribute("formAction", "/brands");
             bindingResult.reject("brand.error", ex.getMessage());
             return "brands/brand-form";
         }
@@ -139,6 +142,7 @@ public class BrandController
         model.addAttribute("brand", dto);
         // Añadir el id de la marca para que el formulario sepa si es edición
         model.addAttribute("brandId", id);
+        model.addAttribute("formActive", "/brands/" + id + "/edit");
 
         return "brands/brand-form";
     }
@@ -164,6 +168,7 @@ public class BrandController
         if (bindingResult.hasErrors())
         {
             model.addAttribute("brandId", id);
+            model.addAttribute("formAction", "/brands/" + id + "/edit");
             return "brands/brand-form";
         }
 
@@ -177,6 +182,7 @@ public class BrandController
         {
             // En caso de error de negocio reinyectar el id y mostrar el error en el formulario
             model.addAttribute("brandId", id);
+            model.addAttribute("formAction", "/brands/" + id + "/edit");
             bindingResult.reject("brand.error", ex.getMessage());
             return "brands/brand-form";
         }
