@@ -80,6 +80,7 @@ public class CategoryController
         model.addAttribute("category", new CategoryRequestDto());
         // Lista de categorías para seleccionar como padre (puede usarse para dropdown)
         model.addAttribute("parentCategories", categoryService.findAll());
+        model.addAttribute("formAction", "/categories");
 
         return "categories/category-form";
     }
@@ -105,6 +106,7 @@ public class CategoryController
         if (bindingResult.hasErrors())
         {
             model.addAttribute("parentCategories", categoryService.findAll());
+            model.addAttribute("formAction", "/categories");
             return "categories/category-form";
         }
 
@@ -118,6 +120,7 @@ public class CategoryController
         {
             //En caso de error de negocio, reinyectar parentCategories y mostrar el error
             model.addAttribute("parentCategories", categoryService.findAll());
+            model.addAttribute("formAction", "/categories");
             bindingResult.reject("category.error", ex.getMessage());
             return "categories/category-form";
         }
@@ -151,6 +154,7 @@ public class CategoryController
         model.addAttribute("categoryId", id);
         // Lista de posibles padres para el select
         model.addAttribute("parentCategories", categoryService.findAll());
+        model.addAttribute("formAction", "/categories/" + id + "/edit");
 
         return "categories/category-form";
     }
@@ -177,6 +181,7 @@ public class CategoryController
         {
             model.addAttribute("categoryId", id);
             model.addAttribute("parentCategories", categoryService.findAll());
+            model.addAttribute("formAction", "/categories/" + id + "/edit");
             return "categories/category-form";
         }
 
@@ -191,6 +196,7 @@ public class CategoryController
             //En caso de error de negocio, reinyectar datos y mostrar el error
             model.addAttribute("categoryId", id);
             model.addAttribute("parentCategories", categoryService.findAll());
+            model.addAttribute("formAction", "/categories/" + id + "/edit");
             bindingResult.reject("category.error", ex.getMessage());
             return "categories/category-form";
         }

@@ -24,6 +24,7 @@ public class CategoryService
      *
      * @return lista de CategoryResponseDto sin información de children
      */
+    @Transactional
     public List<CategoryResponseDto> findAll()
     {
         // Recupera todas las entidades y las mapea a DTOs sin children
@@ -39,6 +40,7 @@ public class CategoryService
      *
      * @return lista de categorías raíz con todos sus hijos anidados
      */
+    @Transactional
     public List<CategoryResponseDto> findRootCategories()
     {
         // Busca las categorias cuyo parent es null y mapea recursivamente
@@ -55,10 +57,12 @@ public class CategoryService
      * @return CategoryResponseDto con hijos incluidos
      * @throws RuntimeException si la categoría no existe (recomendar excepción específica)
      */
+    @Transactional
     public CategoryResponseDto findById(UUID id)
     {
         // Reutiliza el metodo auxiliar para obtener la entidad y convertirla
-        Category category = findCategoryEntityById(id);
+        Category category = categoryRepository.findByIdWithCategories(id)
+                .orElseThrow(() -> new RuntimeException("Categories not found"));
         return toResponseDtoWithChildren(category);
     }
 
@@ -171,8 +175,8 @@ public class CategoryService
      */
     private Category findCategoryEntityById(UUID id)
     {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+        return categoryRepository.findByIdWithCategories(id)
+                .orElseThrow(() ->  new RuntimeException("Category not found"));
     }
 
     /**

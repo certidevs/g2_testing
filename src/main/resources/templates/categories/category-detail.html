@@ -1,10 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Detalles categorias</title>
 </head>
 <body>
+<div class="container">
+    <h1>Detalle de categoría</h1>
+
+    <div class="field">
+        <span class="label">Nombre:</span>
+        <span th:text="${category.name}">Nombre</span>
+    </div>
+
+    <div class="field">
+        <span class="label">Slug:</span>
+        <span th:text="${category.slug}">slug</span>
+    </div>
+
+    <div class="field">
+        <span class="label">Descripción:</span>
+        <span th:text="${category.description != null ? category.description : '-'}">Descripción</span>
+    </div>
+
+    <div class="field">
+        <span class="label">Categoría padre:</span>
+        <span th:text="${category.parentName != null ? category.parentName : 'Categoría raíz'}">Padre</span>
+    </div>
+
+    <div class="field">
+        <span class="label">Activa:</span>
+        <span th:text="${category.active} ? 'Sí' : 'No'">Sí/No</span>
+    </div>
+
+    <div class="field">
+        <span class="label">Subcategorías:</span>
+
+        <!-- Manejo seguro cuando children es null o vacío -->
+        <span th:if="${category.children == null or #lists.isEmpty(category.children)}">No tiene subcategorías.</span>
+
+        <ul th:if="${category.children != null and !#lists.isEmpty(category.children)}">
+            <li th:each="child : ${category.children}">
+                <a th:href="@{/categories/{id}(id=${child.id})}" th:text="${child.name}">Subcategoría</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a th:href="@{/categories}" class="btn-back">Volver</a>
+        <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn-edit">Editar</a>
+    </div>
+</div>
 
 </body>
 </html>

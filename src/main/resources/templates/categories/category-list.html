@@ -1,10 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Categorias</title>
 </head>
 <body>
+<div class="container">
+    <h1>Categorías</h1>
 
+    <div th:if="${successMessage}" class="message" th:text="${successMessage}"></div>
+
+    <div class="actions">
+        <a th:href="@{/categories/new}" class="btn-create">Crear categoría</a>
+        <a th:href="@{/categories/tree}" class="btn-tree">Ver árbol</a>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Padre</th>
+            <th>Activa</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:if="${#lists.isEmpty(categories)}">
+            <td colspan="5">No hay categorías registradas.</td>
+        </tr>
+
+        <tr th:each="category : ${categories}">
+            <td th:text="${category.name}">Nombre</td>
+            <td th:text="${category.slug}">slug</td>
+            <td th:text="${category.parentName != null ? category.parentName : 'Categoría raíz'}">Padre</td>
+            <td>
+                <span th:if="${category.active}" class="active">Sí</span>
+                <span th:unless="${category.active}" class="inactive">No</span>
+            </td>
+            <td>
+                <a th:href="@{/categories/{id}(id=${category.id})}" class="btn-detail">Ver</a>
+                <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn-edit">Editar</a>
+
+                <form th:action="@{/categories/{id}/delete(id=${category.id})}" method="post">
+                    <button type="submit"
+                            class="btn-delete"
+                            onclick="return confirm('¿Seguro que quieres eliminar esta categoría? Se eliminarán también sus subcategorías.')">
+                        Eliminar
+                    </button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

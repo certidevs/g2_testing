@@ -1,10 +1,53 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Arbol de categorias</title>
 </head>
 <body>
+<div class="container">
+    <h1>Árbol de categorías</h1>
 
+    <div class="actions">
+        <a th:href="@{/categories}" class="btn-back">Volver al listado</a>
+        <a th:href="@{/categories/new}" class="btn-create">Crear categoría</a>
+    </div>
+
+    <p th:if="${categories == null or #lists.isEmpty(categories)}">No hay categorías registradas.</p>
+
+    <div th:if="${categories != null and !#lists.isEmpty(categories)}">
+        <ul class="root-list">
+            <li th:each="category : ${categories}">
+                <div class="category-node">
+                    <span class="category-name" th:text="${category.name}">Categoría</span>
+                    <span class="category-slug" th:text="${'/' + category.slug}">/slug</span>
+                    <span th:if="${!category.active}" class="inactive">Inactiva</span>
+                    <a th:href="@{/categories/{id}(id=${category.id})}" class="btn-detail">Ver</a>
+                </div>
+
+                <div th:if="${category.children != null and !#lists.isEmpty(category.children)}"
+                     th:replace="~{this :: childrenList(${category.children})}">
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div th:fragment="childrenList(children)">
+    <ul class="children-list">
+        <li th:each="child : ${children}">
+            <div class="category-node">
+                <span class="category-name" th:text="${child.name}">Subcategoría</span>
+                <span class="category-slug" th:text="${'/' + child.slug}">/slug</span>
+                <span th:if="${!child.active}" class="inactive">Inactiva</span>
+                <a th:href="@{/categories/{id}(id=${child.id})}" class="btn-detail">Ver</a>
+            </div>
+
+            <div th:if="${child.children != null and !#lists.isEmpty(child.children)}"
+                 th:replace="~{this :: childrenList(${child.children})}">
+            </div>
+        </li>
+    </ul>
+</div>
 </body>
 </html>
