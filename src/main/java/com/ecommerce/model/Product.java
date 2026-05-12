@@ -63,4 +63,7 @@ public class Product {
     private Category subcategory;
 
 
+    public boolean getActive() {
+        return available;
+    }
 }
