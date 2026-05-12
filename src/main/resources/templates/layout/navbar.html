@@ -98,7 +98,7 @@
                 <img th:src="@{/images/logo.png}" alt="Logo" class="me-2 rounded img-fluid mw-100" style="max-height:40px; object-fit:contain;" loading="lazy">
             </a>
 
-            <!-- Toggler móvil para navbar collapse -->
+            <!-- Toggler móvil -->
             <button class="navbar-toggler" type="button"
                     data-bs-toggle="collapse" data-bs-target="#mainNav"
                     aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,12 +108,18 @@
             <div class="collapse navbar-collapse" id="mainNav">
 
                 <!-- Links principales -->
-                <ul class="navbar-nav me-2">
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/products}">
-                            <i class="fa-solid fa-bowl-food me-1"></i> Productos
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0"> <!-- CORRECCIÓN: me-auto para empujar el resto -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="prodDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Productos
                         </a>
-                    </li>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="prodDropdown">
+                            <li><a class="dropdown-item" th:href="@{/products}">Moda</a></li>
+                            <li><a class="dropdown-item" th:href="@{/products}">Eletronica</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/products}">Ver todos</a></li>
+                        </ul>
+                    </li> <!-- CORRECCIÓN: Aquí cerraste mal antes -->
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/purchases}">
                             <i class="fa-solid fa-ticket me-1"></i> Compras
@@ -121,14 +127,14 @@
                     </li>
                 </ul>
 
-                <!-- Buscador centrado con filtros -->
-                <div class="d-flex mx-auto align-items-center gap-2">
-                    <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtersPanel" aria-expanded="false" aria-controls="filtersPanel">
+                <!-- Buscador centrado -->
+                <!-- CORRECCIÓN: Quitamos mx-auto si quieres que respete el flujo o ajustamos el ancho -->
+                <div class="d-flex align-items-center gap-2 my-2 my-lg-0" style="flex-grow: 1; max-width: 500px;">
+                    <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtersPanel">
                         <i class="fa-solid fa-sliders"></i>
                     </button>
-                    <form class="d-flex" th:action="@{/products/search}" method="get" style="flex: 1;">
-                        <input class="form-control me-2" type="search" name="query"
-                               placeholder="Buscar productos..." aria-label="Buscar">
+                    <form class="d-flex w-100" th:action="@{/products/search}" method="get">
+                        <input class="form-control me-2" type="search" name="query" placeholder="Buscar...">
                         <button class="btn btn-outline-light" type="submit">
                             <i class="fa-solid fa-search"></i>
                         </button>
@@ -136,7 +142,7 @@
                 </div>
 
                 <!-- Iconos derecha -->
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto gap-2">
                     <li class="nav-item">
                         <a class="nav-link position-relative" th:href="@{/cart}">
                             <i class="fa-solid fa-shopping-cart"></i>
@@ -157,7 +163,6 @@
                         </a>
                     </li>
                 </ul>
-
             </div>
         </div>
     </nav>
