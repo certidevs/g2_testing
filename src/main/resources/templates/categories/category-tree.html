@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{layout/head :: head('Árbol de categorías')}">>
     <meta charset="UTF-8">
     <title>Arbol de categorias</title>
 </head>
-<body>
-<div class="container">
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar::navbar}"></nav>
+<div class="container mt-5">
     <h1>Árbol de categorías</h1>
 
     <div class="actions">
