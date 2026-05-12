@@ -38,7 +38,7 @@ public class ProductControler {
     public String products(Model model) {
         //MODEl
         model.addAttribute("products", productRepository.findAll());
-        model.addAttribute("saludo", "Bienvenido a la lista de productos");
+        model.addAttribute("saludo", "MODA DE VERANO");
         return "products/product-list";
 
     }
