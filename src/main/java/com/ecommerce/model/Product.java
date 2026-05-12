@@ -44,7 +44,7 @@ public class Product {
 
     @Enumerated(EnumType.STRING)
     private ProductStockStatus stockStatus;
-
+    @Column(length = 1000)
      String imageUrl; //URL de la imagen del producto
 
     @ToString.Exclude

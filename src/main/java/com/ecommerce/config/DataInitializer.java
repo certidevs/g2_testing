@@ -132,6 +132,14 @@ public class DataInitializer  implements CommandLineRunner {
                         .active(true)
                         .parent(null)
                         .build()));
+        Category electronicaRoot = categoryRepo.findBySlug("electronica")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("informatica")
+                        .slug("informatica")
+                        .description("informatica y tecnologias")
+                        .active(true)
+                        .parent(null)
+                        .build()));
 
         Category camisetas = categoryRepo.findBySlug("camisetas")
                 .orElseGet(() -> {
@@ -168,6 +176,24 @@ public class DataInitializer  implements CommandLineRunner {
                         .active(true)
                         .parent(ropaRoot)
                         .build()));
+        Category moviles = categoryRepo.findBySlug("moviles")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("moviles")
+                        .slug("movil")
+                        .description("moviles y tablets")
+                        .active(true)
+                        .parent(electronicaRoot)
+                        .build()));
+        Category portatil = categoryRepo.findBySlug("portatil")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("portatil")
+                        .slug("portatil")
+                        .description("portatiles")
+                        .active(true)
+                        .parent(electronicaRoot)
+                        .build()));
+
+
 // --- fin categorías ---
 
         var product1 = productRepo.save(Product.builder()
@@ -197,6 +223,25 @@ public class DataInitializer  implements CommandLineRunner {
                         .subcategory(calzado)
                 .imageUrl("https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRLO_S61-_IXWE6l0J4WiBdUcnglzV7e9ZBYwEPKLQ2whre7AdR-7K8D0MxyEYo-EqsivQma9grEEiWiZEnvPx7W0Q8z5mnyy0oLR7HsXAQQnEtNe8CsRLVdbSDUD3xxZngN83U6efJ&usqp=CAc")
                 .price(10.00).brand(brand1).build());
+        var product5 = productRepo.save(Product.builder()
+                .title("Iphone 15")
+                .subcategory(moviles)
+                .longDescription("iphone 15 128g")
+                .imageUrl("https://imgs.search.brave.com/ESQDLqeCxUyCOQQrWLBxQsuDBwmLcHYDjL-jh_-U7iY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMudW5zcGxhc2gu/Y29tL3Bob3RvLTE3/MDQzODA4OTUzMTYt/Y2FhMmU0ZDY4YTdl/P2ZtPWpwZyZxPTYw/Jnc9MzAwMCZhdXRv/PWZvcm1hdCZmaXQ9/Y3JvcCZpeGxpYj1y/Yi00LjEuMCZpeGlk/PU0zd3hNakEzZkRC/OE1IeHpaV0Z5WTJo/OE4zeDhhWEJvYjI1/bEpUSXdNVFY4Wlc1/OE1IeDhNSHg4ZkRB/PQ")
+                .price(1200.00).brand(brand1).build());
+        var product6 = productRepo.save(Product.builder()
+                .title("Macbook Pro 16")
+                .subcategory(portatil)
+                .longDescription("Macbook Pro 16 pulgadas con chip M1 Pro, 16GB RAM, 512GB SSD")
+                        .imageUrl("https://imgs.search.brave.com/sciRFp0EHNluo57mCivZlwX-wnfY53SR_AfdnAIF4PE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y25ldC5jb20vYS9p/bWcvcmVzaXplLzJm/OTg0ZTczODVjYWJl/NjRlYmZhZWFiZjI1/ZjYzNDFjZmUzZDYz/MWEvaHViLzIwMTkv/MTEvMTIvODRlMTE1/OWMtYjhjYi00MzQ5/LTllM2ItM2MzN2Nj/Nzg5NDVmLzM2LW1h/Y2Jvb2stcHJvLTE2/LWluY2guanBnP2F1/dG89d2VicCZ3aWR0/aD0xMjAw")
+                .price(2500.00).brand(brand1).build());
+
+
+
+
+
+
+
 
         var purchase1 = Purchase.builder()
                 .user(user1)
