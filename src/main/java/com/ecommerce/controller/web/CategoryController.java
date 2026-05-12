@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -64,8 +65,11 @@ public class CategoryController
     public String findById(@PathVariable UUID id, Model model)
     {
         CategoryResponseDto category = categoryService.findById(id);
+
+        List<UUID> categoryIds = categoryService.getCategoryAndChildrenIds(category);
+
         model.addAttribute("category", category);
-        model.addAttribute("products", productRepository.findBySubcategoryId(id));
+        model.addAttribute("products", productRepository.findBySubcategoryIdIn(categoryIds));
 
         return "categories/category-detail";
     }
