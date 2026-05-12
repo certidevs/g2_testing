@@ -2,6 +2,7 @@ package com.ecommerce.controller.web;
 
 import com.ecommerce.dto.CategoryRequestDto;
 import com.ecommerce.dto.CategoryResponseDto;
+import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class CategoryController
 {
     private final CategoryService categoryService;
+    private final ProductRepository productRepository;
 
     /**
      * GET /categories
@@ -63,6 +65,8 @@ public class CategoryController
     {
         CategoryResponseDto category = categoryService.findById(id);
         model.addAttribute("category", category);
+        model.addAttribute("products", productRepository.findBySubcategoryId(id));
+
         return "categories/category-detail";
     }
 
