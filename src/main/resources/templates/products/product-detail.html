@@ -28,6 +28,8 @@
                          <p th:if="${products.brand != null}" class="mt-2">
                              <strong>Marca:</strong> <span th:text="${products.brand.name}">Sin marca</span>
                          </p>
+                         <p th:if="${products.subcategory != null}" class="mt-2">
+                             <strong>Categoría:</strong> <span th:text="${products.subcategory.name}">Sin categoría</span>
                      </div>
                  </div>
 

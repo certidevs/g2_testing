@@ -3,11 +3,15 @@ package com.ecommerce.controller;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Review;
 import com.ecommerce.model.User;
+import com.ecommerce.model.Brand;
+import com.ecommerce.model.Category;
 import com.ecommerce.model.enums.ProductStockStatus;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.repository.BrandRepository;
+import com.ecommerce.repository.CategoryRepository;
 import com.ecommerce.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -26,6 +30,8 @@ public class ProductControler {
     private FavoriteRepository favoriteRepository;
     private UserRepository userRepository;
     private ReviewService reviewService;
+    private BrandRepository brandRepository;
+    private CategoryRepository categoryRepository;
 
 
     @GetMapping("/products")
@@ -77,16 +83,29 @@ public class ProductControler {
          //CREACION DE PRODUCTO
     @GetMapping("/products/new")
     public String navigateToForm(Model model){
-       model.addAttribute("product", new Product());
-       model.addAttribute("allStockStatuses", ProductStockStatus.values());
-
+        model.addAttribute("product", new Product());
+        model.addAttribute("allStockStatuses", ProductStockStatus.values());
+        model.addAttribute("brands", brandRepository.findAll());
+        model.addAttribute("subcategories", categoryRepository.findAll());
         return "products/product-form";
     }
 
 
     //RECIBIR LOS DATOS DEL PRODUCTO
-   @PostMapping("products")
+    @PostMapping("products")
     public String createProduct(@ModelAttribute Product product){
+        // Si se proporciona un ID de marca, buscarla en la BD
+        if (product.getBrand() != null && product.getBrand().getId() != null) {
+            Optional<Brand> brand = brandRepository.findById(product.getBrand().getId());
+            brand.ifPresent(product::setBrand);
+        }
+        
+        // Si se proporciona un ID de subcategoría, buscarla en la BD
+        if (product.getSubcategory() != null && product.getSubcategory().getId() != null) {
+            Optional<Category> category = categoryRepository.findById(product.getSubcategory().getId());
+            category.ifPresent(product::setSubcategory);
+        }
+        
         productRepository.save(product);
         return "redirect:/products";
     }

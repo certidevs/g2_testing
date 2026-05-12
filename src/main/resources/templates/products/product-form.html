@@ -23,10 +23,10 @@
             <label class="form-check-label" for="available">Disponible</label>
         </div>
 
-        <div class="mb-3">
-            <label for="isbn" class="form-label">ISBN:</label>
-            <input type="text" class="form-control" id="isbn" th:field="*{isbn}">
-        </div>
+<!--        <div class="mb-3">-->
+<!--            <label for="isbn" class="form-label">ISBN:</label>-->
+<!--            <input type="text" class="form-control" id="isbn" th:field="*{isbn}">-->
+<!--        </div>-->
 
         <div class="mb-3">
             <label for="shortDescription" class="form-label">Descripción Corta:</label>
@@ -54,21 +54,21 @@
             <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
         </div>
 
-<!--        <div class="mb-3">-->
-<!--            <label for="brand" class="form-label">Marca:</label>-->
-<!--            <select class="form-select" id="brand" th:field="*{brand.id}">-->
-<!--                <option value="">&#45;&#45; seleccione una Marca &#45;&#45;</option>-->
-<!--                <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand.name}"></option>-->
-<!--            </select>-->
-<!--        </div>-->
+        <div class="mb-3">
+            <label for="brand" class="form-label">Marca:</label>
+            <select class="form-select" id="brand" th:field="*{brand.id}">
+                <option value="">-- seleccione una Marca --</option>
+                <option th:each="brandItem : ${brands}" th:value="${brandItem.id}" th:text="${brandItem.name}"></option>
+            </select>
+        </div>
 
-<!--        <div class="mb-3">-->
-<!--            <label for="subcategory" class="form-label">Subcategoría:</label>-->
-<!--            <select class="form-select" id="subcategory" th:field="*{subcategory.id}">-->
-<!--                <option value="">&#45;&#45; Seleccione una Subcategoría &#45;&#45;</option>-->
-<!--                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>-->
-<!--            </select>-->
-<!--        </div>-->
+        <div class="mb-3">
+            <label for="subcategory" class="form-label">Subcategoría:</label>
+            <select class="form-select" id="subcategory" th:field="*{subcategory.id}">
+                <option value="">-- Seleccione una Subcategoría --</option>
+                <option th:each="category : ${subcategories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+        </div>
 
         <button type="submit" class="btn btn-primary">Guardar Producto</button>
         <a href="/products" class="btn btn-secondary">Cancelar</a>

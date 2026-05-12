@@ -61,7 +61,7 @@
                                     <span th:text="${product.price}">0</span>
                                 </span>
                                 <span class="badge bg-success">
-                                    <span th:text="${product.brand.name}">NotFound</span>
+                                    <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
                                 </span>
                                 <span class="badge bg-info">
                                 <i class="fa-solid fa-shopping-bag me-1"></i>
