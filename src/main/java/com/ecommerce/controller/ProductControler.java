@@ -3,6 +3,7 @@ package com.ecommerce.controller;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Review;
 import com.ecommerce.model.User;
+import com.ecommerce.model.enums.ProductStockStatus;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import com.ecommerce.repository.FavoriteRepository;
@@ -11,9 +12,7 @@ import com.ecommerce.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -75,4 +74,20 @@ public class ProductControler {
              });
              return "redirect:/products";
          }
+         //CREACION DE PRODUCTO
+    @GetMapping("/products/new")
+    public String navigateToForm(Model model){
+       model.addAttribute("product", new Product());
+       model.addAttribute("allStockStatuses", ProductStockStatus.values());
+
+        return "products/product-form";
+    }
+
+
+    //RECIBIR LOS DATOS DEL PRODUCTO
+   @PostMapping("products")
+    public String createProduct(@ModelAttribute Product product){
+        productRepository.save(product);
+        return "redirect:/products";
+    }
 }

@@ -1,10 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Productos')}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+<div class="container mt-5">
+    <h1 th:text="${product.id == null ? 'Crear Nuevo Producto' : 'Editar Producto'}"></h1>
 
+    <form th:action="@{/products}" th:object="${product}" method="post">
+        <div class="mb-3">
+            <label for="title" class="form-label">Título:</label>
+            <input type="text" class="form-control" id="title" th:field="*{title}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="price" class="form-label">Precio:</label>
+            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0" required>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="available" th:field="*{available}">
+            <label class="form-check-label" for="available">Disponible</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="isbn" class="form-label">ISBN:</label>
+            <input type="text" class="form-control" id="isbn" th:field="*{isbn}">
+        </div>
+
+        <div class="mb-3">
+            <label for="shortDescription" class="form-label">Descripción Corta:</label>
+            <textarea class="form-control" id="shortDescription" th:field="*{shortDescription}" rows="3" maxlength="500"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="longDescription" class="form-label">Descripción Larga:</label>
+            <textarea class="form-control" id="longDescription" th:field="*{longDescription}" rows="6" maxlength="2000"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="stockStatus" class="form-label">Estado de Stock:</label>
+            <select class="form-select" id="stockStatus" th:field="*{stockStatus}">
+                <option value="">-- seleccione un Estado --</option>
+                <option th:each="status : ${allStockStatuses}"
+                        th:value="${status}"
+                        th:text="${status.label}">
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="imageUrl" class="form-label">URL de la Imagen:</label>
+            <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
+        </div>
+
+<!--        <div class="mb-3">-->
+<!--            <label for="brand" class="form-label">Marca:</label>-->
+<!--            <select class="form-select" id="brand" th:field="*{brand.id}">-->
+<!--                <option value="">&#45;&#45; seleccione una Marca &#45;&#45;</option>-->
+<!--                <option th:each="brand : ${brands}" th:value="${brand.id}" th:text="${brand.name}"></option>-->
+<!--            </select>-->
+<!--        </div>-->
+
+<!--        <div class="mb-3">-->
+<!--            <label for="subcategory" class="form-label">Subcategoría:</label>-->
+<!--            <select class="form-select" id="subcategory" th:field="*{subcategory.id}">-->
+<!--                <option value="">&#45;&#45; Seleccione una Subcategoría &#45;&#45;</option>-->
+<!--                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>-->
+<!--            </select>-->
+<!--        </div>-->
+
+        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+        <a href="/products" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
 </body>
 </html>
