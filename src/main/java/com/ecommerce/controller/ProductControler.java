@@ -95,16 +95,17 @@ public class ProductControler {
     @PostMapping("products")
     public String createProduct(@ModelAttribute Product product){
         // Si se proporciona un ID de marca, buscarla en la BD
-        if (product.getBrand() != null && product.getBrand().getId() != null) {
-            Optional<Brand> brand = brandRepository.findById(product.getBrand().getId());
-            brand.ifPresent(product::setBrand);
-        }
-        
-        // Si se proporciona un ID de subcategoría, buscarla en la BD
-        if (product.getSubcategory() != null && product.getSubcategory().getId() != null) {
-            Optional<Category> category = categoryRepository.findById(product.getSubcategory().getId());
-            category.ifPresent(product::setSubcategory);
-        }
+        // TODO revisar porque creo que no hace falta ya viene asignado desde forms
+//        if (product.getBrand() != null && product.getBrand().getId() != null) {
+//            Optional<Brand> brand = brandRepository.findById(product.getBrand().getId());
+//            brand.ifPresent(product::setBrand);
+//        }
+//
+//        // Si se proporciona un ID de subcategoría, buscarla en la BD
+//        if (product.getSubcategory() != null && product.getSubcategory().getId() != null) {
+//            Optional<Category> category = categoryRepository.findById(product.getSubcategory().getId());
+//            category.ifPresent(product::setSubcategory);
+//        }
         
         productRepository.save(product);
         return "redirect:/products";
