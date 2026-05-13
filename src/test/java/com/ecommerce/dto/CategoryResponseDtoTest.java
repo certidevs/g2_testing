@@ -5,10 +5,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CategoryRequestDtoTest {
+class CategoryResponseDtoTest {
 
     @BeforeEach
     void setUp() {
+    }
+
+    @Test
+    void getId() {
     }
 
     @Test
@@ -32,6 +36,18 @@ class CategoryRequestDtoTest {
     }
 
     @Test
+    void getParentName() {
+    }
+
+    @Test
+    void getChildren() {
+    }
+
+    @Test
+    void setId() {
+    }
+
+    @Test
     void setName() {
     }
 
@@ -49,6 +65,14 @@ class CategoryRequestDtoTest {
 
     @Test
     void setParentId() {
+    }
+
+    @Test
+    void setParentName() {
+    }
+
+    @Test
+    void setChildren() {
     }
 
     @Test
