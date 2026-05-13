@@ -1,59 +1,138 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{layout/head::head('Categorias')}">
     <meta charset="UTF-8">
     <title>Categorias</title>
 </head>
-<body>
-<div class="container">
-    <h1>Categorías</h1>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar::navbar}"></nav>
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Categorías</h1>
+            <p class="text-muted mb-0">
+                Gestiona las categorías y su estructura jerárquica.
+            </p>
+        </div>
 
-    <div th:if="${successMessage}" class="message" th:text="${successMessage}"></div>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <a th:href="@{/categories/new}" class="btn btn-primary">
+                <i class="fa-solid fa-folder-plus me-1"></i>
+                Crear categoría
+            </a>
 
-    <div class="actions">
-        <a th:href="@{/categories/new}" class="btn-create">Crear categoría</a>
-        <a th:href="@{/categories/tree}" class="btn-tree">Ver árbol</a>
+            <a th:href="@{/categories/tree}" class="btn btn-outline-secondary">
+                <i class="fa-solid fa-sitemap me-1"></i>
+                Ver árbol
+            </a>
+        </div>
     </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Slug</th>
-            <th>Padre</th>
-            <th>Activa</th>
-            <th>Acciones</th>
-        </tr>
-        </thead>
+    <div th:if="${successMessage}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
 
-        <tbody>
-        <tr th:if="${#lists.isEmpty(categories)}">
-            <td colspan="5">No hay categorías registradas.</td>
-        </tr>
+        <i class="fa-solid fa-circle-check me-1"></i>
+        <span th:text="${successMessage}">Operación realizada correctamente.</span>
 
-        <tr th:each="category : ${categories}">
-            <td th:text="${category.name}">Nombre</td>
-            <td th:text="${category.slug}">slug</td>
-            <td th:text="${category.parentName != null ? category.parentName : 'Categoría raíz'}">Padre</td>
-            <td>
-                <span th:if="${category.active}" class="active">Sí</span>
-                <span th:unless="${category.active}" class="inactive">No</span>
-            </td>
-            <td>
-                <a th:href="@{/categories/{id}(id=${category.id})}" class="btn-detail">Ver</a>
-                <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn-edit">Editar</a>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Cerrar">
+        </button>
+    </div>
 
-                <form th:action="@{/categories/{id}/delete(id=${category.id})}" method="post">
-                    <button type="submit"
-                            class="btn-delete"
-                            onclick="return confirm('¿Seguro que quieres eliminar esta categoría? Se eliminarán también sus subcategorías.')">
-                        Eliminar
-                    </button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom">
+            <h2 class="h5 mb-0">Listado de categorías</h2>
+        </div>
+
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th scope="col" class="ps-4">Nombre</th>
+                        <th scope="col">Slug</th>
+                        <th scope="col">Padre</th>
+                        <th scope="col">Activa</th>
+                        <th scope="col" class="text-end pe-4">Acciones</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(categories)}">
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <i class="fa-regular fa-folder-open me-1"></i>
+                            No hay categorías registradas.
+                        </td>
+                    </tr>
+
+                    <tr th:each="category : ${categories}">
+                        <td class="ps-4">
+                            <span class="fw-semibold" th:text="${category.name}">
+                                Nombre
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge text-bg-secondary" th:text="${category.slug}">
+                                slug
+                            </span>
+                        </td>
+
+                        <td th:text="${category.parentName != null ? category.parentName : 'Categoría raíz'}">
+                            Padre
+                        </td>
+
+                        <td>
+                            <span th:if="${category.active}" class="badge text-bg-success">
+                                Sí
+                            </span>
+
+                            <span th:unless="${category.active}" class="badge text-bg-warning">
+                                No
+                            </span>
+                        </td>
+
+                        <td class="text-end pe-4">
+                            <div class="d-flex flex-column flex-lg-row justify-content-end gap-2">
+
+                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fa-regular fa-eye me-1"></i>
+                                    Ver
+                                </a>
+
+                                <a th:href="@{/categories/{id}/edit(id=${category.id})}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    <i class="fa-regular fa-pen-to-square me-1"></i>
+                                    Editar
+                                </a>
+
+                                <form th:action="@{/categories/{id}/delete(id=${category.id})}"
+                                      method="post"
+                                      class="d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-outline-danger w-100"
+                                            onclick="return confirm('¿Seguro que quieres eliminar esta categoría? Se eliminarán también sus subcategorías.')">
+                                        <i class="fa-regular fa-trash-can me-1"></i>
+                                        Eliminar
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+<footer th:replace="~{layout/footer::footer}"></footer>
+<script th:replace="~{layout/footer::scripts}"></script>
 </body>
 </html>

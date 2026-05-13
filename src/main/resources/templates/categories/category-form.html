@@ -1,69 +1,125 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{layout/head::head('Formulario Categoria')}">
     <meta charset="UTF-8">
     <title th:text="${categoryId != null} ? 'Editar categoría' : 'Crear categoría'">Formulario categoría</title>
 </head>
-<body>
-<div class="container">
-    <h1 th:text="${categoryId != null} ? 'Editar categoría' : 'Crear categoría'">Formulario categoría</h1>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
 
-    <form th:object="${category}"
-          th:action="@{${formAction}}"
-          method="post" novalidate>
+<main class="flex-grow-1">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-9 col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h1 class="h4 mb-3 text-black" th:text="${categoryId != null} ? 'Editar categoría' : 'Crear categoría'">Formulario categoría</h1>
+                        <p class="text-muted mb-4">Rellena los datos de la categoría. Los campos marcados con * son obligatorios.</p>
 
-        <!-- Errores globales: dentro del form para que #fields pueda acceder al BindingResult -->
-        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
-            <p th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+                        <form th:object="${category}"
+                              th:action="@{${formAction}}"
+                              method="post"
+                              novalidate>
+
+                            <input type="hidden" name="_method" value="put" th:if="${categoryId != null}"/>
+
+                            <!-- Global errors (inside form so #fields puede acceder) -->
+                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                                <ul class="mb-0">
+                                    <li th:each="error : ${#fields.globalErrors()}" th:text="${error}">Error global</li>
+                                </ul>
+                            </div>
+
+                            <!-- Nombre (form-floating) -->
+                            <div class="form-floating mb-3">
+                                <input id="name"
+                                       type="text"
+                                       th:field="*{name}"
+                                       placeholder="Nombre de la categoría"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+                                       aria-describedby="nameHelp"/>
+                                <label for="name">Nombre *</label>
+                                <div id="nameHelp" class="form-text text-muted">Ej: Tecnología</div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+
+                            <!-- Slug (form-floating) -->
+                            <div class="form-floating mb-3">
+                                <input id="slug"
+                                       type="text"
+                                       th:field="*{slug}"
+                                       placeholder="Ej: tecnologia"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid' : ''"
+                                       aria-describedby="slugHelp"/>
+                                <label for="slug">Slug *</label>
+                                <div id="slugHelp" class="form-text text-muted">URL amigable, sin espacios ni caracteres especiales.</div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></div>
+                            </div>
+
+                            <!-- Descripción (form-floating con textarea) -->
+                            <div class="form-floating mb-3">
+                  <textarea id="description"
+                            th:field="*{description}"
+                            placeholder="Descripción de la categoría"
+                            class="form-control rounded-3 shadow-sm"
+                            style="height: 120px;"
+                            th:classappend="${#fields.hasErrors('description')} ? ' is-invalid' : ''"></textarea>
+                                <label for="description">Descripción</label>
+                                <div class="form-text text-muted">Breve descripción que aparecerá en la tienda (opcional).</div>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <!-- Parent select -->
+                            <div class="mb-3">
+                                <label for="parentId" class="form-label">Categoría padre</label>
+                                <select id="parentId"
+                                        th:field="*{parentId}"
+                                        class="form-select rounded-3 shadow-sm"
+                                        th:classappend="${#fields.hasErrors('parentId')} ? ' is-invalid' : ''"
+                                        aria-label="Seleccionar categoría padre">
+                                    <option value="">Sin padre - Categoría raíz</option>
+                                    <option th:each="parent : ${parentCategories}"
+                                            th:value="${parent.id}"
+                                            th:text="${parent.name}"
+                                            th:disabled="${categoryId != null} ? ${parent.id == categoryId} : false">
+                                        Categoría
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('parentId')}" th:errors="*{parentId}"></div>
+                            </div>
+
+                            <!-- Activa -->
+                            <div class="form-check form-switch mb-4">
+                                <input id="active"
+                                       type="checkbox"
+                                       th:field="*{active}"
+                                       class="form-check-input"
+                                       role="switch"/>
+                                <label for="active" class="form-check-label">Categoría activa</label>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg"
+                                        th:text="${categoryId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
+                                <a th:href="@{/categories}" class="btn btn-outline-secondary btn-lg">Volver</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Small help / hint area -->
+                <div class="mt-3 text-muted small">
+                    <p class="mb-1">Consejo: usa nombres claros y slugs únicos para mejorar el SEO.</p>
+                </div>
+            </div>
         </div>
+    </div>
+</main>
 
-        <!-- Si usas PUT para actualizar, habilita HiddenHttpMethodFilter y descomenta -->
-        <input type="hidden" name="_method" value="put" th:if="${categoryId != null}"/>
-
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input id="name" type="text" th:field="*{name}" placeholder="Ej: Tecnología" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="slug">Slug</label>
-            <input id="slug" type="text" th:field="*{slug}" placeholder="Ej: tecnologia" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Descripción</label>
-            <textarea id="description" th:field="*{description}" placeholder="Descripción de la categoría" class="form-control"></textarea>
-            <div class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="parentId">Categoría padre</label>
-            <select id="parentId" th:field="*{parentId}" class="form-control">
-                <option value="">Sin padre - Categoría raíz</option>
-
-                <option th:each="parent : ${parentCategories}"
-                        th:value="${parent.id}"
-                        th:text="${parent.name}"
-                        th:disabled="${categoryId != null} ? ${parent.id == categoryId} : false">
-                    Categoría
-                </option>
-            </select>
-            <div class="error" th:if="${#fields.hasErrors('parentId')}" th:errors="*{parentId}"></div>
-        </div>
-
-        <div class="form-group form-check">
-            <input id="active" type="checkbox" th:field="*{active}" class="form-check-input"/>
-            <label for="active" class="form-check-label">Categoría activa</label>
-        </div>
-
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary" th:text="${categoryId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
-            <a th:href="@{/categories}" class="btn btn-secondary">Volver</a>
-        </div>
-    </form>
-</div>
-
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
 </body>
 </html>
