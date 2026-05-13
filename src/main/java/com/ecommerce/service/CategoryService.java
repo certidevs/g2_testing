@@ -168,6 +168,13 @@ public class CategoryService
         categoryRepository.delete(category);
     }
 
+    /**
+     * Devuelve una lista con el id de la categoría recibida y los ids de
+     * todas sus subcategorías (recursivamente).
+     *
+     * @param category DTO de la categoría raíz desde la que se quiere recoger ids
+     * @return lista de UUID con el id de la categoría y de todos sus descendientes
+     */
     public List<UUID> getCategoryAndChildrenIds(CategoryResponseDto category)
     {
         List<UUID> ids = new ArrayList<>();
@@ -175,6 +182,14 @@ public class CategoryService
         return ids;
     }
 
+
+    /**
+     * Recorre recursivamente el árbol de categorías y añade cada id a la lista
+     * proporcionada.
+     *
+     * @param category nodo actual del árbol (puede tener children)
+     * @param ids     lista mutable donde se añaden los ids encontrados
+     */
     private void collectCategoryIds(CategoryResponseDto category, List<UUID> ids)
     {
         ids.add(category.getId());
