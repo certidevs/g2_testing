@@ -119,7 +119,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .nif("123456789")
                 .country("US")
                 .website("https://www.nike.com")
-                .logo("nike-logo.png")
+                .logo("https://i.imgur.com/sNeRWzU.png")
                 .active(true)
                 .build());
 

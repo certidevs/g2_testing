@@ -1,58 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head::head('Detalles de la Marca')}">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Detalles de la Marca</title>
 </head>
-<body>
-<div class="container">
-    <h1>Detalle de marca</h1>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar::navbar}"></nav>
+<main class="flex-grow-1">
+    <div class="container py-5">
 
-    <div class="field">
-        <span class="label">Nombre:</span>
-        <span th:text="${brand.name}">Nombre</span>
-    </div>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
 
-    <div class="field">
-        <span class="label">NIF:</span>
-        <span th:text="${brand.nif}">NIF</span>
-    </div>
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-body">
 
-    <div class="field">
-        <span class="label">País:</span>
-        <span th:text="${brand.country}">País</span>
-    </div>
+                        <h1 class="h4 mb-4">Detalle de marca</h1>
 
-    <div class="field">
-        <span class="label">Web:</span>
-        <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
-           th:href="${brand.website}"
-           th:text="${brand.website}"
-           target="_blank">
-            Web
-        </a>
-        <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
-    </div>
+                        <ul class="list-group list-group-flush">
 
-    <div class="field">
-        <span class="label">Logo:</span>
+                            <!-- Nombre -->
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-semibold">Nombre:</span>
+                                <span th:text="${brand.name}">Nombre</span>
+                            </li>
 
-        <div th:if="${brand.logo != null and !#strings.isEmpty(brand.logo)}">
-            <img th:src="${brand.logo}" alt="Logo de la marca">
-            <p th:text="${brand.logo}">URL logo</p>
+                            <!-- NIF -->
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-semibold">NIF:</span>
+                                <span th:text="${brand.nif}">NIF</span>
+                            </li>
+
+                            <!-- País -->
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-semibold">País:</span>
+                                <span th:text="${brand.country}">País</span>
+                            </li>
+
+                            <!-- Website -->
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-semibold">Web:</span>
+
+                                <span>
+                  <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
+                     th:href="${brand.website}"
+                     th:text="${brand.website}"
+                     class="text-decoration-none"
+                     target="_blank">
+                    Web
+                  </a>
+
+                  <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
+                </span>
+                            </li>
+
+                            <!-- Logo -->
+                            <li class="list-group-item">
+                                <span class="fw-semibold d-block mb-2">Logo:</span>
+
+                                <div th:if="${brand.logo != null and !#strings.isEmpty(brand.logo)}" class="text-center">
+                                    <img th:src="${brand.logo}"
+                                         alt="Logo de la marca"
+                                         class="img-fluid rounded shadow-sm mb-2"
+                                         style="max-height: 120px; object-fit: contain;">
+                                    <p class="text-muted small mb-0" th:text="${brand.logo}">URL logo</p>
+                                </div>
+
+                                <span th:if="${brand.logo == null or #strings.isEmpty(brand.logo)}">-</span>
+                            </li>
+
+                            <!-- Activa -->
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="fw-semibold">Activa:</span>
+
+                                <span>
+                  <span th:if="${brand.active}" class="badge bg-success">Sí</span>
+                  <span th:unless="${brand.active}" class="badge bg-danger">No</span>
+                </span>
+                            </li>
+
+                        </ul>
+
+                        <!-- Botones -->
+                        <div class="mt-4 d-flex gap-2">
+                            <a th:href="@{/brands}" class="btn btn-outline-secondary">Volver</a>
+                            <a th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn btn-primary">Editar</a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <span th:if="${brand.logo == null or #strings.isEmpty(brand.logo)}">-</span>
     </div>
-
-    <div class="field">
-        <span class="label">Activa:</span>
-        <span th:if="${brand.active}" class="active">Sí</span>
-        <span th:unless="${brand.active}" class="inactive">No</span>
-    </div>
-
-    <a th:href="@{/brands}" class="btn-back">Volver</a>
-    <a th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn-edit">Editar</a>
-</div>
+</main>
+<footer th:replace="~{layout/footer::footer}"></footer>
+<script th:replace="~{layout/footer::scripts}"></script>
 </body>
 </html>
