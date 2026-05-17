@@ -1,65 +1,119 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{layout/head::head('Formulario Marca')}">
     <meta charset="UTF-8">
     <title th:text="${brandId != null} ? 'Editar marca' : 'Crear marca'">Formulario marca</title>
 </head>
-<body>
-<div class="container">
-    <h1 th:text="${brandId != null} ? 'Editar marca' : 'Crear marca'">Formulario marca</h1>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar::navbar}"></nav>
+<main class="flex-grow-1">
+    <div class="container py-5">
 
-    <form th:object="${brand}"
-          th:action="@{${formAction}}"
-          method="post" novalidate>
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
 
-        <!-- errores globales: ahora dentro del form, por eso #fields funciona -->
-        <div th:if="${#fields.hasGlobalErrors()}" class="global-error">
-            <p th:each="error : ${#fields.globalErrors()}" th:text="${error}"></p>
+                <div class="card shadow-sm rounded-3">
+                    <div class="card-body">
+
+                        <h1 class="h4 mb-3" th:text="${brandId != null} ? 'Editar marca' : 'Crear marca'">Formulario marca</h1>
+                        <p class="text-muted mb-4">Completa los datos de la marca. Los campos marcados con * son obligatorios.</p>
+
+                        <form th:object="${brand}"
+                              th:action="@{${formAction}}"
+                              method="post"
+                              novalidate>
+
+                            <!-- PUT para edición -->
+                            <input type="hidden" name="_method" value="put" th:if="${brandId != null}"/>
+
+                            <!-- Errores globales -->
+                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                                <ul class="mb-0">
+                                    <li th:each="error : ${#fields.globalErrors()}" th:text="${error}"></li>
+                                </ul>
+                            </div>
+
+                            <!-- Nombre -->
+                            <div class="form-floating mb-3">
+                                <input id="name" type="text"
+                                       th:field="*{name}"
+                                       placeholder="Nombre de la marca"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"/>
+                                <label for="name">Nombre *</label>
+                                <div class="invalid-feedback" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
+                            </div>
+
+                            <!-- NIF -->
+                            <div class="form-floating mb-3">
+                                <input id="nif" type="text"
+                                       th:field="*{nif}"
+                                       placeholder="Ej: B12345678"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('nif')} ? ' is-invalid' : ''"/>
+                                <label for="nif">NIF *</label>
+                                <div class="invalid-feedback" th:errors="*{nif}" th:if="${#fields.hasErrors('nif')}"></div>
+                            </div>
+
+                            <!-- País -->
+                            <div class="form-floating mb-3">
+                                <input id="country" type="text"
+                                       th:field="*{country}"
+                                       placeholder="Ej: España"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('country')} ? ' is-invalid' : ''"/>
+                                <label for="country">País *</label>
+                                <div class="invalid-feedback" th:errors="*{country}" th:if="${#fields.hasErrors('country')}"></div>
+                            </div>
+
+                            <!-- Website -->
+                            <div class="form-floating mb-3">
+                                <input id="website" type="text"
+                                       th:field="*{website}"
+                                       placeholder="https://example.com"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('website')} ? ' is-invalid' : ''"/>
+                                <label for="website">Sitio web</label>
+                                <div class="invalid-feedback" th:errors="*{website}" th:if="${#fields.hasErrors('website')}"></div>
+                            </div>
+
+                            <!-- Logo -->
+                            <div class="form-floating mb-3">
+                                <input id="logo" type="text"
+                                       th:field="*{logo}"
+                                       placeholder="URL del logo"
+                                       class="form-control rounded-3 shadow-sm"
+                                       th:classappend="${#fields.hasErrors('logo')} ? ' is-invalid' : ''"/>
+                                <label for="logo">Logo (URL)</label>
+                                <div class="invalid-feedback" th:errors="*{logo}" th:if="${#fields.hasErrors('logo')}"></div>
+                            </div>
+
+                            <!-- Activa -->
+                            <div class="form-check form-switch mb-4">
+                                <input id="active" type="checkbox"
+                                       th:field="*{active}"
+                                       class="form-check-input"/>
+                                <label for="active" class="form-check-label">Marca activa</label>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg"
+                                        th:text="${brandId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
+                                <a th:href="@{/brands}" class="btn btn-outline-secondary btn-lg">Volver</a>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
         </div>
 
-        <input type="hidden" name="_method" value="put" th:if="${brandId != null}"/>
-
-        <div class="form-group">
-            <label for="name">Nombre</label>
-            <input id="name" type="text" th:field="*{name}" placeholder="Ej: Nike" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="nif">NIF</label>
-            <input id="nif" type="text" th:field="*{nif}" placeholder="Ej: B12345678" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('nif')}" th:errors="*{nif}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="country">País</label>
-            <input id="country" type="text" th:field="*{country}" placeholder="Ej: España" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('country')}" th:errors="*{country}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="website">Sitio web</label>
-            <input id="website" type="text" th:field="*{website}" placeholder="https://example.com" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('website')}" th:errors="*{website}"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="logo">Logo</label>
-            <input id="logo" type="text" th:field="*{logo}" placeholder="URL del logo" class="form-control"/>
-            <div class="error" th:if="${#fields.hasErrors('logo')}" th:errors="*{logo}"></div>
-        </div>
-
-        <div class="form-group form-check">
-            <input id="active" type="checkbox" th:field="*{active}" class="form-check-input"/>
-            <label for="active" class="form-check-label">Marca activa</label>
-        </div>
-
-        <div class="mt-3">
-            <button type="submit" class="btn btn-primary" th:text="${brandId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
-            <a th:href="@{/brands}" class="btn btn-secondary">Volver</a>
-        </div>
-    </form>
-</div>
-
+    </div>
+</main>
+<footer th:replace="~{layout/footer::footer}"></footer>
+<script th:replace="~{layout/footer::scripts}"></script>
 </body>
 </html>

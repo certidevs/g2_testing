@@ -1,66 +1,110 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{layout/head::head('Marcas')}">
     <meta charset="UTF-8">
     <title>Marcas</title>
 </head>
-<body>
-    <div class="container">
-        <h1>Marcas</h1>
-        <div th:if="${successMessage}" class="message" th:text="${successMessage}"></div>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar::navbar}"></nav>
+<main class="flex-grow-1">
+    <div class="container py-5">
 
-        <div class="actions">
-            <a th:href="@{/brands/new}" class="bth-create">Crear Marca</a>
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0">Marcas</h1>
+            <a th:href="@{/brands/new}" class="btn btn-primary">Crear Marca</a>
         </div>
-        <table>
-            <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>NIF</th>
-                <th>País</th>
-                <th>Web</th>
-                <th>Activa</th>
-                <th>Acciones</th>
-            </tr>
-            </thead>
 
-            <tbody>
-            <tr th:if="${#lists.isEmpty(brands)}">
-                <td colspan="6">No hay marcas registradas.</td>
-            </tr>
+        <!-- Mensaje de éxito -->
+        <div th:if="${successMessage}"
+             class="alert alert-success alert-dismissible fade show"
+             role="alert">
+            <span th:text="${successMessage}">Mensaje</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
 
-            <tr th:each="brand : ${brands}">
-                <td th:text="${brand.name}">Nombre</td>
-                <td th:text="${brand.nif}">NIF</td>
-                <td th:text="${brand.country}">País</td>
-                <td>
-                    <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
-                       th:href="${brand.website}"
-                       th:text="${brand.website}"
-                       target="_blank">
-                        Web
-                    </a>
-                    <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
-                </td>
-                <td>
-                    <span th:if="${brand.active}" class="active">Sí</span>
-                    <span th:unless="${brand.active}" class="inactive">No</span>
-                </td>
-                <td>
-                    <a th:href="@{/brands/{id}(id=${brand.id})}" class="btn-detail">Ver</a>
-                    <a th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn-edit">Editar</a>
+        <!-- Tabla -->
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th>Nombre</th>
+                    <th>NIF</th>
+                    <th>País</th>
+                    <th>Web</th>
+                    <th>Activa</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
 
-                    <form th:action="@{/brands/{id}/delete(id=${brand.id})}" method="post">
-                        <button type="submit"
-                                class="btn-delete"
-                                onclick="return confirm('¿Seguro que quieres eliminar esta marca?')">
-                            Eliminar
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                <tbody>
+
+                <!-- Sin marcas -->
+                <tr th:if="${#lists.isEmpty(brands)}">
+                    <td colspan="6" class="text-center py-4 text-muted">
+                        No hay marcas registradas.
+                    </td>
+                </tr>
+
+                <!-- Filas -->
+                <tr th:each="brand : ${brands}">
+                    <td th:text="${brand.name}">Nombre</td>
+                    <td th:text="${brand.nif}">NIF</td>
+                    <td th:text="${brand.country}">País</td>
+
+                    <!-- Website -->
+                    <td>
+                        <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
+                           th:href="${brand.website}"
+                           th:text="${brand.website}"
+                           class="text-decoration-none"
+                           target="_blank">
+                            Web
+                        </a>
+                        <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
+                    </td>
+
+                    <!-- Activa -->
+                    <td>
+                        <span th:if="${brand.active}" class="badge bg-success">Sí</span>
+                        <span th:unless="${brand.active}" class="badge bg-danger">No</span>
+                    </td>
+
+                    <!-- Acciones -->
+                    <td class="text-center">
+
+                        <div class="d-flex justify-content-center gap-2">
+
+                            <a th:href="@{/brands/{id}(id=${brand.id})}"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver
+                            </a>
+
+                            <a th:href="@{/brands/{id}/edit(id=${brand.id})}"
+                               class="btn btn-sm btn-outline-secondary">
+                                Editar
+                            </a>
+
+                            <form th:action="@{/brands/{id}/delete(id=${brand.id})}"
+                                  method="post"
+                                  onsubmit="return confirm('¿Seguro que quieres eliminar esta marca?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Eliminar
+                                </button>
+                            </form>
+
+                        </div>
+
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</main>
+<footer th:replace="~{layout/footer::footer}"></footer>
+<script th:replace="~{layout/footer::scripts}"></script>
 </body>
 </html>
