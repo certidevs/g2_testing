@@ -42,14 +42,14 @@ public class ProductControler {
         return "products/product-list";
 
     }
-    //agregar el numero de compras en el productos
+    //agregar el numero de compras y reviews en el productos
     @GetMapping("products/{id}")
     public String productsDetail(@PathVariable UUID id, Model model) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
             // TODO cambiar products a product porque es solo uno
-            model.addAttribute("products", product);
+            model.addAttribute("product", product);
             List<Review> reviews = reviewService.getApprovedReviewsByProduct(id);
             model.addAttribute("reviews", reviews);
 
@@ -58,13 +58,14 @@ public class ProductControler {
         }
         return "products/product-detail";
     }
+//Buscador de productos
         @GetMapping("/products/search")
         public String searchProducts(@RequestParam String query, Model model) {
             List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(query, query);
             model.addAttribute("products", products);
-            model.addAttribute("saludo", "Resultados para: " + query);
             return "products/product-list";
         }
+        //Desactivar un producsto
     @GetMapping("products/deactivate/{id}")
     public String deactivateRestaurant(@PathVariable UUID id, Model model) {
         productRepository.findById(id).ifPresent(product -> {
@@ -73,6 +74,7 @@ public class ProductControler {
         });
         return "redirect:/products";
     }
+    //Activar un producto
          @GetMapping("products/activate/{id}")
          public String activateProduct(@PathVariable UUID id, Model model) {
              productRepository.findById(id).ifPresent(product -> {
@@ -95,20 +97,15 @@ public class ProductControler {
     //RECIBIR LOS DATOS DEL PRODUCTO
     @PostMapping("products")
     public String createProduct(@ModelAttribute Product product){
-        // Si se proporciona un ID de marca, buscarla en la BD
-        // TODO revisar porque creo que no hace falta ya viene asignado desde forms
-//        if (product.getBrand() != null && product.getBrand().getId() != null) {
-//            Optional<Brand> brand = brandRepository.findById(product.getBrand().getId());
-//            brand.ifPresent(product::setBrand);
-//        }
-//
-//        // Si se proporciona un ID de subcategoría, buscarla en la BD
-//        if (product.getSubcategory() != null && product.getSubcategory().getId() != null) {
-//            Optional<Category> category = categoryRepository.findById(product.getSubcategory().getId());
-//            category.ifPresent(product::setSubcategory);
-//        }
-        
+
         productRepository.save(product);
         return "redirect:/products";
+    }
+    @GetMapping("/products/categories/{id}")
+    public String listProducts(Model model) {
+        model.addAttribute("products", productRepository.findAll());
+        // Si no pones esta línea, la línea 131 de tu HTML saldrá en amarillo/error
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "products/product-list";
     }
 }

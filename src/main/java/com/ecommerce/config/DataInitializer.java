@@ -202,6 +202,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .longDescription("Esta camiseta blanca de Nike es perfecta para cualquier ocasión. Confeccionada con algodón de alta calidad.")
                 .imageUrl("https://static.nike.com/a/images/t_web_pw_592_v2/f_auto/0b73e9b3-1bba-4a6b-8d4b-ecc9d2a473c8/M+NSW+TEE+M90+FW+MBR+CNCT+HO25.png")
                 .subcategory(camisetas)
+                .stock(25)
                 .price(30.00).brand(brand1).build());
 
         var product2 = productRepo.save(Product.builder()
@@ -209,31 +210,36 @@ public class DataInitializer  implements CommandLineRunner {
                         .subcategory(pantalones)
                 .imageUrl("https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcR6ErZKh_-lTTwptKNoNRmIE7wEd-IIm_GQsU3c5SjQxDU2kj0678uu_vFbVX2QgNrLozE4rcSjki-WGpfYw83KzWSmPjNus4dd5V4hNJJb-SSn-lCSMw5Ez6kRMYbLGeh3rUoMWCpx&usqp=CAc")
                 .subcategory(pantalones)
+                .stock(40)
                 .price(45.00).brand(brand1).build());
 
         var product3 = productRepo.save(Product.builder()
                 .title("Zapatillas Run")
-                        .subcategory(calzado)
+                .subcategory(calzado)
                 .imageUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmqrHlyvYmEn1ghVn1P9djF-vH5PCjlwOhgw&s")
                 .subcategory(calzado)
+                .stock(15)
                 .price(110.00).brand(brand1).build());
 
         var product4 = productRepo.save(Product.builder()
                 .title("Calzetines Run")
-                        .subcategory(calzado)
+                .subcategory(calzado)
                 .imageUrl("https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRLO_S61-_IXWE6l0J4WiBdUcnglzV7e9ZBYwEPKLQ2whre7AdR-7K8D0MxyEYo-EqsivQma9grEEiWiZEnvPx7W0Q8z5mnyy0oLR7HsXAQQnEtNe8CsRLVdbSDUD3xxZngN83U6efJ&usqp=CAc")
+                        .stock(100)
                 .price(10.00).brand(brand1).build());
         var product5 = productRepo.save(Product.builder()
                 .title("Iphone 15")
                 .subcategory(moviles)
                 .longDescription("iphone 15 128g")
                 .imageUrl("https://imgs.search.brave.com/ESQDLqeCxUyCOQQrWLBxQsuDBwmLcHYDjL-jh_-U7iY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMudW5zcGxhc2gu/Y29tL3Bob3RvLTE3/MDQzODA4OTUzMTYt/Y2FhMmU0ZDY4YTdl/P2ZtPWpwZyZxPTYw/Jnc9MzAwMCZhdXRv/PWZvcm1hdCZmaXQ9/Y3JvcCZpeGxpYj1y/Yi00LjEuMCZpeGlk/PU0zd3hNakEzZkRC/OE1IeHpaV0Z5WTJo/OE4zeDhhWEJvYjI1/bEpUSXdNVFY4Wlc1/OE1IeDhNSHg4ZkRB/PQ")
+                        .stock(20)
                 .price(1200.00).brand(brand1).build());
         var product6 = productRepo.save(Product.builder()
                 .title("Macbook Pro 16")
                 .subcategory(portatil)
                 .longDescription("Macbook Pro 16 pulgadas con chip M1 Pro, 16GB RAM, 512GB SSD")
                         .imageUrl("https://imgs.search.brave.com/sciRFp0EHNluo57mCivZlwX-wnfY53SR_AfdnAIF4PE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y25ldC5jb20vYS9p/bWcvcmVzaXplLzJm/OTg0ZTczODVjYWJl/NjRlYmZhZWFiZjI1/ZjYzNDFjZmUzZDYz/MWEvaHViLzIwMTkv/MTEvMTIvODRlMTE1/OWMtYjhjYi00MzQ5/LTllM2ItM2MzN2Nj/Nzg5NDVmLzM2LW1h/Y2Jvb2stcHJvLTE2/LWluY2guanBnP2F1/dG89d2VicCZ3aWR0/aD0xMjAw")
+                        .stock(10)
                 .price(2500.00).brand(brand1).build());
 
 

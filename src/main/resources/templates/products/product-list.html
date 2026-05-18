@@ -5,14 +5,7 @@
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 <main class="container flex-grow-1">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">
-            Productos
-        </h1>
-    <span class="badge bg-secondary fs-6"
 
-          th:text="|${#lists.size(products)} resultados|">0 resultados</span>
-    </div>
     <!-- Añadimos mb-5 para el margen inferior y shadow para separarlo visualmente -->
     <div id="carouselExampleIndicators" class="carousel slide mb-5 shadow">
         <div class="carousel-indicators">
@@ -54,6 +47,14 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Siguiente</span>
         </button>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">
+            Productos
+        </h1>
+        <span class="badge bg-secondary fs-6"
+
+              th:text="|${#lists.size(products)} resultados|">0 resultados</span>
     </div>
 
 

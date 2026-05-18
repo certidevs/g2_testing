@@ -71,9 +71,10 @@ public class PurchaseController {
         // primero verificar que el product existe:
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (product.getStockStatus() == ProductStockStatus.NO_STOCK) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Producto sin stock");
-        }
+
+           if (product.getStock() <= 0) {
+                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Producto sin stock disponible");
+           }
 
         // primero verificar si existe ya una purchase in progress
         Optional<Purchase> purchaseOptional = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);

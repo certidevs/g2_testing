@@ -39,14 +39,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="stockStatus" class="form-label">Estado de Stock:</label>
-            <select class="form-select" id="stockStatus" th:field="*{stockStatus}">
-                <option value="">-- seleccione un Estado --</option>
-                <option th:each="status : ${allStockStatuses}"
-                        th:value="${status}"
-                        th:text="${status.label}">
-                </option>
-            </select>
+            <label for="stock" class="form-label">Cantidad en Stock:</label>
+            <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" placeholder="Ej: 50">
         </div>
 
         <div class="mb-3">

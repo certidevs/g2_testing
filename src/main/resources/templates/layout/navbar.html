@@ -124,18 +124,17 @@
             <div class="collapse navbar-collapse" id="mainNav">
 
                 <!-- Links principales -->
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0"> <!-- CORRECCIÓN: me-auto para empujar el resto -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="prodDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Productos
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="prodDropdown">
-                            <li><a class="dropdown-item" th:href="@{/products}">Moda</a></li>
-                            <li><a class="dropdown-item" th:href="@{/products}">Eletronica</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" th:href="@{/products}">Ver todos</a></li>
-                        </ul>
-                    </li> <!-- CORRECCIÓN: Aquí cerraste mal antes -->
+                        </a><ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="prodDropdown">
+                        <li><a class="dropdown-item" th:href="@{/products}">Moda de Verano</a></li>
+                        <li><a class="dropdown-item" th:href="@{/products}">OFERTAS ESPECIALES</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" th:href="@{/products}">Ver todos</a></li>
+                    </ul>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/purchases}">
                             <i class="fa-solid fa-ticket me-1"></i> Compras
@@ -144,13 +143,14 @@
                 </ul>
 
                 <!-- Buscador centrado -->
-                <!-- CORRECCIÓN: Quitamos mx-auto si quieres que respete el flujo o ajustamos el ancho -->
                 <div class="d-flex align-items-center gap-2 my-2 my-lg-0" style="flex-grow: 1; max-width: 500px;">
                     <button class="btn btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#filtersPanel">
                         <i class="fa-solid fa-sliders"></i>
                     </button>
                     <form class="d-flex w-100" th:action="@{/products/search}" method="get">
-                        <input class="form-control me-2" type="search" name="query" placeholder="Buscar...">
+                        <label>
+                            <input class="form-control me-2" type="search" name="query" placeholder="Buscar...">
+                        </label>
                         <button class="btn btn-outline-light" type="submit">
                             <i class="fa-solid fa-search"></i>
                         </button>

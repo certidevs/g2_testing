@@ -12,6 +12,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@Data
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
@@ -42,8 +43,9 @@ public class Product {
 
 //    private Integer stock; // Cantidad de productos disponibles en el inventario
 
-    @Enumerated(EnumType.STRING)
-    private ProductStockStatus stockStatus;
+//    @Enumerated(EnumType.STRING)
+//    private ProductStockStatus stockStatus;
+    private int stock ; // Cantidad de productos disponibles en el inventario
     @Column(length = 1000)
      String imageUrl; //URL de la imagen del producto
 
