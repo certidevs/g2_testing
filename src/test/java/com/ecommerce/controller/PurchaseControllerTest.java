@@ -159,9 +159,9 @@ class PurchaseControllerTest {
     void purchasesFull() throws Exception {
         mockMvc.perform(get("/purchases"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("purchases/purchases-list"))
+                .andExpect(view().name("purchases/purchase-list"))
                 .andExpect(model().attributeExists("purchases"))
-                .andExpect(model().attribute("purchases", hasSize(4)));
+                .andExpect(model().attribute("purchases", hasSize(8)));
     }
 
     @Test
@@ -170,7 +170,7 @@ class PurchaseControllerTest {
 
         mockMvc.perform(get("/purchases"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("purchases/purchases-list"))
+                .andExpect(view().name("purchases/purchase-list"))
                 .andExpect(model().attributeExists("purchases"))
                 .andExpect(model().attribute("purchases", hasSize(0)));
     }
