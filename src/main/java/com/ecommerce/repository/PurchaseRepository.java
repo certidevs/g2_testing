@@ -55,7 +55,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     // -------- SPECIFICS --------
 
     // Specific purchase & user comment (key word)
-    List<Purchase> findByIdAndUserCommentContaining(UUID id, String userComment);
+    List<Purchase> findByIdAndUserCommentContaining(UUID product_id, String userComment);
 
     // Specific user & user comment (key word)
     List<Purchase> findByUserIdAndUserCommentContaining(UUID user_id, String userComment);
