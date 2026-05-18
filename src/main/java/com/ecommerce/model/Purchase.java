@@ -73,10 +73,4 @@ public class Purchase {
         this.creationDate = now;
     }
 
-    // Method to add purchase lines
-    public void addLine(PurchaseLine line) {
-        if (this.lines == null) this.lines = new ArrayList<>();
-        this.lines.add(line);
-        line.setPurchase(this);
-    }
 }
