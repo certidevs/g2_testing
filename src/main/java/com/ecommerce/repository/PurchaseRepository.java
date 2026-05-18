@@ -11,15 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
+public interface PurchaseRepository extends JpaRepository<Purchase, UUID> {
 
     // -------- SIMPLES --------
 
     // Specific user
     List<Purchase> findByUserId(UUID users_id);
-
-    // Specific purchase
-    Optional<Purchase> findById(UUID purchaseId);
 
     // Purchase status
     List<Purchase> findByPurchaseStatus(PurchaseStatus purchaseStatus);
