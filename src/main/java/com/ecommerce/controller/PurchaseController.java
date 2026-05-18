@@ -161,6 +161,15 @@ public class PurchaseController {
     }
 
     // @GetMapping("purchases/delete/{productId}")
+    @GetMapping("purchases/{id}/finish")
+    public String finishPurchase(@PathVariable UUID id) {
+        Purchase purchase =  purchaseRepository.findById(id).orElseThrow();
+        purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
+        purchase.setTotalPrice(purchaseLineRepository.calculateTotalPrice(purchase.getId()));
+
+        purchaseRepository.save(purchase);
+        return "redirect:/purchases/" + id;
+    }
 
     // @GetMapping("purchases/finish/{id}")
 }

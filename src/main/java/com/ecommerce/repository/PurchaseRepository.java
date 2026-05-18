@@ -2,6 +2,7 @@ package com.ecommerce.repository;
 
 import com.ecommerce.model.enums.*;
 import com.ecommerce.model.Purchase;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -87,16 +88,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, UUID> {
            "WHERE p.user.id = :userId AND pr.id = :productId")
     boolean existsByUsersIdAndProductId(@Param("userId") UUID userId, @Param("productId") UUID productId);
 
-    // Method to delete a purchase by ID, if the purchase does not exist, it does nothing
-    default void deleteById(UUID id){
-        if (findById(id).isPresent()) {
-            deleteById(id);
-        }
-    }
-
     Optional<Purchase> findFirstByPurchaseStatus(PurchaseStatus purchaseStatus);
-
-
 
     //List<Purchase> findByUserIdAndUserCommentContaining(UUID userId, String userComment);
 }
