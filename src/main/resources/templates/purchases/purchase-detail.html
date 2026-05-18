@@ -21,9 +21,23 @@
             </h5>
             <p th:text="'Precio total de compra: ' + ${purchase.totalPrice}"></p>
             <p th:text="'Estado del pago: ' + ${purchase.paymentStatus}"></p>
-<!-- Agregar botón de finalizar -->
 
-        </div>
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body">
+                    <h5 class="mb-3">Sección de pago</h5>
+
+                    <form th:action="@{/purchases/{id}/finish}" method="get"
+                          class="row align-items-end justify-content-end gap-3">
+
+                        <div class="col">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                Pay & finish purchase
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         <div class="card-body">
             <h5 class="card-title">
                 <i class="fa-solid fa-comment text-primary me-2"></i>
@@ -47,6 +61,7 @@
                 <th>Unit Price</th>
                 <th>Quantity</th>
                 <th>Total Price</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -55,16 +70,26 @@
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.getPrice, 1, 2)}"></td>
                 <td th:text="${line.quantity}"></td>
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)}"></td>
+                <td>
+                    <button>
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button>
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                </td>
 
-                <!-- TODO agregar boton de subir o bajar cantidad -->
             </tr>
+
+            <!-- TODO agregar boton de subir o bajar cantidad -->
+
             </tbody>
         </table>
     </div>
 
     <footer th:replace="~{layout/footer :: footer}"></footer>
     <script th:replace="~{layout/footer :: scripts}"></script>
-
+</div>
 </main>
 </body>
 </html>
