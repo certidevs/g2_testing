@@ -5,8 +5,10 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.Product;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID> {
@@ -58,4 +60,12 @@ public interface PurchaseLineRepository extends JpaRepository<PurchaseLine, UUID
     // Product & quantity between values
     List<PurchaseLine> findByProductAndQuantityBetween(Product product, int minQuantity, int maxQuantity);
 
+    Optional<PurchaseLine> findByPurchase_IdAndProduct_Id(UUID purchaseId, UUID productId);
+
+
+    @Query("""
+        SELECT SUM(ol.quantity * ol.product.price)
+        FROM PurchaseLine ol where ol.purchase.id = ?1
+        """)
+    Double calculateTotalPrice(UUID purchaseId);
 }

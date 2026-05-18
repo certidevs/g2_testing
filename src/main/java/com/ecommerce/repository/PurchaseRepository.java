@@ -97,5 +97,9 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
         }
     }
 
+    Optional<Purchase> findFirstByPurchaseStatus(PurchaseStatus purchaseStatus);
+
+
+
     //List<Purchase> findByUserIdAndUserCommentContaining(UUID userId, String userComment);
 }

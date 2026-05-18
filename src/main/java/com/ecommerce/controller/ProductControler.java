@@ -48,6 +48,7 @@ public class ProductControler {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
+            // TODO cambiar products a product porque es solo uno
             model.addAttribute("products", product);
             List<Review> reviews = reviewService.getApprovedReviewsByProduct(id);
             model.addAttribute("reviews", reviews);

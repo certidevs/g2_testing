@@ -21,6 +21,7 @@
             </h5>
             <p th:text="'Precio total de compra: ' + ${purchase.totalPrice}"></p>
             <p th:text="'Estado del pago: ' + ${purchase.paymentStatus}"></p>
+<!-- Agregar botón de finalizar -->
 
         </div>
         <div class="card-body">
@@ -54,6 +55,8 @@
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.getPrice, 1, 2)}"></td>
                 <td th:text="${line.quantity}"></td>
                 <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)}"></td>
+
+                <!-- TODO agregar boton de subir o bajar cantidad -->
             </tr>
             </tbody>
         </table>

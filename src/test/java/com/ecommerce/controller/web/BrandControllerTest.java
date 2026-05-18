@@ -188,6 +188,31 @@ class BrandControllerTest {
     }
 
     @Test
+    void updateCatch() throws Exception
+    {
+        mockMvc.perform(post("/brands/" + UUID.randomUUID() + "/edit")
+                        .param("name", "Nike Updated")
+                        .param("nif", "B12345678")
+                        .param("country", "USA")
+                        .param("website", "https://nikeupdated.com")
+                        .param("logo", "nike-updated.png")
+                        .param("active", "false"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/brands*"))
+                .andExpect(flash().attribute("successMessage", "Marca actualizada correctamente"));
+
+        Brand updatedBrand = brandRepository.findById(nike.getId())
+                .orElseThrow();
+
+        assertEquals("Nike Updated", updatedBrand.getName());
+        assertEquals("B12345678", updatedBrand.getNif());
+        assertEquals("USA", updatedBrand.getCountry());
+        assertEquals("https://nikeupdated.com", updatedBrand.getWebsite());
+        assertEquals("nike-updated.png", updatedBrand.getLogo());
+        assertFalse(updatedBrand.getActive());
+    }
+
+    @Test
     void updateWithValidationErrors() throws Exception
     {
         mockMvc.perform(post("/brands/{id}/edit", nike.getId())
