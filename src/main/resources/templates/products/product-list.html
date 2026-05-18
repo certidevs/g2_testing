@@ -80,10 +80,10 @@
                                 <span class="badge bg-success">
                                     <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
                                 </span>
-                                <span class="badge bg-info">
-                                <i class="fa-solid fa-shopping-bag me-1"></i>
-                                <span th:text="${product.purchase != null ? product.purchase.id : 'No comprado'}">Sin compra</span>
-                                </span>
+<!--                                <span class="badge bg-info">-->
+<!--                                <i class="fa-solid fa-shopping-bag me-1"></i>-->
+<!--                                <span th:text="${product.purchase != null ? product.purchase.id : 'No comprado'}">Sin compra</span>-->
+<!--                                </span>-->
 
                                 <a th:href="@{/purchase/add/{id}(id=${product.id})}"
                                    class="btn btn-success btn-sm">

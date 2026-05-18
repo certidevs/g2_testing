@@ -160,7 +160,7 @@
                 <!-- Iconos derecha -->
                 <ul class="navbar-nav ms-auto gap-2">
                     <li class="nav-item">
-                        <a class="nav-link position-relative" th:href="@{/cart}">
+                        <a class="nav-link position-relative" th:href="@{/purchases/cart}">
                             <i class="fa-solid fa-shopping-cart"></i>
                             <span class="badge bg-danger position-absolute top-0 start-100 translate-middle"
                                   th:if="${cartCount > 0}" th:text="${cartCount}">0</span>

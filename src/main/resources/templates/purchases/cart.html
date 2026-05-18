@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{layout/head :: head('Mi Carrito')}">
+  <title>Mi Carrito de Compras</title>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="container flex-grow-1 my-5">
+
+  <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+    <i class="fa-solid fa-cart-shopping fs-2 me-3 text-primary"></i>
+    <h2 class="fw-bold mb-0">Mi Carrito de Compras</h2>
+  </div>
+
+  <div th:if="${cart == null || #lists.isEmpty(lines)}" class="text-center py-5 my-4 bg-white rounded shadow-sm border">
+    <i class="fa-solid fa-basket-shopping text-muted display-1 mb-3"></i>
+    <h3 class="h4 text-dark fw-semibold">Tu carrito está vacío</h3>
+    <p class="text-muted mb-4">¿Aún no te has decidido? Tenemos miles de productos esperándote.</p>
+    <a th:href="@{/products}" class="btn btn-primary px-4 py-2 fw-medium rounded-pill">
+      <i class="fa-solid fa-arrow-left me-2"></i>Ir a la tienda
+    </a>
+  </div>
+
+  <div th:if="${cart != null && !#lists.isEmpty(lines)}" class="row g-4">
+
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light text-uppercase fs-7 fw-semibold text-muted border-bottom">
+              <tr>
+                <th class="ps-4 py-3">Producto</th>
+                <th class="py-3">Precio</th>
+                <th class="py-3 text-center">Cantidad</th>
+                <th class="pe-4 py-3 text-end">Total</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr th:each="line : ${lines}" class="border-bottom">
+                <td class="ps-4 py-3">
+                  <div class="d-flex align-items-center">
+                    <div class="bg-light rounded p-2 me-3 d-none d-sm-block" style="width: 40px; height: 40px;">
+                      <i class="fa-solid fa-box text-secondary fa-lg d-flex justify-content-center align-items-center h-100"></i>
+                    </div>
+                    <div>
+                      <h6 th:text="${line.product.title}" class="mb-0 fw-bold text-dark">Producto</h6>
+                      <small class="text-muted" th:text="'Ref: ' + ${#strings.substring(line.product.id,0,8)}">Ref</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-secondary fw-medium" th:text="${#numbers.formatDecimal(line.product.price, 1, 2)} + '€'">0.00€</td>
+                <td class="text-center">
+                  <div class="d-inline-flex align-items-center border rounded bg-white shadow-sm">
+                    <a th:href="@{/purchases/remove-item/{productId}(productId=${line.product.id})}"
+                       class="btn btn-sm btn-light px-2 py-1 border-0 rounded-start">
+                      <i class="fa-solid fa-minus fa-xs text-muted"></i>
+                    </a>
+
+                    <span class="px-3 fw-bold text-dark" th:text="${line.quantity}">1</span>
+
+                    <a th:href="@{/purchases/add/{id}(id=${line.product.id})}"
+                       class="btn btn-sm btn-light px-2 py-1 border-0 rounded-end">
+                      <i class="fa-solid fa-plus fa-xs text-muted"></i>
+                    </a>
+                  </div>
+                </td>
+                <td class="pe-4 text-end fw-bold text-dark" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)} + '€'">0.00€</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="mt-3">
+        <a th:href="@{/products}" class="btn btn-link text-decoration-none p-0 text-primary fw-medium">
+          <i class="fa-solid fa-arrow-left me-2"></i>Seguir comprando
+        </a>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-4">
+          <h5 class="fw-bold mb-4 text-dark">Resumen del pedido</h5>
+          <div class="d-flex justify-content-between mb-3 text-secondary">
+            <span>Subtotal productos</span>
+            <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)} + '€'">0.00€</span>
+          </div>
+          <div class="d-flex justify-content-between mb-3 text-secondary">
+            <span>Gastos de envío</span>
+            <span class="text-success fw-medium">Gratis</span>
+          </div>
+          <hr class="my-3 text-muted">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <span class="fs-5 fw-bold text-dark">Total</span>
+            <span class="fs-4 fw-black text-primary" th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)} + '€'">0€</span>
+          </div>
+          <a th:href="@{/purchases/checkout}" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm text-uppercase">
+            Seguir con la compra <i class="fa-solid fa-credit-card ms-2"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+
+</body>
+</html>

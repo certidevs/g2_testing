@@ -51,7 +51,7 @@ public class Purchase {
     @ManyToOne
     private User user;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private java.util.List<PurchaseLine> lines = new java.util.ArrayList<>();
 

@@ -46,7 +46,7 @@
                           <a th:href="@{/purchases/add/{id}(id=${product.id})}" class="btn btn-success me-2">
                               <i class="fa-solid fa-shopping-cart me-1"></i> Comprar ahora
                           </a>
-                          <a th:href="@{/purchases/add/{id}(id=${product.id})}" class="btn btn-outline-primary">
+                          <a th:href="" class="btn btn-outline-primary">
                               <i class="fa-solid fa-cart-plus me-1"></i> Añadir al carrito
                           </a>
                           <form th:action="@{/favorites/add/{id}(id=${product.id})}" method="post" style="display: inline;">
