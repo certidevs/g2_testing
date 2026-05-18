@@ -190,26 +190,31 @@ class BrandControllerTest {
     @Test
     void updateCatch() throws Exception
     {
-        mockMvc.perform(post("/brands/" + UUID.randomUUID() + "/edit")
+        UUID fakeId = UUID.randomUUID();
+
+        mockMvc.perform(post("/brands/{id}/edit", fakeId)
                         .param("name", "Nike Updated")
                         .param("nif", "B12345678")
                         .param("country", "USA")
                         .param("website", "https://nikeupdated.com")
                         .param("logo", "nike-updated.png")
                         .param("active", "false"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/brands*"))
-                .andExpect(flash().attribute("successMessage", "Marca actualizada correctamente"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("brands/brand-form"))
+                .andExpect(model().attributeExists("brand"))
+                .andExpect(model().attribute("brandId", is(fakeId)))
+                .andExpect(model().attribute("formAction", is("/brands/" + fakeId + "/edit")))
+                .andExpect(model().hasErrors());
 
-        Brand updatedBrand = brandRepository.findById(nike.getId())
+        Brand originalBrand = brandRepository.findById(nike.getId())
                 .orElseThrow();
 
-        assertEquals("Nike Updated", updatedBrand.getName());
-        assertEquals("B12345678", updatedBrand.getNif());
-        assertEquals("USA", updatedBrand.getCountry());
-        assertEquals("https://nikeupdated.com", updatedBrand.getWebsite());
-        assertEquals("nike-updated.png", updatedBrand.getLogo());
-        assertFalse(updatedBrand.getActive());
+        assertEquals("Nike", originalBrand.getName());
+        assertEquals("B12345678", originalBrand.getNif());
+        assertEquals("USA", originalBrand.getCountry());
+        assertEquals("https://nike.com", originalBrand.getWebsite());
+        assertEquals("nike.png", originalBrand.getLogo());
+        assertTrue(originalBrand.getActive());
     }
 
     @Test
