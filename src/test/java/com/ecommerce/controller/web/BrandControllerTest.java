@@ -130,6 +130,22 @@ class BrandControllerTest {
     }
 
     @Test
+    void createWithValidationErrors() throws Exception
+    {
+        mockMvc.perform(post("/brands")
+                        .param("name", "")
+                        .param("nif", "")
+                        .param("country", "")
+                        .param("website", "")
+                        .param("logo", "")
+                        .param("active", "true"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("brands/brand-form"))
+                .andExpect(model().attributeExists("brand"))
+                .andExpect(model().attribute("formAction", is("/brands")));
+    }
+
+    @Test
     void showEditForm() throws Exception
     {
         mockMvc.perform(get("/brands/{id}/edit", nike.getId()))
@@ -169,6 +185,23 @@ class BrandControllerTest {
         assertEquals("https://nikeupdated.com", updatedBrand.getWebsite());
         assertEquals("nike-updated.png", updatedBrand.getLogo());
         assertFalse(updatedBrand.getActive());
+    }
+
+    @Test
+    void updateWithValidationErrors() throws Exception
+    {
+        mockMvc.perform(post("/brands/{id}/edit", nike.getId())
+                        .param("name", "")
+                        .param("nif", "")
+                        .param("country", "")
+                        .param("website", "")
+                        .param("logo", "")
+                        .param("active", "true"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("brands/brand-form"))
+                .andExpect(model().attributeExists("brand"))
+                .andExpect(model().attribute("brandId", is(nike.getId())))
+                .andExpect(model().attribute("formAction", is("/brands/" + nike.getId() + "/edit")));
     }
 
     @Test
