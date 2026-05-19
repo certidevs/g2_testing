@@ -76,7 +76,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .state("Madrid")
                 .zipCode("28001")
                 .country("España")
-                .addressType(AddressType.PRIMARY)
+                .addressType(AddressType.BILLING)
                 .user(user1)
                 .build();
 
@@ -111,7 +111,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .state("Comunidad Valenciana")
                 .zipCode("46001")
                 .country("España")
-                .addressType(AddressType.SECONDARY)
+                .addressType(AddressType.SHIPPING)
                 .user(user2)
                 .build();
 

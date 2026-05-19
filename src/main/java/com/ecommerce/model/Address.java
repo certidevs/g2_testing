@@ -35,7 +35,8 @@ public class Address {
     @ManyToOne
     private User user;
 
-    // Asociación con la compra a la que pertenece esta dirección, una compra puede tener varias direcciones (por ejemplo, una dirección de envío y una de facturación), pero cada dirección pertenece a una sola compra
-    @OneToMany
+    // Asociación con la compra a la que pertenece esta dirección: una compra puede tener varias direcciones,
+    // pero cada dirección pertenece a una sola compra. Por tanto aquí debe ser ManyToOne.
+    @ManyToOne
     private Purchase purchase;
 }
