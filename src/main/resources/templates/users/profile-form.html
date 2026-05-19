@@ -15,7 +15,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form th:action="@{/user/update}" method="post" th:object="${user}">
+            <form th:action="@{/templates/users/update}" method="post" th:object="${user}">
                 <input type="hidden" name="email" th:value="${user.email}" />
                 <div class="row">
                     <div class="col-md-6">

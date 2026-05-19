@@ -13,16 +13,18 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     // Consultas personalizadas
 
+    boolean existsByUsername(String username);
+
+    boolean existsByEmail(String email);
+
     // Traer usuario por name
     List<User> findByName(String name);
 
+    //Traer los user name
+    Optional<User> findByUsername(String username);
         
     // Traer usuario por email
-    List<User> findByEmail(String email);
-
-    // Traer primer usuario por email con direcciones precargadas
-    @EntityGraph(attributePaths = "addresses")
-    Optional<User> findFirstByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     // Traer usuario por telefono
     List<User> findByPhone(String phone);
