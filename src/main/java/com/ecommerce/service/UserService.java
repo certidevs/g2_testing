@@ -1,5 +1,6 @@
 package com.ecommerce.service;
 
+import com.ecommerce.dto.UserRequestDto;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.UserRepository;
@@ -20,6 +21,8 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
@@ -29,6 +32,26 @@ public class UserService implements UserDetailsService {
      */
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    public User register(UserRequestDto form) {
+        //Validaciones
+        if (userRepository.existsByUsername(form.getUsername()))
+            throw new IllegalArgumentException("El username ya existe, elige otro username");
+        if (userRepository.existsByEmail(form.getEmail()))
+            throw new IllegalArgumentException("El email ya existe, elige otro email");
+        if (! form.getPassword().equals(form.getPasswordConfirm()))
+            throw new IllegalArgumentException("Las contraseñas no coinciden");
+
+//        if (form.getAcceptRGPD())
+//            throw new IllegalArgumentException("Debes aceptar las políticas de privacidad");
+
+        User user = new User();
+        user.setUsername(form.getUsername());
+        user.setEmail(form.getEmail());
+        user.setRole(Role.CUSTOMER);
+        user.setPassword(passwordEncoder.encode(form.getPassword()));
+        return userRepository.save(user);
     }
 
     public String resolveAdminEmail(String adminEmail) {

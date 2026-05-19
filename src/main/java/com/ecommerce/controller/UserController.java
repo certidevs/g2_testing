@@ -1,6 +1,6 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.RegisterForm;
+import com.ecommerce.dto.UserRequestDto;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,15 +26,21 @@ public class UserController {
     @GetMapping("register")
     public String register(Model model)
     {
-        model.addAttribute("user", new RegisterForm());
+        model.addAttribute("user", new UserRequestDto());
         return "/users/register";
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute RegisterForm form) {
-        System.out.println(form);
-        //userService.register(user);
-        return "redirect:/login";
+    public String register(@ModelAttribute UserRequestDto form, RedirectAttributes redirectAttributes)
+    {
+        try {
+            userService.register(form);
+            redirectAttributes.addFlashAttribute("message", "Cuenta creada correctamente, inicia sesion");
+            return "redirect:/login";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/register";
+        }
     }
 
 
@@ -50,5 +57,5 @@ public class UserController {
 //                .orElseThrow(() -> new ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND));
 //        model.addAttribute("user", user);
 //        return "users/user-detail";
-    }
-
+//}
+}

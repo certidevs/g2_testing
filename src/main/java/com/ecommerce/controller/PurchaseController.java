@@ -32,12 +32,14 @@ public class PurchaseController {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
 
+    // Show all purchases
     @GetMapping("purchases")
     public String listPurchases(Model model) {
         model.addAttribute("purchases", purchaseRepository.findAll());
         return "purchases/purchase-list";
     }
 
+    // Show purchase details of a specific purchase
     @GetMapping("purchases/{id}")
     public String detailPurchase(Model model, @PathVariable UUID id) {
         model.addAttribute("purchase", purchaseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
@@ -45,13 +47,7 @@ public class PurchaseController {
         return "purchases/purchase-detail";
     }
 
-    @GetMapping("purchases/delete/{id}")
-    public String deletePurchase(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
-        purchaseService.deletePurchase(id);
-        redirectAttributes.addFlashAttribute("message", "Purchase deleted successfully");
-        return "redirect:/purchases";
-    }
-
+    // Create a new purchase for an existing user
     @GetMapping("purchases/new")
     public String showCreatePurchaseForm(Model model) {
         model.addAttribute("purchase", new Purchase());
@@ -59,24 +55,35 @@ public class PurchaseController {
         return "purchases/purchase-form";
     }
 
+    // Handle form submission to create a new purchase
     @PostMapping("purchases")
     public String createPurchase(@ModelAttribute Purchase newPurchase) {
         purchaseService.createPurchase(newPurchase);
         return "redirect:/purchases";
     }
 
+    // Delete a specific purchase
+    @GetMapping("purchases/delete/{id}")
+    public String deletePurchase(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        purchaseService.deletePurchase(id);
+        redirectAttributes.addFlashAttribute("message", "Purchase deleted successfully");
+        return "redirect:/purchases";
+    }
+
+    // Add a product to the purchase
     @GetMapping("purchases/add/{productId}")
     public String addProduct(@PathVariable UUID productId) {
 
-        // primero verificar que el product existe:
-        Product product = productRepository.findById(productId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // Verifies that the product exists
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
+        // Verifies that the product has stock available
+        if (product.getStock() <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is out of stock");
+        }
 
-           if (product.getStock() <= 0) {
-                  throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Producto sin stock disponible");
-           }
-
-        // primero verificar si existe ya una purchase in progress
+        // Verifies if the user has an initiated purchase, if not, creates a new one
         Optional<Purchase> purchaseOptional = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);
 
         Purchase purchase;
@@ -87,49 +94,102 @@ public class PurchaseController {
             // TODO purchase.setUser(currentUser);
             purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
             purchase.setCreationDate(LocalDateTime.now());
-            purchaseRepository.save(purchase);
+            purchase.setTotalPrice(0.0);
         }
 
-        // añadir producto a la compra:
+        // Save the purchase to ensure it has an ID for the purchase line
+        purchase = purchaseRepository.save(purchase);
+
+        // Add or update the purchase line for the product
         Optional<PurchaseLine> lineOptional = purchaseLineRepository
                 .findByPurchase_IdAndProduct_Id(purchase.getId(), product.getId());
 
+        // If the purchaseline already exists, we update the quantity, if not, we create a new one
         PurchaseLine purchaseLine;
         if (lineOptional.isPresent()) {
             purchaseLine = lineOptional.get();
+
+            if (purchaseLine.getQuantity() >= product.getStock()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not add more units of this product, stock limit reached");
+            }
+
+            // Add one unit to the quantity of the purchase line
             purchaseLine.setQuantity(purchaseLine.getQuantity() + 1);
+
+            // Upload the new quantity to the purchase line in the purchase object, to keep the data consistent
+            if (purchase.getLines() != null) {
+                for (PurchaseLine l : purchase.getLines()) {
+                    if (l.getProduct().getId().equals(product.getId())) {
+                        l.setQuantity(purchaseLine.getQuantity());
+                    }
+                }
+            }
         } else {
-            purchaseLine =  new PurchaseLine();
+
+            // If the purchase line does not exist, we create a new one with quantity one
+            purchaseLine = new PurchaseLine();
             purchaseLine.setProduct(product);
             purchaseLine.setPurchase(purchase);
             purchaseLine.setQuantity(1);
+            purchase.getLines().add(purchaseLine);
         }
 
         purchaseLineRepository.save(purchaseLine);
 
-        // recalcular precio de la Purchase para mostrarlo por pantalla
+        // Calculate the total price of the purchase based on the purchase lines, and update the purchase total price
         Double totalPrice = purchaseLineRepository.calculateTotalPrice(purchase.getId());
+        if (totalPrice == null) {
+            totalPrice = product.getPrice() * purchaseLine.getQuantity();
+        }
+
         purchase.setTotalPrice(totalPrice);
+
+        // Once it coincides, we save the purchase to update the total price and the purchase lines in the purchase object
         purchaseRepository.save(purchase);
-
-
-
-        // TODO atualizar stock y status del product tras añadir al carrito
 
         return "redirect:/purchases/" + purchase.getId();
-
     }
 
-    // @GetMapping("purchases/delete/{productId}")
+    // Show the cart with the products added to the purchase
+    @GetMapping("/purchases/{id}/cart")
+    public String showCart(Model model) {
+
+        // Search for an initiated purchase
+        Optional<Purchase> purchaseOptional = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);
+
+        // If there is an initiated purchase, we pass it to the model
+        if (purchaseOptional.isPresent()) {
+            Purchase cart = purchaseOptional.get();
+            model.addAttribute("cart", cart);
+
+            // Also pass the purchase lines to the model, so we can show the products in the cart
+            model.addAttribute("lines", cart.getPurchaseLines());
+
+        } else {
+
+            // If the cart is empty, we pass a null value or an empty purchase object to the model
+            model.addAttribute("cart", null);
+        }
+
+        return "purchases/cart";
+    }
+
+    // Finish the purchase
     @GetMapping("purchases/{id}/finish")
     public String finishPurchase(@PathVariable UUID id) {
-        Purchase purchase =  purchaseRepository.findById(id).orElseThrow();
+        Purchase purchase = purchaseRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        // Verifies that the purchase has lines, if not, it cannot be finished
+        if (purchase.getPurchaseLines() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not finish a purchase without lines");
+        }
+
+        // Update the purchase status to finished and save it
         purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
-        purchase.setTotalPrice(purchaseLineRepository.calculateTotalPrice(purchase.getId()));
-
+        purchase.setFinishedDate(LocalDateTime.now());
         purchaseRepository.save(purchase);
-        return "redirect:/purchases/" + id;
-    }
 
-    // @GetMapping("purchases/finish/{id}")
+        return "redirect:/purchases";
+    }
 }
