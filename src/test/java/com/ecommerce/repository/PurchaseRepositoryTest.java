@@ -1,6 +1,8 @@
 package com.ecommerce.repository;
 
 import com.ecommerce.model.Purchase;
+import com.ecommerce.model.PurchaseLine;
+import com.ecommerce.model.Product;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,18 +26,31 @@ class PurchaseRepositoryTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ProductRepository productRepository;
+
+    @Autowired
+    PurchaseLineRepository purchaseLineRepository;
+
     User user1;
     User user2;
+
+    Product product1;
+    Product product2;
 
     Purchase purchase1;
     Purchase purchase2;
     Purchase purchase3;
     Purchase purchase4;
 
+    PurchaseLine purchaseLine1;
+    PurchaseLine purchaseLine2;
+
     @BeforeEach
     void setUp(){
 
         user1 = User.builder()
+                .username("user1.purchase")
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -47,6 +62,7 @@ class PurchaseRepositoryTest {
                 .build();
 
         user2 = User.builder()
+                .username("user2.purchase")
                 .name("User 2")
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
@@ -58,6 +74,18 @@ class PurchaseRepositoryTest {
                 .build();
 
         userRepository.saveAll(List.of(user1, user2));
+
+        product1 = Product.builder()
+                .title("Product 1")
+                .price(25.00)
+                .build();
+
+        product2 = Product.builder()
+                .title("Product 2")
+                .price(15.00)
+                .build();
+
+        productRepository.saveAll(List.of(product1, product2));
 
         purchase1 = Purchase.builder()
                 .user(user1)
@@ -112,6 +140,20 @@ class PurchaseRepositoryTest {
                 .build();
 
         purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
+
+        purchaseLine1 = PurchaseLine.builder()
+                .purchase(purchase1)
+                .product(product1)
+                .quantity(2)
+                .build();
+
+        purchaseLine2 = PurchaseLine.builder()
+                .purchase(purchase2)
+                .product(product2)
+                .quantity(1)
+                .build();
+
+        purchaseLineRepository.saveAll(List.of(purchaseLine1, purchaseLine2));
     }
 
     // -------- SIMPLE --------
@@ -237,11 +279,12 @@ class PurchaseRepositoryTest {
 
     @Test
     void findByIdAndUserCommentContaining(){
-        List<Purchase> containsUserIdAndCommentPurchases = purchaseRepository.findByUserIdAndUserCommentContaining(purchase1.getUser().getId(), "mal estado");
+        List<Purchase> containsIdAndCommentPurchases = purchaseRepository.findByIdAndUserCommentContaining(purchase1.getId(), "mal estado");
         System.out.println("-----------------------------------");
-        System.out.println(containsUserIdAndCommentPurchases);
+        System.out.println(containsIdAndCommentPurchases);
         System.out.println("-----------------------------------");
-        assertEquals(1, containsUserIdAndCommentPurchases.size());
+        assertEquals(1, containsIdAndCommentPurchases.size());
+        assertEquals(purchase1.getId(), containsIdAndCommentPurchases.get(0).getId());
     }
 
     @Test
@@ -314,5 +357,50 @@ class PurchaseRepositoryTest {
         System.out.println(idAndShippingMode);
         System.out.println("-----------------------------------");
         assertEquals(1, idAndShippingMode.size());
+    }
+
+    // -------- FUNCTIONS --------
+
+    @Test
+    void existsByUsersIdAndProductIdReturnsTrueWhenUserBoughtProduct() {
+        boolean exists = purchaseRepository.existsByUsersIdAndProductId(user1.getId(), product1.getId());
+
+        assertTrue(exists);
+    }
+
+    @Test
+    void existsByUsersIdAndProductIdReturnsFalseWhenUserDidNotBuyProduct() {
+        boolean exists = purchaseRepository.existsByUsersIdAndProductId(user1.getId(), product2.getId());
+
+        assertFalse(exists);
+    }
+
+    @Test
+    void findFirstByPurchaseStatus() {
+        Optional<Purchase> initiatedPurchase = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);
+
+        assertTrue(initiatedPurchase.isPresent());
+        assertEquals(purchase3.getId(), initiatedPurchase.get().getId());
+    }
+
+    @Test
+    void findFirstByUserIdAndPurchaseStatusReturnsPurchaseForMatchingUser() {
+        Optional<Purchase> initiatedPurchase = purchaseRepository.findFirstByUserIdAndPurchaseStatus(
+                user1.getId(),
+                PurchaseStatus.INITIATED
+        );
+
+        assertTrue(initiatedPurchase.isPresent());
+        assertEquals(purchase3.getId(), initiatedPurchase.get().getId());
+    }
+
+    @Test
+    void findFirstByUserIdAndPurchaseStatusReturnsEmptyWhenNoMatch() {
+        Optional<Purchase> initiatedPurchase = purchaseRepository.findFirstByUserIdAndPurchaseStatus(
+                user2.getId(),
+                PurchaseStatus.INITIATED
+        );
+
+        assertTrue(initiatedPurchase.isEmpty());
     }
 }
