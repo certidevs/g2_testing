@@ -44,4 +44,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     // Traer usuario por fecha de creacion
     List<User> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
+
+    Optional<User> findFirstByEmail(String email);
 }

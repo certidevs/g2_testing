@@ -13,8 +13,7 @@ public class SecurityConfig
 {
     // cifrar y verificar el passwords
     @Bean
-    public PasswordEncoder passwordEncoder()
-    {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -24,28 +23,31 @@ public class SecurityConfig
     {
         http.authorizeHttpRequests(
                 auth -> auth
-                        //GENERAL
-                        .requestMatchers("/login", "/register", "/css/**", "/webjars/**", "/images/**").permitAll()
+                //GENERAL
+                .requestMatchers("/login", "/register", "/css/**", "/js/**", "/webjars/**", "/images/**").permitAll()
 
-                        //PRODUCT
-                        .requestMatchers(HttpMethod.GET, "/products/", "").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
+                //PRODUCT
+                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
 
-                        //CATEGORY
-                        .requestMatchers(HttpMethod.GET, "/categories/tree").permitAll()
-                        .requestMatchers(HttpMethod.POST, "").hasRole("ADMIN")
+                //CATEGORY
+                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
 
-                        //BRANDS
-                        .requestMatchers(HttpMethod.GET, "").permitAll()
-                        .requestMatchers(HttpMethod.POST, "").hasRole("ADMIN")
+                //BRANDS
+                .requestMatchers(HttpMethod.GET, "/brands/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/brands/**").hasRole("ADMIN")
 
-                        //REVIEW
-                        .requestMatchers(HttpMethod.GET, "").permitAll()
-                        .requestMatchers(HttpMethod.POST, "").hasRole("ADMIN")
+                //REVIEW
+                .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("ADMIN")
 
-                        //PURCHASE
-                        .requestMatchers(HttpMethod.GET, "").permitAll()
-                        .requestMatchers(HttpMethod.POST, "").hasRole("ADMIN")
+                //PURCHASE
+                .requestMatchers(HttpMethod.GET, "/purchases/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/purchases/**").hasRole("ADMIN")
+
+
+                .anyRequest().authenticated()
         );
 
         http.formLogin(

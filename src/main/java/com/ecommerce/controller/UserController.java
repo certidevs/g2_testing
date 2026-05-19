@@ -1,5 +1,6 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.dto.RegisterForm;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
@@ -24,13 +25,13 @@ public class UserController {
     @GetMapping("register")
     public String register(Model model)
     {
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new RegisterForm());
         return "/users/register";
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute User user)
-    {
+    public String register(@ModelAttribute RegisterForm form) {
+        System.out.println(form);
         //userService.register(user);
         return "redirect:/login";
     }
@@ -50,4 +51,4 @@ public class UserController {
 //        model.addAttribute("user", user);
 //        return "users/user-detail";
     }
-}
+
