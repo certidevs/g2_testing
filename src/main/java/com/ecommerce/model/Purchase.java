@@ -71,5 +71,4 @@ public class Purchase {
     public void setPurchaseDate(LocalDateTime now) {
         this.creationDate = now;
     }
-
 }
