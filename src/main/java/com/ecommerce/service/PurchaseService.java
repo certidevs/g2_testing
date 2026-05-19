@@ -46,7 +46,7 @@ public class PurchaseService {
                 .orElseThrow(() -> new RuntimeException("Purchase not found with id: " + id));
     }
 
-    // Update purchase
+    // Update purchase [NOT USED]
     public Purchase updatePurchase(UUID id, Purchase purchaseDetails) {
         Purchase purchase = getPurchaseEntityById(id);
         if (purchaseDetails.getUserComment() != null)
