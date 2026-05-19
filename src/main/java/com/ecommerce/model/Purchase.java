@@ -19,42 +19,44 @@ public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id; // ID Purchase
+    private UUID id; // ID de la compra
 
     @Builder.Default
     @Column(nullable = false)
-    private LocalDateTime creationDate = LocalDateTime.now(); // Date & time the purchase started
+    private LocalDateTime creationDate = LocalDateTime.now(); // Fecha y hora de creación de la compra
 
-    private LocalDateTime finishedDate; // Date & time the purchase finished
+    private LocalDateTime finishedDate; // Fecha y hora de finalización de la compra
 
     @Builder.Default
-    @Enumerated(EnumType.STRING) // Status of purchase: INITIATED INACTIVE, FINISHED
+    @Enumerated(EnumType.STRING) // Estatus de la compra: INITIATED (iniciado), INACTIVE (inactivo), FINISHED (finalizado)
     private PurchaseStatus purchaseStatus = PurchaseStatus.INITIATED;
 
-    @Enumerated(EnumType.STRING) // Shipping mode: STANDARD, EXPRESS, PREMIUM
+    @Enumerated(EnumType.STRING) // Modo de envío: STANDARD (estándar), EXPRESS (express), PREMIUM (premium)
     private ShippingMode shippingMode;
 
-    @Enumerated(EnumType.STRING) // Shipping status: SHIPPED, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED
+    @Enumerated(EnumType.STRING) // Estado del envío: PENDING (pendiente), SHIPPED (enviado), IN_TRANSIT (en tránsito), OUT_FOR_DELIVERY (EN REPARTO), DELIVERED (entregado)
     private ShippingStatus shippingStatus;
 
-    @Enumerated(EnumType.STRING) // Payment status: PENDING, PAID, FAILED
+    @Enumerated(EnumType.STRING) // Payment status: PENDING (pendiente), PAID (pagado), FAILED (fallido)
     private PaymentStatus paymentStatus;
 
-    @Enumerated(EnumType.STRING) // Process status: PROCESSING, ON_HOLD, COMPLETED, CANCELLED
+    @Enumerated(EnumType.STRING) // Process status: PROCESSING (procesando), ON_HOLD (en espera), COMPLETED (completado), CANCELLED (cancelado)
     private ProcessStatus processStatus;
 
-    private Double totalPrice; // Total purchase price
+    private Double totalPrice; // Precio total de la compra, calculado a partir de las líneas de compra (price * quantity)
 
-    private String userComment; // Requirements specified by the buyer at the time of delivery
+    private String userComment; // Comentario opcional del usuario para la entrega de la compra
 
+    // Asociación con el usuario que realizó la compra, una compra pertenece a un solo usuario, pero un usuario puede tener varias compras
     @ManyToOne
     private User user;
 
+    // Asociación con las líneas de compra, una compra puede tener varias líneas, cada línea representa un producto comprado con su cantidad y precio
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private java.util.List<PurchaseLine> lines = new java.util.ArrayList<>();
 
-    // Returns the purchase lines as an array, if there are no lines, it returns an empty array
+    // Función para obtener las líneas de compra como un array, si no hay líneas devuelve un array vacío
     public PurchaseLine[] getPurchaseLines() {
         if (this.lines == null) {
             return new PurchaseLine[0];
@@ -62,14 +64,13 @@ public class Purchase {
         return this.lines.toArray(new PurchaseLine[0]);
     }
 
-    // Establishes the total amount of the purchase by summing the total of each line (price * quantity)
+    // Establece el precio total de la compra sumando el precio de cada línea de compra (price * quantity)
     public void setTotalAmount(double total) {
         this.totalPrice = total;
     }
 
-    // Establishes the purchase date to the current date and time when the purchase is created
+    // Establece la fecha de compra a la fecha y hora actual, se puede llamar al crear una nueva compra o al finalizarla
     public void setPurchaseDate(LocalDateTime now) {
         this.creationDate = now;
     }
-
 }

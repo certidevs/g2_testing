@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ShippingMode {
 
+    // Modos de envío asociados a la velocidad y el tipo de servicio de envío seleccionado por el cliente
     STANDARD ("STANDARD"), // Modo de envío estándar, con un tiempo de entrega típico.
     EXPRESS ("EXPRESS"), // Modo de envío express, con un tiempo de entrega más rápido que el estándar.
     PREMIUM ("PREMIUM"); // Modo de envío premium, con un tiempo de entrega aún más rápido que el express y posiblemente con servicios adicionales como seguimiento en tiempo real o entrega en horarios específicos.

@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ProcessStatus {
 
+    // Estados del proceso en el que se encuentra un proceso específico, como un pedido, una tarea o una operación
     PENDING ("PENDIENTE"), // El proceso está pendiente, lo que significa que aún no se ha iniciado o está en espera de ser procesado.
     PROCESSING ("PROCESANDO"), // El proceso está en curso, lo que indica que se están realizando las acciones necesarias para completar el proceso, como la preparación de un pedido o la ejecución de una tarea.
     ON_HOLD ("EN ESPERA"), // El proceso está en espera, lo que podría indicar que se ha detenido temporalmente debido a una condición específica, como la falta de información o la necesidad de una acción adicional antes de continuar.

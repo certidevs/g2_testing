@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum PurchaseStatus {
 
+    // Estados de una compra concreta para rastrear el progreso del proceso de compra, desde la creación de esta hasta la finalización del pago
     INITIATED ("INICIADO"), // El proceso de compra ha comenzado, pero aún no se han agregado productos al carrito o no se ha iniciado el proceso de pago.
     INACTIVE ("INACTIVO"), // El proceso de compra está inactivo, lo que podría indicar que el usuario ha abandonado el carrito o no ha interactuado con el proceso de compra durante un período prolongado.
     FINISHED ("TERMINADO"); // El proceso de compra está finalizado, lo que significa que el usuario ha completado el proceso de pago y la compra está lista para ser procesada y enviada.

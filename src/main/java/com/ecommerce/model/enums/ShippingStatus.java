@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ShippingStatus {
 
+    // Estados de envío asociados al progreso del envío de un pedido
     PENDING ("PENDIENTE"), // El envío está pendiente, lo que significa que aún no se ha procesado ni enviado el pedido.
     SHIPPED ("ENVIADO"), // El envío ha sido procesado y el pedido ha sido enviado, pero aún no ha llegado al destino.
     IN_TRANSIT ("EN TRÁNSITO"), // El envío está en tránsito, lo que indica que el pedido está en camino hacia su destino, pero aún no ha llegado.
