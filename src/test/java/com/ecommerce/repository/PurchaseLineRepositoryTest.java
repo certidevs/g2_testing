@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -84,6 +85,17 @@ class PurchaseLineRepositoryTest {
         System.out.println(specificPurchase);
         System.out.println("-----------------------------------");
         assertEquals(2, specificPurchase.size());
+    }
+
+    @Test
+    void findByPurchaseId() {
+        List<PurchaseLine> specificPurchase = purchaseLineRepository.findByPurchaseId(purchase1.getId());
+        System.out.println("-----------------------------------");
+        System.out.println(specificPurchase);
+        System.out.println("-----------------------------------");
+        assertEquals(2, specificPurchase.size());
+        assertTrue(specificPurchase.stream()
+                .allMatch(purchaseLine -> purchaseLine.getPurchase().getId().equals(purchase1.getId())));
     }
 
     @Test
@@ -195,5 +207,40 @@ class PurchaseLineRepositoryTest {
         System.out.println(productAndQuantityBetween);
         System.out.println("-----------------------------------");
         assertEquals(2, productAndQuantityBetween.size());
+    }
+
+    @Test
+    void findByPurchaseIdAndProductIdReturnsPurchaseLineWhenItExists() {
+        Optional<PurchaseLine> purchaseLine = purchaseLineRepository.findByPurchase_IdAndProduct_Id(
+                purchase2.getId(),
+                product1.getId()
+        );
+
+        assertTrue(purchaseLine.isPresent());
+        assertEquals(purchaseLine2.getId(), purchaseLine.get().getId());
+    }
+
+    @Test
+    void findByPurchaseIdAndProductIdReturnsEmptyWhenItDoesNotExist() {
+        Optional<PurchaseLine> purchaseLine = purchaseLineRepository.findByPurchase_IdAndProduct_Id(
+                purchase2.getId(),
+                product4.getId()
+        );
+
+        assertTrue(purchaseLine.isEmpty());
+    }
+
+    @Test
+    void calculateTotalPrice() {
+        Double totalPrice = purchaseLineRepository.calculateTotalPrice(purchase1.getId());
+
+        assertEquals(70.50, totalPrice, 0.001);
+    }
+
+    @Test
+    void calculateTotalPriceReturnsNullWhenPurchaseHasNoLines() {
+        Double totalPrice = purchaseLineRepository.calculateTotalPrice(purchase4.getId());
+
+        assertNull(totalPrice);
     }
 }
