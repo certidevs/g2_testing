@@ -4,6 +4,7 @@ import com.ecommerce.dto.UserRequestDto;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute UserRequestDto form, RedirectAttributes redirectAttributes)
+    public String register(@Valid @ModelAttribute UserRequestDto form, RedirectAttributes redirectAttributes)
     {
         try {
             userService.register(form);
