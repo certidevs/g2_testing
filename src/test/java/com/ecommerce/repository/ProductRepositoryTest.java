@@ -32,7 +32,7 @@ class ProductRepositoryTest {
 
                 .price(32.0)
                 .available(true)
-                .stockStatus(ProductStockStatus.STOCK)
+                //.stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
         var product2 = Product.builder()
@@ -40,14 +40,14 @@ class ProductRepositoryTest {
 
                 .price(43.0)
                 .available(true)
-                .stockStatus(ProductStockStatus.STOCK)
+                //.stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
         var product3 = Product.builder()
                 .title("Zapatillas deporte")
                 .price(80.0)
                 .available(true)
-                .stockStatus(ProductStockStatus.STOCK)
+                //.stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
         var product4 = Product.builder()
@@ -55,7 +55,7 @@ class ProductRepositoryTest {
 
                 .price(8.0)
                 .available(true)
-                .stockStatus(ProductStockStatus.STOCK)
+                //.stockStatus(ProductStockStatus.STOCK)
                 .brand(brandNike)
                 .build();
         productRepository.saveAll(List.of(product1, product2, product3, product4));
