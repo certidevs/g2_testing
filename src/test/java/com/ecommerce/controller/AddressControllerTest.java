@@ -66,7 +66,7 @@ class AddressControllerTest {
                 .state("Madrid")
                 .zipCode("28001")
                 .country("España")
-                .addressType(AddressType.PRIMARY)
+                .addressType(AddressType.BILLING)
                 .user(user1)
                 .build();
 
@@ -123,7 +123,7 @@ class AddressControllerTest {
                 .andExpect(model().attributeExists("address"))
                 .andExpect(model().attribute("address", hasProperty("id", is(address1.getId()))))
                 .andExpect(model().attribute("address", hasProperty("city", is("Madrid"))))
-                .andExpect(model().attribute("address", hasProperty("addressType", is(AddressType.PRIMARY))));
+                .andExpect(model().attribute("address", hasProperty("addressType", is(AddressType.BILLING))));
     }
 
     @Test
