@@ -64,6 +64,11 @@ public class Purchase {
         return this.lines.toArray(new PurchaseLine[0]);
     }
 
+    // Función auxiliar segura para comprobar si la compra contiene líneas de forma efectiva
+    public boolean hasLines() {
+        return this.lines != null && !this.lines.isEmpty();
+    }
+
     // Establece el precio total de la compra sumando el precio de cada línea de compra (price * quantity)
     public void setTotalAmount(double total) {
         this.totalPrice = total;
