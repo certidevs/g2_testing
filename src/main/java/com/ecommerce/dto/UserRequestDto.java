@@ -14,7 +14,7 @@ import lombok.*;
 public class UserRequestDto
 {
     @NotBlank(message = "El nombre es obligatorio")
-    private String name;
+    private String username;
 
     @NotBlank(message = "El email es obligatorio")
     @Email(message = "El email no tiene un formato válido")
@@ -27,4 +27,9 @@ public class UserRequestDto
             message = "La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial"
     )
     private String password;
+
+    private String passwordConfirm;
+
+    //@NotBlank(message = "Aceptar las condiciones es obligatorio")
+    //private Boolean acceptRGPD;
 }

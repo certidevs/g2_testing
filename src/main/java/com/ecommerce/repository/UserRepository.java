@@ -26,22 +26,22 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Traer usuario por email
     Optional<User> findByEmail(String email);
 
-    // Traer usuario por telefono
-    List<User> findByPhone(String phone);
+//    // Traer usuario por telefono
+//    List<User> findByPhone(String phone);
+//
+//    // Traer usuario por genero
+//    List<User> findByGender(Gender gender);
+//
+//    // Traer usuario por role
+//    List<User> findByRole(Role role);
+//
+//    // Traer primer usuario administrador disponible
+//    Optional<User> findFirstByRole(Role role);
+//
+//    // Traer primer usuario disponible con direcciones precargadas
+//    @EntityGraph(attributePaths = "addresses")
+//    Optional<User> findFirstByOrderByCreationDateAsc();
 
-    // Traer usuario por genero
-    List<User> findByGender(Gender gender);
-
-    // Traer usuario por role
-    List<User> findByRole(Role role);
-
-    // Traer primer usuario administrador disponible
-    Optional<User> findFirstByRole(Role role);
-
-    // Traer primer usuario disponible con direcciones precargadas
-    @EntityGraph(attributePaths = "addresses")
-    Optional<User> findFirstByOrderByCreationDateAsc();
-
-    // Traer usuario por fecha de creacion
-    List<User> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
+//    // Traer usuario por fecha de creacion
+//    List<User> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
 }
