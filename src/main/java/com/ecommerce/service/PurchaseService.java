@@ -76,54 +76,53 @@ public class PurchaseService {
         return purchaseRepository.findByUserId(userId);
     }
 
-
-    // Update purchase status
+    // Update purchase status [NOT USED]
     public Purchase updatePurchaseStatus(UUID id, PurchaseStatus purchaseStatus) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setPurchaseStatus(purchaseStatus);
         return purchaseRepository.save(purchase);
     }
 
-    // Update payment status
+    // Update payment status [NOT USED]
     public Purchase updatePaymentStatus(UUID id, PaymentStatus paymentStatus) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setPaymentStatus(paymentStatus);
         return purchaseRepository.save(purchase);
     }
 
-    // Update process status
+    // Update process status [NOT USED]
     public Purchase updateProcessStatus(UUID id, ProcessStatus processStatus) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setProcessStatus(processStatus);
         return purchaseRepository.save(purchase);
     }
 
-    // Update shipping status
+    // Update shipping status [NOT USED]
     public Purchase updateShippingStatus(UUID id, ShippingStatus shippingStatus) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setShippingStatus(shippingStatus);
         return purchaseRepository.save(purchase);
     }
 
-    // Update shipping mode
+    // Update shipping mode [NOT USED]
     public Purchase updateShippingMode(UUID id, ShippingMode shippingMode) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setShippingMode(shippingMode);
         return purchaseRepository.save(purchase);
     }
 
-    // Update user comment
+    // Update user comment [NOT USED]
     public Purchase updateUserComment(UUID id, String comment) {
         Purchase purchase = getPurchaseEntityById(id);
         purchase.setUserComment(comment);
         return purchaseRepository.save(purchase);
     }
 
-    // Mark purchase as finished
+    // Mark purchase as finished [NOT USED]
     public Purchase finishPurchase(UUID id) {
         Purchase purchase = getPurchaseEntityById(id);
-        purchase.setFinishedDate(LocalDateTime.now());
         purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
+        purchase.setFinishedDate(LocalDateTime.now());
         return purchaseRepository.save(purchase);
     }
 }
