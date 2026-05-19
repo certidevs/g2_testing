@@ -34,10 +34,12 @@ public class UserRepositoryTest {
         LocalDateTime oneMonthAgo = now.minusMonths(1);
         
         user1 = userRepository.save(User.builder()
+            .username("john.doe")
             .name("John")
             .lastName("Doe")
             .email("john.doe@example.com")
             .phone("123456789")
+            .password("password1")
             .gender(Gender.MALE)
             .role(Role.CUSTOMER)
             .creationDate(now)
@@ -45,10 +47,12 @@ public class UserRepositoryTest {
             .build());
 
         user2 = userRepository.save(User.builder()
+            .username("jane.smith")
             .name("Jane")
             .lastName("Smith")
             .email("jane.smith@example.com")
             .phone("987654321")
+            .password("password2")
             .gender(Gender.FEMALE)
             .role(Role.ADMIN)
             .creationDate(twoWeeksAgo)
@@ -56,10 +60,12 @@ public class UserRepositoryTest {
             .build());
 
         user3 = userRepository.save(User.builder()
+            .username("alice.johnson")
             .name("Alice")
             .lastName("Johnson")
             .email("alice.johnson@example.com")
             .phone("555555555")
+            .password("password3")
             .gender(Gender.FEMALE)
             .role(Role.CUSTOMER)
             .creationDate(oneMonthAgo)
@@ -113,20 +119,20 @@ public class UserRepositoryTest {
     void findByEmail() {
         String email = "jane.smith@example.com";
 
-        List<User> users = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.findByEmail(email);
 
-        assertEquals(1, users.size());
-        assertEquals(email, users.get(0).getEmail());
-        assertEquals("Jane", users.get(0).getName());
+        assertTrue(user.isPresent());
+        assertEquals(email, user.get().getEmail());
+        assertEquals("Jane", user.get().getName());
     }
 
     @Test
     void findByEmail_NotFound() {
         String nonExistentEmail = "nonexistent@example.com";
 
-        List<User> users = userRepository.findByEmail(nonExistentEmail);
+        Optional<User> user = userRepository.findByEmail(nonExistentEmail);
 
-        assertEquals(0, users.size());
+        assertTrue(user.isEmpty());
     }
 
     @Test
