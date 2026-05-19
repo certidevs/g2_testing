@@ -27,27 +27,27 @@ public class SecurityConfig
                 .requestMatchers("/login", "/register", "/css/**", "/js/**", "/webjars/**", "/images/**").permitAll()
 
                 //PRODUCT
-                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
+//                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/products/**").hasRole("ADMIN")
+//
+//                //CATEGORY
+//                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
+//
+//                //BRANDS
+//                .requestMatchers(HttpMethod.GET, "/brands/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/brands/**").hasRole("ADMIN")
+//
+//                //REVIEW
+//                .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("ADMIN")
+//
+//                //PURCHASE
+//                .requestMatchers(HttpMethod.GET, "/purchases/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/purchases/**").hasRole("ADMIN")
 
-                //CATEGORY
-                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/categories/**").hasRole("ADMIN")
 
-                //BRANDS
-                .requestMatchers(HttpMethod.GET, "/brands/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/brands/**").hasRole("ADMIN")
-
-                //REVIEW
-                .requestMatchers(HttpMethod.GET, "/reviews/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/reviews/**").hasRole("ADMIN")
-
-                //PURCHASE
-                .requestMatchers(HttpMethod.GET, "/purchases/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/purchases/**").hasRole("ADMIN")
-
-
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
         );
 
         http.formLogin(
