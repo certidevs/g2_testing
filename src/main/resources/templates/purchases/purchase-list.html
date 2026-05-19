@@ -12,7 +12,7 @@
     <h1 class="mb-3">Purchases</h1>
 
     <div class="mb-3">
-        <a href="/purchases/new" class="btn btn-primary">
+        <a th:href="@{/purchases/new}" class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i>
             Create New Purchase
         </a>
@@ -60,12 +60,21 @@
 
                 <td>
                     <a th:href="@{/purchases/{id}(id=${purchase.id})}"
-                       class="btn btn-sm btn-outline-primary">
+                       class="btn btn-sm btn-outline-primary mb-1 d-block text-center">
                         <i class="fa-regular fa-eye me-1"></i> See purchase
                     </a>
-                    <!--                            <a>Finalizar pedido</a>-->
-                    <!--                            <a>Editar pedido</a>-->
-                    <!--                            <a>Borrar pedido</a>-->
+
+                    <a th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"
+                       th:href="@{/purchases/{id}/finish(id=${purchase.id})}"
+                       class="btn btn-sm btn-outline-success mb-1 d-block text-center">
+                        <i class="fa-solid fa-check me-1"></i> Finalizar pedido
+                    </a>
+
+                    <a th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
+                       class="btn btn-sm btn-outline-danger d-block text-center"
+                       onclick="return confirm('Are you sure you want to delete this purchase?');">
+                        <i class="fa-regular fa-trash-can me-1"></i> Borrar pedido
+                    </a>
                 </td>
             </tr>
             </tbody>
@@ -75,7 +84,7 @@
 
 </main>
 
-<footer th:replace="~{layout/footer :: footer}"></footer>
+<footer th:replace="~{layout/footer :: footer}"></footer >
 <script th:replace="~{layout/footer :: scripts}"></script>
 
 </body>

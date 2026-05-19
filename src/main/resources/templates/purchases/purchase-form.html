@@ -30,18 +30,13 @@
             </select>
         </div>
 
-        <div class="mb-3">
-            <label for="userComment" class="form-label">User Comment</label>
-            <textarea class="form-control" id="userComment" th:field="*{userComment}" rows="3"></textarea>
-        </div>
-
         <button type="submit" class="btn btn-primary">Create Purchase</button>
-        <a href="/purchases" class="btn btn-secondary">Cancel</a>
+        <a th:href="@{/purchases}" class="btn btn-secondary">Cancel</a>
     </form>
 
 </main>
 
-<footer th:replace="~{layout/footer :: footer}"></footer>
+<footer th:replace="~{layout/footer :: footer}"></footer >
 <script th:replace="~{layout/footer :: scripts}"></script>
 
 </body>

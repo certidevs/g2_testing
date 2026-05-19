@@ -1,95 +1,106 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="~{layout/head :: head('Purchase Details')}"><title>Purchase Lines</title></head>
+<head th:replace="~{layout/head :: head('Purchase Details')}"><title>Purchase Details</title></head>
 
 <body class="d-flex flex-column min-vh-100">
 
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <main class="container flex-grow-1">
-<h1>Purchase Details</h1>
+    <h1>Purchase Details</h1>
 
-<div class="mb-3">
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="mb-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
 
-            <h5 class="card-title">
-                <i class="fa-solid fa-receipt text-primary me-2"></i>
-                Purchase ID:
-                <span th:text="${purchase.id}">0</span>
-            </h5>
-            <p th:text="'Precio total de compra: ' + ${purchase.totalPrice}"></p>
-            <p th:text="'Estado del pago: ' + ${purchase.paymentStatus}"></p>
+                <h5 class="card-title">
+                    <i class="fa-solid fa-receipt text-primary me-2"></i>
+                    Purchase ID:
+                    <span th:text="${purchase.id}"></span>
+                </h5>
 
-            <div class="card shadow-sm border-0 mb-4">
-                <div class="card-body">
-                    <h5 class="mb-3">Sección de pago</h5>
+                <h5 class="card-title">
+                    Payment status:
+                </h5>
 
-                    <form th:action="@{/purchases/{id}/finish}" method="get"
-                          class="row align-items-end justify-content-end gap-3">
+                <div class="alert alert-light border" th:switch="${purchase.paymentStatus}">
+                    <span class="btn btn-warning disabled" th:case="${T(com.ecommerce.model.enums.PaymentStatus).PENDING}"> <b>PENDING</b></span>
+                    <span class="btn btn-success disabled" th:case="${T(com.ecommerce.model.enums.PaymentStatus).PAID}"> <b>PAID</b></span>
+                    <span class="btn btn-danger disabled" th:case="${T(com.ecommerce.model.enums.PaymentStatus).FAILED}"> <b>FAILED</b></span>
+                    <span class="btn btn-outline-dark disabled" th:case="*"> Error.</span>
+                </div>
 
-                        <div class="col">
-                            <button type="submit" class="btn btn-sm btn-success">
-                                Pay & finish purchase
-                            </button>
+
+                <p th:text="'Precio total de compra: ' + ${purchase.totalPrice}"></p>
+
+                <h5 class="card-title">
+                    <i class="fa-solid fa-comment text-primary me-2"></i>
+                    User comment:
+                    <span th:text="${purchase.getUserComment()}"></span>
+                </h5>
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <a th:href="@{/purchases/{id}/cart(id=${purchase.id})}" class="btn btn-primary">
+                                <i class="fa-solid fa-cart-shopping me-1"></i>
+                                Go to cart
+                            </a>
                         </div>
-                    </form>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <a th:href="@{/purchases}"
+                       class="btn btn-primary">
+                        <i class="fa-solid fa-list me-1"></i>
+                        Go back to purchases
+                    </a>
                 </div>
             </div>
-
-        <div class="card-body">
-            <h5 class="card-title">
-                <i class="fa-solid fa-comment text-primary me-2"></i>
-                User comment:
-                <span th:text="${purchase.getUserComment()}"></span>
-            </h5>
-            <a th:href="@{/purchases}"
-               class="btn btn-primary">
-                <i class="fa-solid fa-list me-1"></i>
-                Go back to purchases
-            </a>
         </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle table-bordered border-success">
+                <thead class="table-dark">
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Purchase Line Price</th>
+                    <th>Total price</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="line : ${lines}">
+                    <td th:text="${line.product.getTitle()}"></td>
+                    <td th:text="${line.quantity}"></td>
+                    <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)}"></td>
+                    <td th:text="${purchase.totalPrice}"></td>
+                    <td>
+                        <a th:href="@{/purchases/{purchaseId}/lines/add/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}" class="text-decoration-none">
+                            <button class="btn btn-sm btn-light border">
+                                <i class="fa-solid fa-plus text-success"></i>
+                            </button>
+                        </a>
+
+                        <a th:href="@{/purchases/{purchaseId}/lines/remove/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}" class="text-decoration-none">
+                            <button class="btn btn-sm btn-light border">
+                                <i class="fa-solid fa-minus text-danger"></i>
+                            </button>
+                        </a>
+                    </td>
+
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <footer th:replace="~{layout/footer :: footer}"></footer>
+        <script th:replace="~{layout/footer :: scripts}"></script>
     </div>
-</div>
-
-    <div class="table-responsive">
-        <table class="table table-hover align-middle table-bordered border-success">
-            <thead class="table-dark">
-            <tr>
-                <th>Product</th>
-                <th>Unit Price</th>
-                <th>Quantity</th>
-                <th>Total Price</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="line : ${purchaseLines}">
-                <td th:text="${line.product.getTitle()}"></td>
-                <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.getPrice, 1, 2)}"></td>
-                <td th:text="${line.quantity}"></td>
-                <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2)}"></td>
-                <td>
-                    <button>
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                    <button>
-                        <i class="fa-solid fa-minus"></i>
-                    </button>
-                </td>
-
-            </tr>
-
-            <!-- TODO agregar boton de subir o bajar cantidad -->
-
-            </tbody>
-        </table>
-    </div>
-
-    <footer th:replace="~{layout/footer :: footer}"></footer>
-    <script th:replace="~{layout/footer :: scripts}"></script>
-</div>
 </main>
 </body>
 </html>
