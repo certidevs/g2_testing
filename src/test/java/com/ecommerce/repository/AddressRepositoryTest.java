@@ -37,10 +37,12 @@ public class AddressRepositoryTest {
     void setUp() {
         // Create test users
         user1 = userRepository.save(User.builder()
+            .username("john.doe.address")
             .name("John")
             .lastName("Doe")
             .email("john.doe@example.com")
             .phone("123456789")
+            .password("password1")
             .gender(Gender.MALE)
             .role(Role.CUSTOMER)
             .creationDate(java.time.LocalDateTime.now())
@@ -48,10 +50,12 @@ public class AddressRepositoryTest {
             .build());
 
         user2 = userRepository.save(User.builder()
+            .username("jane.smith.address")
             .name("Jane")
             .lastName("Smith")
             .email("jane.smith@example.com")
             .phone("987654321")
+            .password("password2")
             .gender(Gender.FEMALE)
             .role(Role.ADMIN)
             .creationDate(java.time.LocalDateTime.now())
@@ -66,7 +70,7 @@ public class AddressRepositoryTest {
             .state("Madrid")
             .zipCode("28001")
             .country("Spain")
-            .addressType(AddressType.PRIMARY)
+            .addressType(AddressType.SHIPPING)
             .user(user1)
             .build());
 
@@ -77,7 +81,7 @@ public class AddressRepositoryTest {
             .state("Catalonia")
             .zipCode("08001")
             .country("Spain")
-            .addressType(AddressType.SECONDARY)
+            .addressType(AddressType.BILLING)
             .user(user1)
             .build());
 
@@ -139,8 +143,11 @@ public class AddressRepositoryTest {
     void findByUser_NotFound() {
         User nonExistentUser = User.builder()
             .id(UUID.randomUUID())
+            .username("non.existent")
             .name("Non")
             .lastName("Existent")
+            .email("non.existent@example.com")
+            .password("password")
             .build();
 
         List<Address> addresses = addressRepository.findByUser(nonExistentUser);
@@ -276,10 +283,12 @@ public class AddressRepositoryTest {
     @Test
     void countByUser_NoAddresses() {
         User userWithoutAddresses = userRepository.save(User.builder()
+            .username("alice.johnson.address")
             .name("Alice")
             .lastName("Johnson")
             .email("alice.johnson@example.com")
             .phone("555555555")
+            .password("password3")
             .gender(Gender.FEMALE)
             .role(Role.CUSTOMER)
             .creationDate(java.time.LocalDateTime.now())
@@ -293,58 +302,72 @@ public class AddressRepositoryTest {
 
     @Test
     void findByAddressType() {
-        List<Address> addresses = addressRepository.findByAddressType(AddressType.PRIMARY);
+        List<Address> addresses = addressRepository.findByAddressType(AddressType.BILLING);
 
-        assertEquals(1, addresses.size());
-        assertEquals(AddressType.PRIMARY, addresses.get(0).getAddressType());
-        assertEquals("Main Street", addresses.get(0).getStreet());
+        assertEquals(2, addresses.size());
+        for (Address address : addresses) {
+            assertEquals(AddressType.BILLING, address.getAddressType());
+        }
     }
 
     @Test
     void findByAddressType_NotFound() {
+        addressRepository.deleteAll();
+
         List<Address> addresses = addressRepository.findByAddressType(AddressType.BILLING);
-
-        assertEquals(1, addresses.size()); // address3 is BILLING
-        assertEquals(AddressType.BILLING, addresses.get(0).getAddressType());
-    }
-
-    @Test
-    void findByUserAndAddressType() {
-        List<Address> addresses = addressRepository.findByUserAndAddressType(user1, AddressType.PRIMARY);
-
-        assertEquals(1, addresses.size());
-        assertEquals(user1, addresses.get(0).getUser());
-        assertEquals(AddressType.PRIMARY, addresses.get(0).getAddressType());
-        assertEquals("Main Street", addresses.get(0).getStreet());
-    }
-
-    @Test
-    void findByUserAndAddressType_NotFound() {
-        List<Address> addresses = addressRepository.findByUserAndAddressType(user1, AddressType.SHIPPING);
 
         assertEquals(0, addresses.size());
     }
 
     @Test
+    void findByUserAndAddressType() {
+        List<Address> addresses = addressRepository.findByUserAndAddressType(user1, AddressType.SHIPPING);
+
+        assertEquals(1, addresses.size());
+        assertEquals(user1, addresses.get(0).getUser());
+        assertEquals(AddressType.SHIPPING, addresses.get(0).getAddressType());
+        assertEquals("Main Street", addresses.get(0).getStreet());
+    }
+
+    @Test
+    void findByUserAndAddressType_NotFound() {
+        User userWithoutAddresses = userRepository.save(User.builder()
+            .username("no.addresses")
+            .name("No")
+            .lastName("Addresses")
+            .email("no.addresses@example.com")
+            .phone("666666666")
+            .password("password4")
+            .gender(Gender.OTHER)
+            .role(Role.CUSTOMER)
+            .creationDate(java.time.LocalDateTime.now())
+            .addresses(new ArrayList<>())
+            .build());
+
+        List<Address> addresses = addressRepository.findByUserAndAddressType(userWithoutAddresses, AddressType.BILLING);
+
+        assertTrue(addresses.isEmpty());
+    }
+
+    @Test
     void findByUserAndAddressType_MultipleResults() {
-        // Add another PRIMARY address for user1 to test multiple results
-        Address anotherPrimary = addressRepository.save(Address.builder()
-            .street("Another Primary")
+        addressRepository.save(Address.builder()
+            .street("Another Shipping")
             .number("999")
             .city("Madrid")
             .state("Madrid")
             .zipCode("28003")
             .country("Spain")
-            .addressType(AddressType.PRIMARY)
+            .addressType(AddressType.SHIPPING)
             .user(user1)
             .build());
 
-        List<Address> addresses = addressRepository.findByUserAndAddressType(user1, AddressType.PRIMARY);
+        List<Address> addresses = addressRepository.findByUserAndAddressType(user1, AddressType.SHIPPING);
 
         assertEquals(2, addresses.size());
         for (Address address : addresses) {
             assertEquals(user1, address.getUser());
-            assertEquals(AddressType.PRIMARY, address.getAddressType());
+            assertEquals(AddressType.SHIPPING, address.getAddressType());
         }
     }
 }
