@@ -1,11 +1,6 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
-import com.ecommerce.model.PurchaseLine;
-import com.ecommerce.model.enums.ProductStockStatus;
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.UserRepository;
@@ -18,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,16 +24,15 @@ public class PurchaseController {
     private final PurchaseLineRepository purchaseLineRepository;
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
 
-    // Show all purchases
+    // Muestra la lista de todas las compras
     @GetMapping("purchases")
     public String listPurchases(Model model) {
         model.addAttribute("purchases", purchaseRepository.findAll());
         return "purchases/purchase-list";
     }
 
-    // Show purchase details of a specific purchase
+    // Muestra el detalle de una compra específica con las líneas de compra
     @GetMapping("purchases/{id}")
     public String detailPurchase(Model model, @PathVariable UUID id) {
         model.addAttribute("purchase", purchaseRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND)));
@@ -47,7 +40,7 @@ public class PurchaseController {
         return "purchases/purchase-detail";
     }
 
-    // Create a new purchase for an existing user
+    // Muestra el formulario para crear una nueva compra
     @GetMapping("purchases/new")
     public String showCreatePurchaseForm(Model model) {
         model.addAttribute("purchase", new Purchase());
@@ -55,14 +48,14 @@ public class PurchaseController {
         return "purchases/purchase-form";
     }
 
-    // Handle form submission to create a new purchase
+    // Procesa el formulario para crear una nueva compra
     @PostMapping("purchases")
     public String createPurchase(@ModelAttribute Purchase newPurchase) {
         purchaseService.createPurchase(newPurchase);
         return "redirect:/purchases";
     }
 
-    // Delete a specific purchase
+    // Elimina una compra específica
     @GetMapping("purchases/delete/{id}")
     public String deletePurchase(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         purchaseService.deletePurchase(id);
@@ -70,126 +63,69 @@ public class PurchaseController {
         return "redirect:/purchases";
     }
 
-    // Add a product to the purchase
+    // Agrega un producto a la compra
     @GetMapping("purchases/add/{productId}")
     public String addProduct(@PathVariable UUID productId) {
 
-        // Verifies that the product exists
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        // Verifies that the product has stock available
-        if (product.getStock() <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Product is out of stock");
-        }
-
-        // Verifies if the user has an initiated purchase, if not, creates a new one
-        Optional<Purchase> purchaseOptional = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);
-
-        Purchase purchase;
-        if (purchaseOptional.isPresent()) {
-            purchase = purchaseOptional.get();
-        } else {
-            purchase = new Purchase();
-            // TODO purchase.setUser(currentUser);
-            purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
-            purchase.setCreationDate(LocalDateTime.now());
-            purchase.setTotalPrice(0.0);
-        }
-
-        // Save the purchase to ensure it has an ID for the purchase line
-        purchase = purchaseRepository.save(purchase);
-
-        // Add or update the purchase line for the product
-        Optional<PurchaseLine> lineOptional = purchaseLineRepository
-                .findByPurchase_IdAndProduct_Id(purchase.getId(), product.getId());
-
-        // If the purchaseline already exists, we update the quantity, if not, we create a new one
-        PurchaseLine purchaseLine;
-        if (lineOptional.isPresent()) {
-            purchaseLine = lineOptional.get();
-
-            if (purchaseLine.getQuantity() >= product.getStock()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not add more units of this product, stock limit reached");
-            }
-
-            // Add one unit to the quantity of the purchase line
-            purchaseLine.setQuantity(purchaseLine.getQuantity() + 1);
-
-            // Upload the new quantity to the purchase line in the purchase object, to keep the data consistent
-            if (purchase.getLines() != null) {
-                for (PurchaseLine l : purchase.getLines()) {
-                    if (l.getProduct().getId().equals(product.getId())) {
-                        l.setQuantity(purchaseLine.getQuantity());
-                    }
-                }
-            }
-        } else {
-
-            // If the purchase line does not exist, we create a new one with quantity one
-            purchaseLine = new PurchaseLine();
-            purchaseLine.setProduct(product);
-            purchaseLine.setPurchase(purchase);
-            purchaseLine.setQuantity(1);
-            purchase.getLines().add(purchaseLine);
-        }
-
-        purchaseLineRepository.save(purchaseLine);
-
-        // Calculate the total price of the purchase based on the purchase lines, and update the purchase total price
-        Double totalPrice = purchaseLineRepository.calculateTotalPrice(purchase.getId());
-        if (totalPrice == null) {
-            totalPrice = product.getPrice() * purchaseLine.getQuantity();
-        }
-
-        purchase.setTotalPrice(totalPrice);
-
-        // Once it coincides, we save the purchase to update the total price and the purchase lines in the purchase object
-        purchaseRepository.save(purchase);
-
+        // TODO [Requiere reemplazar el usuario simulado por el usuario autenticado en la aplicación en la función de agregar un producto al carrito del usuario actual]
+        // ID temporal simulado para identificar al usuario actual en esta petición
+        UUID currentUserId = UUID.randomUUID();
+        Purchase purchase = purchaseService.addProductToCart(productId, currentUserId);
         return "redirect:/purchases/" + purchase.getId();
     }
 
-    // Show the cart with the products added to the purchase
+    // Muestra el carrito de compras del usuario actual, que es la compra con estatus iniciado (INITIATED) asociada al usuario actual, si no hay ninguna compra iniciada para el usuario actual, se muestra un carrito vacío
     @GetMapping("/purchases/{id}/cart")
     public String showCart(Model model) {
 
-        // Search for an initiated purchase
-        Optional<Purchase> purchaseOptional = purchaseRepository.findFirstByPurchaseStatus(PurchaseStatus.INITIATED);
+        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
+        // ID temporal simulado para identificar al usuario actual
+        UUID currentUserId = UUID.randomUUID();
 
-        // If there is an initiated purchase, we pass it to the model
+        Optional<Purchase> purchaseOptional = purchaseService.getOrCreateCartForUser(currentUserId);
+
+        // Si hay un carrito iniciado para el usuario actual, pasamos el modelo a la vista
         if (purchaseOptional.isPresent()) {
             Purchase cart = purchaseOptional.get();
             model.addAttribute("cart", cart);
 
-            // Also pass the purchase lines to the model, so we can show the products in the cart
+            // Pasamos las línes de la compra al modelo, si no hay líneas, se pasará un array vacío, para mostrar un carrito vacío en la vista
             model.addAttribute("lines", cart.getPurchaseLines());
-
         } else {
-
-            // If the cart is empty, we pass a null value or an empty purchase object to the model
+            // Si no hay ningún carrito iniciado para el usuario actual, pasamos un carrito vacío al modelo, con líneas vacías, para mostrar un carrito vacío en la vista
             model.addAttribute("cart", null);
         }
-
         return "purchases/cart";
     }
 
-    // Finish the purchase
+    // Finalizar la compra, cambiando su estatus a finalizada (FINISHED) y estableciendo la fecha de finalización a la fecha y hora actual, antes de finalizar la compra se ejecuta una validación para comprobar que la compra tiene líneas de compra, si no tiene líneas, se lanza una excepción y no se finaliza la compra
     @GetMapping("purchases/{id}/finish")
     public String finishPurchase(@PathVariable UUID id) {
-        Purchase purchase = purchaseRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        // Verifies that the purchase has lines, if not, it cannot be finished
-        if (purchase.getPurchaseLines() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can not finish a purchase without lines");
-        }
-
-        // Update the purchase status to finished and save it
-        purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
-        purchase.setFinishedDate(LocalDateTime.now());
-        purchaseRepository.save(purchase);
-
+        purchaseService.completePurchase(id);
         return "redirect:/purchases";
+    }
+
+    // ---- [ BOTONES + Y - ] ----
+
+    // Incrementar cantidad desde los detalles de la compra
+    @GetMapping("purchases/{purchaseId}/lines/add/{productId}")
+    public String incrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId) {
+        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
+        // ID temporal simulado para identificar al usuario actual
+        UUID currentUserId = UUID.randomUUID();
+
+        purchaseService.addProductToCart(productId, currentUserId);
+        return "redirect:/purchases/" + purchaseId;
+    }
+
+    // Decrementar cantidad desde los detalles de la compra
+    @GetMapping("purchases/{purchaseId}/lines/remove/{productId}")
+    public String decrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId) {
+        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
+        // ID temporal simulado para identificar al usuario actual
+        UUID currentUserId = UUID.randomUUID();
+
+        purchaseService.removeProductFromCart(productId, currentUserId);
+        return "redirect:/purchases/" + purchaseId;
     }
 }
