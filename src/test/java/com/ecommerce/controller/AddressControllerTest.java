@@ -1,6 +1,5 @@
 package com.ecommerce.controller;
 
-import com.ecommerce.dto.AddressResponseDto;
 import com.ecommerce.model.Address;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
@@ -49,6 +48,7 @@ class AddressControllerTest {
     @BeforeEach
     void setUp() {
         user1 = userRepository.save(User.builder()
+                .username("user1.address.controller")
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -95,15 +95,20 @@ class AddressControllerTest {
         addressRepository.saveAll(List.of(address1, address2, address3));
     }
 
+    // Verifica que la lista de direcciones se muestra correctamente con datos completos
     @Test
     void listAddressesFull() throws Exception {
         mockMvc.perform(get("/addresses"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addresses/addresses-list"))
                 .andExpect(model().attributeExists("addresses"))
-                .andExpect(model().attribute("addresses", hasSize(3)));
+                .andExpect(model().attribute("addresses", hasSize(3)))
+                .andExpect(model().attribute("addresses", hasItem(hasProperty("id", is(address1.getId())))))
+                .andExpect(model().attribute("addresses", hasItem(hasProperty("city", is("Barcelona")))))
+                .andExpect(model().attribute("addresses", hasItem(hasProperty("addressType", is(AddressType.SHIPPING)))));
     }
 
+    // Verifica que la lista de direcciones se muestra correctamente cuando no hay direcciones en la base de datos
     @Test
     void listAddressesEmpty() throws Exception {
         addressRepository.deleteAll();
@@ -115,6 +120,7 @@ class AddressControllerTest {
                 .andExpect(model().attribute("addresses", hasSize(0)));
     }
 
+    // Verifica que se muestra la vista de detalle de una dirección específica con datos completos
     @Test
     void addressDetailFound() throws Exception {
         mockMvc.perform(get("/addresses/{id}", address1.getId()))
@@ -122,10 +128,16 @@ class AddressControllerTest {
                 .andExpect(view().name("addresses/address-detail"))
                 .andExpect(model().attributeExists("address"))
                 .andExpect(model().attribute("address", hasProperty("id", is(address1.getId()))))
+                .andExpect(model().attribute("address", hasProperty("street", is("Calle Mayor"))))
+                .andExpect(model().attribute("address", hasProperty("number", is("10"))))
                 .andExpect(model().attribute("address", hasProperty("city", is("Madrid"))))
+                .andExpect(model().attribute("address", hasProperty("state", is("Madrid"))))
+                .andExpect(model().attribute("address", hasProperty("zipCode", is("28001"))))
+                .andExpect(model().attribute("address", hasProperty("country", is("España"))))
                 .andExpect(model().attribute("address", hasProperty("addressType", is(AddressType.BILLING))));
     }
 
+    // Verifica que se muestra un error 404 Not Found cuando se intenta acceder a una dirección que no existe en la base de datos
     @Test
     void addressDetailNotFound() throws Exception {
         UUID randomId = UUID.randomUUID();
@@ -134,4 +146,3 @@ class AddressControllerTest {
                 .andExpect(status().isNotFound());
     }
 }
-

@@ -5,31 +5,40 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.ProductRepository;
+import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.service.PurchaseService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@ActiveProfiles("test")
 class PurchaseControllerTest {
 
     @Autowired
@@ -39,10 +48,17 @@ class PurchaseControllerTest {
     ProductRepository productRepository;
 
     @Autowired
+    PurchaseLineRepository purchaseLineRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
     MockMvc mockMvc;
+
+    // Utilizamos la anotación MockitoBean para inyectar un mock de PurchaseService y así poder verificar las interacciones que tengan con este servicio durante las pruebas
+    @MockitoBean
+    PurchaseService purchaseService;
 
     User user1;
     User user2;
@@ -57,8 +73,16 @@ class PurchaseControllerTest {
 
     @BeforeEach
     void setUp(){
+        purchaseLineRepository.deleteAll();
+        purchaseRepository.deleteAll();
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // Hacemos reset del mock de purchaseService para asegurar que no haya nada previo que afecte a las pruebas etc
+        reset(purchaseService);
 
         user1 = User.builder()
+                .username("user1.purchase.controller")
                 .name("User 1")
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
@@ -70,6 +94,7 @@ class PurchaseControllerTest {
                 .build();
 
         user2 = User.builder()
+                .username("user2.purchase.controller")
                 .name("User 2")
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
@@ -86,16 +111,12 @@ class PurchaseControllerTest {
                 .title("Product 1")
                 .available(true)
                 .price(20.00)
-                .purchase(purchase1)
-                .purchase(purchase3)
                 .build();
 
         product2 = Product.builder()
                 .title("Product 2")
                 .available(true)
                 .price(10.00)
-                .purchase(purchase2)
-                .purchase(purchase4)
                 .build();
 
         productRepository.saveAll(List.of(product1, product2));
@@ -155,15 +176,19 @@ class PurchaseControllerTest {
         purchaseRepository.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
     }
 
+    // Verifica que la lista de compras se muestra correctamente con datos completos
     @Test
     void purchasesFull() throws Exception {
         mockMvc.perform(get("/purchases"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-list"))
                 .andExpect(model().attributeExists("purchases"))
-                .andExpect(model().attribute("purchases", hasSize(8)));
+                .andExpect(model().attribute("purchases", hasSize(4)))
+                .andExpect(model().attribute("purchases", hasItem(hasProperty("id", is(purchase1.getId())))))
+                .andExpect(model().attribute("purchases", hasItem(hasProperty("id", is(purchase4.getId())))));
     }
 
+    // Verifica que la lista de compras se muestra correctamente cuando está vacía
     @Test
     void purchasesEmpty() throws Exception {
         purchaseRepository.deleteAll();
@@ -175,6 +200,7 @@ class PurchaseControllerTest {
                 .andExpect(model().attribute("purchases", hasSize(0)));
     }
 
+    // Verifica que el detalle de una compra se muestra correctamente cuando la compra existe (purchase-detail)
     @Test
     void purchaseDetailIsPresentTrue() throws Exception {
 
@@ -188,12 +214,125 @@ class PurchaseControllerTest {
                 .andExpect(model().attribute("purchase", hasProperty("id", is(purchase.getId()))));
     }
 
+    // Verifica que se muestra un error 404 cuando se intenta acceder al detalle de una compra que no existe (purchase-detail)
     @Test
     void purchaseDetailIsPresentFalse() throws Exception {
-
         UUID randomId = UUID.randomUUID();
 
         mockMvc.perform(get("/purchases/{id}", randomId))
                 .andExpect(status().isNotFound());
+    }
+
+    // Verifica que se muestra el formulario de creación de compra con los datos necesarios para crear una nueva compra (purchase-form)
+    @Test
+    void showCreatePurchaseForm() throws Exception {
+        mockMvc.perform(get("/purchases/new"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/purchase-form"))
+                .andExpect(model().attributeExists("purchase"))
+                .andExpect(model().attributeExists("users"))
+                .andExpect(model().attribute("users", hasSize(2)));
+    }
+
+    // Verifica que al enviar el formulario de creación de compra se redirige a la lista de compras
+    @Test
+    void createPurchaseRedirectsToPurchaseList() throws Exception {
+        mockMvc.perform(post("/purchases")
+                        .with(csrf())
+                        .param("totalPrice", "99.99")
+                        .param("purchaseStatus", PurchaseStatus.INITIATED.name())
+                        .param("paymentStatus", PaymentStatus.PENDING.name())
+                        .param("processStatus", ProcessStatus.PENDING.name())
+                        .param("shippingStatus", ShippingStatus.PENDING.name())
+                        .param("shippingMode", ShippingMode.STANDARD.name()))
+                // [ is3xxRedirection() se utiliza para verificar que la respuesta HTTP es una redirección ]
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases"));
+
+        // Cuando hagamos pruebas que tengamos que verificar la lógica de service utilizaremos verify,
+        // de tal manera se comprueba que se han llamado a los métodos correspondientes del servicio con los argumentos esperados, lo que nos permite asegurarnos de que la lógica de negocio se está ejecutando correctamente durante las pruebas
+        verify(purchaseService).createPurchase(any(Purchase.class));
+    }
+
+    // Verifica que al eliminar una compra se redirige a la lista de compras
+    @Test
+    void deletePurchaseRedirectsAndAddsFlashMessage() throws Exception {
+        mockMvc.perform(get("/purchases/delete/{id}", purchase1.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases"))
+                .andExpect(flash().attribute("message", "Purchase deleted successfully"));
+
+        verify(purchaseService).deletePurchase(purchase1.getId());
+    }
+
+    // Verifica que al agregar un producto a la compra se redirige al detalle de la compra
+    @Test
+    void addProductRedirectsToPurchaseDetail() throws Exception {
+        Purchase cart = Purchase.builder().build();
+        cart.setId(purchase3.getId());
+        when(purchaseService.addProductToCart(eq(product1.getId()), any(UUID.class))).thenReturn(cart);
+
+        mockMvc.perform(get("/purchases/add/{productId}", product1.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases/" + purchase3.getId()));
+
+        verify(purchaseService).addProductToCart(eq(product1.getId()), any(UUID.class));
+    }
+
+    // Verifica que al eliminar un producto de la compra se redirige al detalle de la compra
+    @Test
+    void showCartWithExistingCart() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("cart", hasProperty("id", is(purchase3.getId()))))
+                .andExpect(model().attributeExists("lines"));
+
+        verify(purchaseService).getOrCreateCartForUser(any(UUID.class));
+    }
+
+    // Verifica que al intentar mostrar el carrito sin un carrito existente se muestra la vista de carrito con un atributo "cart" nulo
+    @Test
+    void showCartWithoutExistingCart() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("cart", nullValue()));
+
+        verify(purchaseService).getOrCreateCartForUser(any(UUID.class));
+    }
+
+    // Verifica que al finalizar una compra se redirige a la lista de compras
+    @Test
+    void finishPurchaseRedirectsToPurchaseList() throws Exception {
+        mockMvc.perform(get("/purchases/{id}/finish", purchase1.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases"));
+
+        verify(purchaseService).completePurchase(purchase1.getId());
+    }
+
+    // Verifica que al cancelar una compra se redirige a la lista de compras
+    @Test
+    void incrementLineQuantityRedirectsToPurchaseDetail() throws Exception {
+        mockMvc.perform(get("/purchases/{purchaseId}/lines/add/{productId}", purchase1.getId(), product1.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
+
+        verify(purchaseService).addProductToCart(eq(product1.getId()), any(UUID.class));
+    }
+
+    // Verifica que al eliminar un producto de la compra se redirige al detalle de la compra
+    @Test
+    void decrementLineQuantityRedirectsToPurchaseDetail() throws Exception {
+        mockMvc.perform(get("/purchases/{purchaseId}/lines/remove/{productId}", purchase1.getId(), product1.getId()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
+
+        verify(purchaseService).removeProductFromCart(eq(product1.getId()), any(UUID.class));
     }
 }
