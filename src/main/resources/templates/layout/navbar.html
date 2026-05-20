@@ -70,7 +70,7 @@
                 </li>
                 <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
-                       th:href="@{/admin/products/list}">
+                       sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products/list}">
                         <i class="fa-solid fa-gears text-danger"></i> Admin Productos
                     </a>
                 </li>
@@ -85,7 +85,7 @@
                         <i class="fa-regular fa-square-plus"></i> Crear Categoria
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" >
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark" th:href="@{/categories}">
                         <i class="fa-solid fa-layer-group"></i> Categoria Admin
                     </a>

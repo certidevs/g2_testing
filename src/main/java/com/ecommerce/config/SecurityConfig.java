@@ -59,9 +59,7 @@ public class SecurityConfig
         );
 // AVISO: Esta combinación permite añadir comentarios pero abre una vulnerabilidad CSRF.
 // Cualquiera podría forzar a un usuario autenticado a postear una review falsa.
-        http.csrf(csrf -> csrf
-            .ignoringRequestMatchers("/products/*/reviews/add")
-    );
+
 http.sessionManagement(session -> session
             .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
     );

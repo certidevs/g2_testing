@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout/head :: head('Detalle de Producto')}"></head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
@@ -12,10 +12,10 @@
                     <p class="mb-2 fs-5" th:text="${product.longDescription != null ? product.longDescription : 'Sin descripción'}">Descripción</p>
 
                     <div class="mb-3">
-                        <a class="btn btn-danger btn-sm" th:href="@{/products/deactivate/{id}(id=${product.id})}">
+                        <a class="btn btn-danger btn-sm" sec:authorize="hasRole('ADMIN')" th:href="@{/products/deactivate/{id}(id=${product.id})}">
                             <i class="fa-solid fa-ban"></i> Desactivar
                         </a>
-                        <a class="btn btn-success btn-sm" th:href="@{/products/activate/{id}(id=${product.id})}">
+                        <a class="btn btn-success btn-sm" sec:authorize="hasRole('ADMIN')" th:href="@{/products/activate/{id}(id=${product.id})}">
                             <i class="fa-solid fa-check"></i> Activar
                         </a>
                     </div>
@@ -87,14 +87,15 @@
                         <i class="fa-solid fa-cart-plus me-1"></i> Añadir al carrito
                     </a>
 
-                    <form th:if="${#authentication != null and #authentication.principal != 'anonymousUser'}"
+                    <!-- Control de Favoritos usando sec:authorize de forma más limpia -->
+                    <form sec:authorize="isAuthenticated()"
                           th:action="@{/favorites/add/{productId}(productId=${product.id})}" method="post" style="display: inline;">
                         <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Añadir a favoritos?')">
                             <i class="fa-solid fa-heart me-1"></i> Favorito
                         </button>
                     </form>
 
-                    <a th:unless="${#authentication != null and #authentication.principal != 'anonymousUser'}"
+                    <a sec:authorize="isAnonymous()"
                        th:href="@{/login}" class="btn btn-outline-secondary" title="Inicia sesión para añadir a favoritos">
                         <i class="fa-regular fa-heart me-1"></i> Favorito
                     </a>
@@ -111,16 +112,27 @@
                 </div>
             </div>
 
+            <!-- SECCIÓN DE RESEÑAS CON CONTROL DE AUTENTICACIÓN -->
             <div class="mt-4 border-top pt-3">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h3>Reseñas</h3>
 
-                    <button type="button"
+                    <!-- Si está Autenticado: Muestra el botón para desplegar el modal -->
+                    <button sec:authorize="isAuthenticated()"
+                            type="button"
                             class="btn btn-primary btn-sm"
                             data-bs-toggle="modal"
                             data-bs-target="#reviewModal">
                         <i class="fa-solid fa-plus me-1"></i> Añadir reseña
                     </button>
+
+                    <!-- Si es Anónimo: Muestra el botón de bloqueo redirigiendo al login -->
+                    <a sec:authorize="isAnonymous()"
+                       th:href="@{/login}"
+                       class="btn btn-secondary btn-sm"
+                       title="Inicia sesión para escribir una reseña">
+                        <i class="fa-solid fa-lock me-1"></i> Iniciar sesión para opinar
+                    </a>
                 </div>
 
                 <div th:if="${product.reviews != null and !product.reviews.isEmpty()}" th:each="review : ${product.reviews}">
@@ -148,6 +160,7 @@
                 </p>
             </div>
 
+            <!-- El Modal solo es accesible por acción del botón de usuarios autenticados -->
             <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -159,9 +172,13 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
-                        <!-- Tu acción de añadir reseña configurada en el formulario -->
                         <form th:action="@{/products/{id}/reviews/add(id=${product.id})}" method="post">
                             <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label fw-bold">Título de la reseña:</label>
+                                    <input type="text" class="form-control" id="title" name="title"
+                                           placeholder="Resumen de tu opinión (ej: ¡Excelente producto!, Muy mala calidad)" required maxlength="100">
+                                </div>
 
                                 <div class="mb-3">
                                     <label for="rating" class="form-label fw-bold">Puntuación:</label>

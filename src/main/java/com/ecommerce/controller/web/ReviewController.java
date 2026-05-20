@@ -48,36 +48,45 @@ public class ReviewController {
         return "redirect:/reviews";
 
     }
-    @PostMapping("/products/{productId}/reviews/add")
-    public String addReview(@PathVariable UUID productId,
-                            @RequestParam("rating") int rating,
-                            @RequestParam("message") String message,
+    @PostMapping("/products/{id}/reviews/add")
+    public String addReview(@PathVariable UUID id,
+                            @RequestParam String title,
+                            @RequestParam Integer rating,
+                            @RequestParam String message,
                             java.security.Principal principal) {
 
-        Optional<Product> productOpt = productRepository.findById(productId);
-
-        if (productOpt.isPresent()) {
-            Product product = productOpt.get();
-            Review.ReviewBuilder reviewBuilder = Review.builder()
-                    .rating(rating)
-                    .message(message)
-                    .product(product);
-
-            // Si hay un usuario logueado (Admin, cliente, etc.), lo enlazamos
-            if (principal != null) {
-                Optional<User> userOpt = userRepository.findByUsername(principal.getName());
-                userOpt.ifPresent(reviewBuilder::user);
-            } else {
-                // Opcional: Si es invitado, puedes dejar el usuario como null
-                // o buscar un usuario comodín en tu BD llamado "Anónimo"
-                reviewBuilder.user(null);
-            }
-
-            reviewRepository.save(reviewBuilder.build());
+        // 1. Control de seguridad en el servidor (por si se saltan el HTML)
+        if (principal == null) {
+            return "redirect:/login";
         }
 
-        return "redirect:/products/" + productId;
+        // 2. Obtener de forma segura quién está logueado
+        String username = principal.getName();
+
+        // 3. Buscar el usuario en la base de datos
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado: " + username));
+
+        // 4. Buscar el producto en la base de datos usando el ID de la ruta
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + id));
+
+        // 5. Crear la Review pasando las variables correctas y guardarla
+        Review review = new Review();
+        review.setTitle(title);
+        review.setRating(rating);
+        review.setMessage(message);
+        review.setUser(user);
+        review.setProduct(product);
+
+        reviewRepository.save(review);
+
+        // 6. Redirigir al detalle del producto
+        return "redirect:/products/" + id;
     }
+
+
+
     @PostMapping("/products/{productId}/reviews/edit/{reviewId}")
     public String editReview(@PathVariable UUID productId,
                              @PathVariable UUID reviewId,
