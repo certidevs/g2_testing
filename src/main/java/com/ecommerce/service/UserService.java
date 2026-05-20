@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(form.getUsername());
         user.setEmail(form.getEmail());
-        user.setRole(Role.CUSTOMER);
+        user.setRole(Role.ROLE_CUSTOMER);
         user.setPassword(passwordEncoder.encode(form.getPassword()));
         return userRepository.save(user);
     }
@@ -59,7 +59,7 @@ public class UserService implements UserDetailsService {
             return adminEmail;
         }
 
-        return userRepository.findFirstByRole(Role.ADMIN)
+        return userRepository.findFirstByRole(Role.ROLE_ADMIN)
                 .map(User::getEmail)
                 .orElseThrow(() -> new RuntimeException("No hay administradores disponibles"));
     }
@@ -146,7 +146,7 @@ public class UserService implements UserDetailsService {
      * Verifica si el usuario es ADMIN
      */
     public boolean isAdmin(User user) {
-        return user.getRole() == Role.ADMIN;
+        return user.getRole() == Role.ROLE_ADMIN;
     }
 
     /**
@@ -176,7 +176,7 @@ public class UserService implements UserDetailsService {
     }
 
     private void validateTargetIsNotAdmin(User targetUser) {
-        if (targetUser.getRole() == Role.ADMIN) {
+        if (targetUser.getRole() == Role.ROLE_ADMIN) {
             throw new RuntimeException("No se puede modificar el estado de otro administrador");
         }
     }

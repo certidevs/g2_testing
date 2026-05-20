@@ -42,7 +42,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .password(passwordEncoder.encode("Password1*"))
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         var user2 = User.builder()
@@ -54,7 +54,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .password(passwordEncoder.encode("Password2*"))
                 .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
                 .gender(Gender.FEMALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         var adminUser = User.builder()
@@ -66,7 +66,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .password(passwordEncoder.encode("Admin123*"))
                 .birthday(LocalDateTime.of(1988, Month.JANUARY, 10, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.ADMIN)
+                .role(Role.ROLE_ADMIN)
                 .build();
         userRepo.saveAll(List.of(user1, user2, adminUser));
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout/head::head('Marcas')}">
     <meta charset="UTF-8">
     <title>Marcas</title>
@@ -12,7 +12,7 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">Marcas</h1>
-            <a th:href="@{/brands/new}" class="btn btn-primary">Crear Marca</a>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/new}" class="btn btn-primary">Crear Marca</a>
         </div>
 
         <!-- Mensaje de éxito -->
@@ -80,12 +80,12 @@
                                 Ver
                             </a>
 
-                            <a th:href="@{/brands/{id}/edit(id=${brand.id})}"
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/{id}/edit(id=${brand.id})}"
                                class="btn btn-sm btn-outline-secondary">
                                 Editar
                             </a>
 
-                            <form th:action="@{/brands/{id}/delete(id=${brand.id})}"
+                            <form sec:authorize="hasRole('ADMIN')" th:action="@{/brands/{id}/delete(id=${brand.id})}"
                                   method="post"
                                   onsubmit="return confirm('¿Seguro que quieres eliminar esta marca?')">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">

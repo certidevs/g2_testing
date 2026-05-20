@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="~{layout/head::head('Detalles de la Marca')}">
     <meta charset="UTF-8">
     <title>Detalles de la Marca</title>
@@ -84,7 +84,7 @@
                         <!-- Botones -->
                         <div class="mt-4 d-flex gap-2">
                             <a th:href="@{/brands}" class="btn btn-outline-secondary">Volver</a>
-                            <a th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn btn-primary">Editar</a>
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn btn-primary">Editar</a>
                         </div>
 
                     </div>
