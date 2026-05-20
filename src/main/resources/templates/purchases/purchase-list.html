@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/security">
 
-<head th:replace="~{layout/head :: head('Purchases')}"></head>
+<head th:replace="~{layout/head :: head('Purchases')}">Lista de compras</head>
 
 <body class="d-flex flex-column min-vh-100">
 
@@ -9,71 +9,89 @@
 
 <main class="container flex-grow-1">
 
+    <!-- TÍTULO DE LA PÁGINA WEB -->
     <h1 class="mb-3">Compras</h1>
 
+    <!-- BOTÓN PARA CREAR UNA NUEVA COMPRA -->
     <div class="mb-3">
-        <a th:href="@{/purchases/new}" class="btn btn-primary">
+        <a th:href="@{/purchases/new}" class="btn btn-outline-primary">
             <i class="fa-solid fa-plus me-1"></i>
             Crear nueva compra
         </a>
     </div>
 
+    <!-- TABLA DE COLOR NEGRO -->
     <div class="table-responsive">
         <table class="table table-hover align-middle table-bordered border-success">
             <thead class="table-dark">
-            <tr>
-                <th>
-                    <i class="fa-solid fa-calendar"></i>
-                    Fecha de creación</th>
-                <th>
-                    <i class="fa-solid fa-calendar"></i>
-                    Fecha de finalización</th>
 
+            <!-- ENCABEZADOS DENTRO DE LA TABLA -->
+            <tr>
+                <!-- FECHA DE CREACIÓN -->
+                <th>Fecha de creación</th>
+
+                <!-- MODO DE ENVÍO -->
                 <th>Modo de envío</th>
 
-                <th>Estado de procesamiento</th>
-
-                <th>Estado del envío</th>
-
-                <th>Estado del pago</th>
-
-                <th>
-                    <i class="fa-solid fa-euro"></i>
-                    Precio total</th>
-
+                <!-- ESTADO DE LA COMPRA -->
                 <th>Estado de la compra</th>
 
+                <!-- Nº DE PRODUCTOS -->
+                <!-- <th>Nº Productos</th> -->
+
+                <!-- PRECIO TOTAL -->
+                <th>Precio total</th>
+
+                <!-- FECHA DE FINALIZACIÓN -->
+                <th>Fecha de finalización</th>
+
+                <!-- BOTONES DE ACCIÓN -->
                 <th></th>
 
             </tr>
             </thead>
             <tbody>
+
             <tr th:each="purchase : ${purchases}">
+
+                <!-- FECHA DE CREACIÓN -->
                 <td class="fw-semibold" th:text="${#temporals.format(purchase.creationDate, 'dd/MM/yy HH:mm')}"></td>
-                <td class="fw-semibold" th:text="${#temporals.format(purchase.finishedDate, 'dd/MM/yy HH:mm')}"></td>
+
+                <!-- MODO DE ENVÍO -->
                 <td th:text="${purchase.getShippingMode()}"></td>
-                <td th:text="${purchase.getProcessStatus()}"></td>
-                <td th:text="${purchase.getShippingStatus()}"></td>
-                <td th:text="${purchase.getPaymentStatus()}"></td>
-                <td class="text-muted small" th:text="${#numbers.formatDecimal(purchase.getTotalPrice, 1, 2)}"></td>
+
+                <!-- ESTADO DE LA COMPRA -->
                 <td th:text="${purchase.getPurchaseStatus()}"></td>
 
+                <!-- Nº DE PRODUCTOS -->
+                <!-- <td class="text-muted small" th:text="${#numbers.formatDecimal(line.product.size() * line.quantity, 1, 2)}"></td> -->
+
+                <!-- PRECIO TOTAL -->
+                <td class="text-muted small" th:text="${#numbers.formatDecimal(purchase.getTotalPrice, 1, 2)}"></td>
+
+                <!-- FECHA DE FINALIZACIÓN -->
+                <td class="fw-semibold" th:text="${#temporals.format(purchase.finishedDate, 'dd/MM/yy HH:mm')}"></td>
+
+                <!-- BOTONES DE ACCIÓN -->
                 <td>
+                    <!-- VER DETALLES DE COMPRA -->
                     <a th:href="@{/purchases/{id}(id=${purchase.id})}"
                        class="btn btn-sm btn-outline-primary mb-1 d-block text-center">
                         <i class="fa-regular fa-eye me-1"></i> Ver compra
                     </a>
 
+                    <!-- FINALIZAR UNA COMPRA -->
                     <a th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"
                        th:href="@{/purchases/{id}/finish(id=${purchase.id})}"
                        class="btn btn-sm btn-outline-success mb-1 d-block text-center">
-                        <i class="fa-solid fa-check me-1"></i> Finalizar pedido
+                        <i class="fa-solid fa-check me-1"></i> Finalizar compra
                     </a>
 
+                    <!-- BORRAR COMPRA -->
                     <a th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
                        class="btn btn-sm btn-outline-danger d-block text-center"
                        onclick="return confirm('Are you sure you want to delete this purchase?');">
-                        <i class="fa-regular fa-trash-can me-1"></i> Borrar pedido
+                        <i class="fa-regular fa-trash-can me-1"></i> Borrar compra
                     </a>
                 </td>
             </tr>
@@ -81,10 +99,9 @@
         </table>
     </div>
 
-
 </main>
 
-<footer th:replace="~{layout/footer :: footer}"></footer >
+<footer th:replace="~{layout/footer :: footer}"></footer>
 <script th:replace="~{layout/footer :: scripts}"></script>
 
 </body>
