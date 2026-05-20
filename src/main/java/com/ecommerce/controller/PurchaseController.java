@@ -8,6 +8,7 @@ import com.ecommerce.service.PurchaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -26,6 +27,7 @@ public class PurchaseController {
     private final UserRepository userRepository;
 
     // Muestra la lista de todas las compras
+    @Transactional
     @GetMapping("purchases")
     public String listPurchases(Model model) {
         model.addAttribute("purchases", purchaseRepository.findAll());
