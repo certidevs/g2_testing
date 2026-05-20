@@ -197,9 +197,11 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a th:action="@{/logout}" sec:authorize="isAuthenticated()" class="nav-link" th:href="@{/logout}">
-                            <i class="fa-solid fa-sign-out"></i>salir
-                        </a>
+                        <form th:action="@{/logout}" sec:authorize="isAuthenticated()" method="post">
+                            <button class="btn btn-secondary">
+                                <i class="fa-solid fa-sign-out"></i>salir
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </div>
