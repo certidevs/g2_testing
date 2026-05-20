@@ -9,12 +9,12 @@
 
 <main class="container flex-grow-1">
 
-    <h1 class="mb-3">Purchases</h1>
+    <h1 class="mb-3">Compras</h1>
 
     <div class="mb-3">
         <a th:href="@{/purchases/new}" class="btn btn-primary">
             <i class="fa-solid fa-plus me-1"></i>
-            Create New Purchase
+            Crear nueva compra
         </a>
     </div>
 
@@ -24,24 +24,24 @@
             <tr>
                 <th>
                     <i class="fa-solid fa-calendar"></i>
-                    Creation Date</th>
+                    Fecha de creación</th>
                 <th>
                     <i class="fa-solid fa-calendar"></i>
-                    Finished Date</th>
+                    Fecha de finalización</th>
 
-                <th>Shipping Mode</th>
+                <th>Modo de envío</th>
 
-                <th>Process Status</th>
+                <th>Estado de procesamiento</th>
 
-                <th>Shipping Status</th>
+                <th>Estado del envío</th>
 
-                <th>Payment Status</th>
+                <th>Estado del pago</th>
 
                 <th>
                     <i class="fa-solid fa-euro"></i>
-                    Total Price</th>
+                    Precio total</th>
 
-                <th>Purchase Status</th>
+                <th>Estado de la compra</th>
 
                 <th></th>
 
@@ -61,7 +61,7 @@
                 <td>
                     <a th:href="@{/purchases/{id}(id=${purchase.id})}"
                        class="btn btn-sm btn-outline-primary mb-1 d-block text-center">
-                        <i class="fa-regular fa-eye me-1"></i> See purchase
+                        <i class="fa-regular fa-eye me-1"></i> Ver compra
                     </a>
 
                     <a th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"

@@ -8,15 +8,15 @@
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <main class="container flex-grow-1">
-    <h1 class="mb-3">Cart</h1>
+    <h1 class="mb-3">Carrito</h1>
 
     <div th:if="${cart == null}" class="alert alert-info">
-        Your cart is empty.
+        El carrito está vacío
     </div>
 
     <div th:if="${cart != null}">
         <h5>
-            Purchase ID:
+            ID de la compra:
             <span th:text="${cart.id}"></span>
         </h5>
 
@@ -24,8 +24,8 @@
             <table class="table table-hover align-middle table-bordered border-success">
                 <thead class="table-dark">
                 <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
                     <th>Total</th>
                 </tr>
                 </thead>
@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <a th:href="@{/purchases}" class="btn btn-secondary">Back</a>
+    <a th:href="@{/purchases}" class="btn btn-secondary">Volver atrás</a>
 </main>
 
 <footer th:replace="~{layout/footer :: footer}"></footer>
