@@ -44,6 +44,10 @@ public class UserController {
         }
     }
 
+    @GetMapping("login")
+    public String login(Model model){
+        return "/users/login";
+    }
 
 //    @GetMapping("/users")
 //    public String listUsers(Model model) {

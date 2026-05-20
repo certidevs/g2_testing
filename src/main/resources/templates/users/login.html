@@ -1,10 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="es"  xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head::head('Iniciar sesión')}">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Login</title>
 </head>
-<body>
+<body class="d-flex align-items-center py-4 bg-light min-vh-100">
+<main class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <form th:action="@{/login}" method="post" class="card shadow-sm p-4" th:object="${user}">
 
+                <!-- LOGO Y TITULO -->
+                <div class="text-center mb-3">
+                    <img th:src="@{/images/logo.png}" alt="Logo" class="mb-2 rounded-3" style="width:150px;">
+                    <h1 class="h3 mt-3 fw-normal">Inicia sesión</h1>
+                </div>
+
+                 <!-- MENSAJE DE ERROR PARA CUANDO EL USUARIO PONGA MAL LOS DATOS -->
+                <div th:if="${param.error}" class="alert alert-danger">Credenciales incorrectas.</div>
+
+                <!-- MENSAJE DE SUCCESS PARA CUANDO ENTRE EL USUARIO -->
+                <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+                <!-- NOMBRE DE USUARIO -->
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="username" name="username"
+                           placeholder="pepe666" required min="3" maxlength="100">
+                    <label for="username">Username</label>
+                </div>
+
+                <!-- CONTRASEÑA -->
+                <div class="form-floating mb-3">
+                    <input type="password" name="password"
+                           class="form-control" id="password"
+                           required minlength="4">
+                    <label for="password">Contraseña</label>
+                </div>
+
+                <!-- BOTÓN DE ENTRAR -->
+                <button type="submit" class="btn btn-success">Entrar</button>
+
+                <!-- REDIRIGE A CREAR UNA CUENTA SI NO TENEMOS CREADA UNA -->
+                <p class="mt-3 text-center small">¿No tienes cuenta?
+                    <a th:href="@{/register}">Regístrate</a>.
+                </p>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+<script th:replace="~{layout/footer::scripts}"></script>
 </body>
 </html>
