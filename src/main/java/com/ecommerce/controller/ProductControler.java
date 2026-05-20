@@ -21,65 +21,97 @@ import java.util.UUID;
 @Controller
 @AllArgsConstructor
 public class ProductControler {
-    private ProductRepository productRepository;
-    private ReviewRepository  reviewRepository;
-    private FavoriteRepository favoriteRepository;
-    private UserRepository userRepository;
 
-    private BrandRepository brandRepository;
-    private CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+    private final ReviewRepository  reviewRepository;
+    private final FavoriteRepository favoriteRepository;
+    private final UserRepository userRepository;
+    private final BrandRepository brandRepository;
+    private final CategoryRepository categoryRepository;
 
+    // ==========================================
+    //          VISTAS PÚBLICAS DE LA TIENDA
+    // ==========================================
 
     @GetMapping("/products")
     public String products(Model model) {
-        //MODEl
         model.addAttribute("products", productRepository.findAll());
         model.addAttribute("saludo", "MODA DE VERANO");
         return "products/product-list";
-
     }
-    //agregar el numero de compras y reviews en el productos
+
     @GetMapping("products/{id}")
     public String productsDetail(@PathVariable UUID id, Model model) {
         Optional<Product> productOptional = productRepository.findById(id);
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
-            // TODO cambiar products a product porque es solo uno
             model.addAttribute("product", product);
             List<Review> reviews = reviewRepository.findByProductId(id);
             model.addAttribute("reviews", reviews);
-
         } else {
             return "redirect:/products";
         }
         return "products/product-detail";
     }
-//Buscador de productos
-        @GetMapping("/products/search")
-        public String searchProducts(@RequestParam String query, Model model) {
-            List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(query, query);
-            model.addAttribute("products", products);
-            return "products/product-list";
-        }
-        //Desactivar un producsto
+
+    @GetMapping("/products/search")
+    public String searchProducts(@RequestParam String query, Model model) {
+        List<Product> products = productRepository.findByTitleContainingIgnoreCaseOrShortDescriptionContainingIgnoreCase(query, query);
+        model.addAttribute("products", products);
+        return "products/product-list";
+    }
+
+    @GetMapping("/products/categories/{id}")
+    public String listProductsByCategory(@PathVariable UUID id, Model model) {
+        // TODO: En el futuro filtra aquí usando el ID de la categoría: productRepository.findByCategoryId(id)
+        model.addAttribute("products", productRepository.findAll());
+        model.addAttribute("categories", categoryRepository.findAll());
+        return "products/product-list";
+    }
+
+
+    // ==========================================
+    //        PANEL DE GESTIÓN / ADMINISTRACIÓN
+    // ==========================================
+
+    // Nueva ruta para ver el listado de administración con la tabla y los modales
+    @GetMapping("/admin/products/list")
+    public String listAdminProducts(Model model) {
+        model.addAttribute("products", productRepository.findAll());
+        return "products/product-admin-list";
+    }
+
+    // Nueva ruta POST para actualizar el descuento de forma rápida desde el modal
+    @PostMapping("/admin/products/update-discount")
+    public String updateProductDiscount(@RequestParam("productId") UUID id,
+                                        @RequestParam("discountPercentage") Integer discount) {
+
+        productRepository.findById(id).ifPresent(product -> {
+            product.setDiscountPercentage(discount);
+            productRepository.save(product);
+        });
+
+        return "redirect:/admin/products/list";
+    }
+
     @GetMapping("products/deactivate/{id}")
-    public String deactivateRestaurant(@PathVariable UUID id, Model model) {
+    public String deactivateProduct(@PathVariable UUID id) {
         productRepository.findById(id).ifPresent(product -> {
             product.setAvailable(false);
             productRepository.save(product);
         });
-        return "redirect:/products";
+        return "redirect:/admin/products/list"; // Redirige al panel de control tras desactivar
     }
-    //Activar un producto
-         @GetMapping("products/activate/{id}")
-         public String activateProduct(@PathVariable UUID id, Model model) {
-             productRepository.findById(id).ifPresent(product -> {
-                 product.setAvailable(true);
-                 productRepository.save(product);
-             });
-             return "redirect:/products";
-         }
-         //CREACION DE PRODUCTO
+
+    @GetMapping("products/activate/{id}")
+    public String activateProduct(@PathVariable UUID id) {
+        productRepository.findById(id).ifPresent(product -> {
+            product.setAvailable(true);
+            productRepository.save(product);
+        });
+        return "redirect:/admin/products/list"; // Redirige al panel de control tras activar
+    }
+
     @GetMapping("/products/new")
     public String navigateToForm(Model model){
         model.addAttribute("product", new Product());
@@ -89,19 +121,9 @@ public class ProductControler {
         return "products/product-form";
     }
 
-
-    //RECIBIR LOS DATOS DEL PRODUCTO
     @PostMapping("products")
     public String createProduct(@ModelAttribute Product product){
-
         productRepository.save(product);
-        return "redirect:/products";
-    }
-    @GetMapping("/products/categories/{id}")
-    public String listProducts(Model model) {
-        model.addAttribute("products", productRepository.findAll());
-        // Si no pones esta línea, la línea 131 de tu HTML saldrá en amarillo/error
-        model.addAttribute("categories", categoryRepository.findAll());
-        return "products/product-list";
+        return "redirect:/admin/products/list"; // volver al listado de admin para ver el resultado
     }
 }

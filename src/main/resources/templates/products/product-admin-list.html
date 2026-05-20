@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Panel de Administración - Productos')}">
+</head>
+<body class="bg-light">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="container py-5">
+  <!-- TITULO Y ACCIONES PRINCIPALES -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h2 fw-bold text-dark m-0">Gestión de Inventario y Descuentos</h1>
+      <p class="text-muted m-0">Modifica precios, añade promociones y controla el catálogo activo.</p>
+    </div>
+    <a th:href="@{/products/add}" class="btn btn-primary shadow-sm">
+      <i class="fa-solid fa-plus me-2"></i>Nuevo Producto
+    </a>
+  </div>
+
+  <!-- TARJETA CONTENEDORA DE LA TABLA -->
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-dark">
+          <tr>
+            <th scope="col" class="ps-4" style="width: 80px;">Imagen</th>
+            <th scope="col">Producto</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Precio Base</th>
+            <th scope="col">Descuento</th>
+            <th scope="col">Precio Final</th>
+            <th scope="col" class="text-end pe-4" style="width: 200px;">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <!-- BUCLE DE PRODUCTOS -->
+          <tr th:each="product : ${products}">
+            <!-- MINIATURA DE IMAGEN -->
+            <td class="ps-4">
+              <img th:src="${product.imageUrl}" th:alt="${product.title}"
+                   class="rounded border bg-white"
+                   style="width: 50px; height: 50px; object-fit: contain;">
+            </td>
+
+            <!-- DATOS BÁSICOS -->
+            <td>
+              <div class="fw-bold text-dark" th:text="${product.title}">Nombre del Producto</div>
+              <small class="text-muted" th:text="|ID: #${product.id}|">#1</small>
+            </td>
+
+            <!-- MARCA -->
+            <td>
+                                <span class="badge bg-light text-secondary border"
+                                      th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">Marca</span>
+            </td>
+
+            <!-- PRECIO ORIGINAL -->
+            <td class="fw-semibold text-secondary"
+                th:text="${#numbers.formatCurrency(product.price)}">0.00 €</td>
+
+            <!-- PORCENTAJE DE DESCUENTO -->
+            <td>
+                                <span th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                                      class="badge bg-danger fs-6" th:text="|-${product.discountPercentage}%|">
+                                    -20%
+                                </span>
+              <span th:unless="${product.discountPercentage != null and product.discountPercentage > 0}"
+                    class="badge bg-light text-muted border">
+                                    Sin oferta
+                                </span>
+            </td>
+
+            <!-- PRECIO FINAL CALCULADO -->
+            <td class="fw-bold text-success"
+                th:text="${#numbers.formatCurrency(product.finalPrice)}">0.00 €</td>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <td class="text-end pe-4">
+              <div class="btn-group" role="group">
+                <!-- Botón que activa el modal de descuento específico usando el ID del producto -->
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        data-bs-toggle="modal"
+                        th:data-bs-target="|#discountModal-${product.id}|"
+                        title="Gestionar Descuento">
+                  <i class="fa-solid fa-percent"></i> Descuento
+                </button>
+                <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                   class="btn btn-sm btn-outline-secondary" title="Editar detalles">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </a>
+              </div>
+
+              <!-- MODAL FLOTANTE INDIVIDUAL PARA ASIGNAR DESCUENTO -->
+              <div class="modal fade text-start" th:id="|discountModal-${product.id}|" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <!-- Envía los datos directamente a tu controlador de guardado rápido -->
+                    <form th:action="@{/admin/products/update-discount}" method="post">
+                      <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Aplicar Descuento Especial</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-content-body p-4">
+                        <p class="text-muted small">Estás editando la oferta para <strong th:text="${product.title}">Producto</strong>.</p>
+
+                        <!-- Pasar ID oculto para saber qué producto actualizar -->
+                        <input type="hidden" name="productId" th:value="${product.id}" />
+
+                        <div class="mb-3">
+                          <label class="form-label fw-semibold">Porcentaje de Descuento (%)</label>
+                          <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="fa-solid fa-tag text-danger"></i></span>
+                            <input type="number" name="discountPercentage"
+                                   th:value="${product.discountPercentage}"
+                                   class="form-control form-control-lg"
+                                   min="0" max="99" required placeholder="Ej: 15">
+                          </div>
+                          <div class="form-text">Introduce 0 para eliminar el descuento y restaurar el precio original.</div>
+                        </div>
+
+                        <div class="bg-light p-3 rounded border">
+                          <div class="d-flex justify-content-between small mb-1">
+                            <span>Precio Base original:</span>
+                            <span th:text="${#numbers.formatCurrency(product.price)}">0.00 €</span>
+                          </div>
+                          <div class="d-flex justify-content-between fw-bold text-success">
+                            <span>Precio de venta actual:</span>
+                            <span th:text="${#numbers.formatCurrency(product.finalPrice)}">0.00 €</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Actualizar Oferta</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div> <!-- /modal -->
+
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>
