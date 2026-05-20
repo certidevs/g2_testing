@@ -7,6 +7,7 @@ import com.ecommerce.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ public class DataInitializer  implements CommandLineRunner {
     private UserRepository userRepo;
     private ReviewRepository reviewRepo;
     private AddressRepository addressRepo;
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception{
@@ -37,7 +39,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .lastName("Last Name 1")
                 .email("user1@gmail.com")
                 .phone("123456789")
-                .password("Password1*")
+                .password(passwordEncoder.encode("Password1*"))
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
                 .role(Role.CUSTOMER)
@@ -49,7 +51,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .lastName("Last Name 2")
                 .email("user2@gmail.com")
                 .phone("987654321")
-                .password("Password2*")
+                .password(passwordEncoder.encode("Password2*"))
                 .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
                 .gender(Gender.FEMALE)
                 .role(Role.CUSTOMER)
@@ -61,7 +63,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .lastName("G2")
                 .email("admin@g2store.com")
                 .phone("600000000")
-                .password("Admin123*")
+                .password(passwordEncoder.encode("Admin123*"))
                 .birthday(LocalDateTime.of(1988, Month.JANUARY, 10, 0, 0))
                 .gender(Gender.MALE)
                 .role(Role.ADMIN)

@@ -54,7 +54,7 @@ public class SecurityConfig
         http.formLogin(
           form -> form
                   .loginPage("/login")
-                  .defaultSuccessUrl("/products/")
+                  .defaultSuccessUrl("/products")
                   .permitAll()
         );
 // AVISO: Esta combinación permite añadir comentarios pero abre una vulnerabilidad CSRF.

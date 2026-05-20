@@ -1,8 +1,6 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.dto.UserRequestDto;
-import com.ecommerce.model.User;
-import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -10,13 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
-import java.util.UUID;
 
 @Controller
 @AllArgsConstructor
@@ -28,7 +21,7 @@ public class UserController {
     public String register(Model model)
     {
         model.addAttribute("user", new UserRequestDto());
-        return "/users/register";
+        return "/auth/register";
     }
 
     @PostMapping("register")
@@ -46,7 +39,7 @@ public class UserController {
 
     @GetMapping("login")
     public String login(Model model){
-        return "/users/login";
+        return "/auth/login";
     }
 
 //    @GetMapping("/users")
