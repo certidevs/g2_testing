@@ -6,7 +6,7 @@
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 <main class="container flex-grow-1">
 
-    <!-- Añadimos mb-5 para el margen inferior y shadow para separarlo visualmente -->
+    <!-- Carousel de Videos -->
     <div id="carouselExampleIndicators" class="carousel slide mb-5 shadow">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -15,30 +15,17 @@
         </div>
 
         <div class="carousel-inner">
-            <!-- Slide 1 -->
             <div class="carousel-item active">
-                <video th:src="@{/images/videoverano.mp4}"
-                       class="d-block w-100"
-                       autoplay loop muted playsinline>
-                </video>
+                <video th:src="@{/images/videoverano.mp4}" class="d-block w-100" autoplay loop muted playsinline></video>
             </div>
-            <!-- Slide 2 -->
             <div class="carousel-item">
-                <video th:src="@{/images/videoverano.mp4}"
-                       class="d-block w-100"
-                       autoplay loop muted playsinline>
-                </video>
+                <video th:src="@{/images/videoverano.mp4}" class="d-block w-100" autoplay loop muted playsinline></video>
             </div>
-            <!-- Slide 3 -->
             <div class="carousel-item">
-                <video th:src="@{/images/videoverano.mp4}"
-                       class="d-block w-100"
-                       autoplay loop muted playsinline>
-                </video>
+                <video th:src="@{/images/videoverano.mp4}" class="d-block w-100" autoplay loop muted playsinline></video>
             </div>
         </div>
 
-        <!-- Controles -->
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Anterior</span>
@@ -48,55 +35,87 @@
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">
-            Productos
-        </h1>
-        <span class="badge bg-secondary fs-6"
 
-              th:text="|${#lists.size(products)} resultados|">0 resultados</span>
+    <!-- Cabecera de listado -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">Productos</h1>
+        <span class="badge bg-secondary fs-6" th:text="|${#lists.size(products)} resultados|">0 resultados</span>
     </div>
 
+    <!-- Grid de Productos -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        <div class="col" th:each="product : ${products}">
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-                <div class="col" th:each="product : ${products}">
-                    <div class="card card-restaurant h-100 shadow-sm">
-                        <div class="card-img-top" style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
-                            <img th:src="${product.imageUrl}"
-                                 th:alt="${product.title}"
-                                 class="w-100 h-100 object-fit-cover"
-                                 style="object-fit: cover;">
+            <!-- Card con posición relativa para que el badge se monte correctamente -->
+            <div class="card card-restaurant h-100 shadow-sm position-relative">
+
+                <!-- BADGE DE DESCUENTO: Controla que no sea nulo y que sea mayor que cero -->
+                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                     class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
+                    <i class="fa-solid fa-tag me-1"></i>
+                    <span th:text="|-${product.discountPercentage}%|">-20%</span>
+                </div>
+
+                <!-- Imagen del Producto -->
+                <div class="card-img-top" style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
+                    <img th:src="${product.imageUrl}"
+                         th:alt="${product.title}"
+                         class="w-100 h-100 object-fit-cover">
+                </div>
+
+                <!-- Cuerpo de la Tarjeta (Arreglado el cierre de etiquetas HTML) -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">
+                        <i class="fa-solid fa-store text-primary me-2"></i>
+                        <span th:text="${product.title}">Nombre</span>
+                    </h5>
+
+                    <!-- Marca -->
+                    <div class="mb-3">
+                        <span class="badge bg-secondary">
+                            <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
+                        </span>
+                    </div>
+
+                    <!-- Bloque de precios dinámico según el descuento -->
+                    <div class="mt-auto mb-3">
+                        <!-- Muestra esto si tiene descuento real -->
+                        <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}">
+                            <span class="text-muted text-decoration-line-through me-2 small"
+                                  th:text="${#numbers.formatCurrency(product.price)}">0.00 €</span>
+                            <span class="badge bg-danger fs-5">
+                                <i class="fa-solid fa-euro-sign me-1"></i>
+                                <span th:text="${#numbers.formatDecimal(product.finalPrice, 1, 2)}">0</span>
+                            </span>
                         </div>
-                        <div class="card-body">
-                            <h5 class="card-title">
-                                <i class="fa-solid fa-store text-primary me-2"></i>
-                                <span th:text="${product.title}">Nombre</span>
-                            </h5>
-                            <p class="card-text">
-                                <span class="badge bg-success">
-                                    <i class="fa-solid fa-euro-sign me-1"></i>
-                                    <span th:text="${product.price}">0</span>
-                                </span>
-                                <span class="badge bg-success">
-                                    <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
-                                </span>
 
-                                <a th:href="@{/purchase/add/{id}(id=${product.id})}"
-                                   class="btn btn-success btn-sm">
-                                    <i class="fa-solid fa-shopping-cart me-1"></i> Comprar
-                                </a>
-
-
-                        </div>
-                        <div class="card-footer bg-transparent border-0 pt-0">
-                            <a th:href="@{/products/{id}(id=${product.id})}"
-                               class="btn btn-outline-primary btn-sm w-100">
-                                <i class="fa-regular fa-eye me-1"></i> Ver Producto
-                            </a>
+                        <!-- Muestra esto si es nulo o es cero (Sin Descuento) -->
+                        <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
+                            <span class="badge bg-success fs-5">
+                                <i class="fa-solid fa-euro-sign me-1"></i>
+                                <span th:text="${product.price}">0</span>
+                            </span>
                         </div>
                     </div>
+
+                    <!-- Botón Comprar -->
+                    <div>
+                        <a th:href="@{/purchase/add/{id}(id=${product.id})}" class="btn btn-success btn-sm w-100">
+                            <i class="fa-solid fa-shopping-cart me-1"></i> Comprar
+                        </a>
+                    </div>
                 </div>
-            </div>
+
+                <!-- Footer de la Tarjeta -->
+                <div class="card-footer bg-transparent border-0 pt-0">
+                    <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="fa-regular fa-eye me-1"></i> Ver Producto
+                    </a>
+                </div>
+
+            </div> <!-- /card -->
+        </div> <!-- /col -->
+    </div> <!-- /row -->
 
     <footer th:replace="~{layout/footer :: footer}"></footer>
     <script th:replace="~{layout/footer :: scripts}"></script>
