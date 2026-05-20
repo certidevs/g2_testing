@@ -25,15 +25,30 @@ public class GlobalDataInterceptor implements HandlerInterceptor {
                            @NonNull Object handler, ModelAndView modelAndView) throws Exception {
 
         if (modelAndView != null) {
-            List<User> users = userRepository.findAll();
+            // 1. Intentamos obtener el nombre del usuario autenticado en Spring Security
+            java.security.Principal principal = request.getUserPrincipal();
 
-            if (!users.isEmpty()) {
-                UUID userId = users.getFirst().getId();
-                long favoritesCount = favoriteRepository.countByUserId(userId);
-                modelAndView.addObject("favoritesCount", favoritesCount);
-            } else {
-                modelAndView.addObject("favoritesCount", 0L);
+            if (principal != null) {
+                String username = principal.getName();
+                // Buscamos en la base de datos SOLO al usuario que está navegando
+                java.util.Optional<User> userOpt = userRepository.findByUsername(username);
+
+                if (userOpt.isPresent()) {
+                    UUID userId = userOpt.get().getId();
+
+                    // 2. Agregamos sus favoritos reales
+                    modelAndView.addObject("favoritesCount", favoriteRepository.countByUserId(userId));
+
+                    // 3. Agregamos el carrito (Si tu entidad User tiene relación con Cart, pónselo.
+                    // Si no, dejamos un 0 temporal para que el Navbar no explote buscando la variable)
+                    modelAndView.addObject("cartCount", 0L);
+                    return;
+                }
             }
+
+            // Si no hay nadie logueado (invitado), los contadores van a 0 obligatoriamente
+            modelAndView.addObject("favoritesCount", 0L);
+            modelAndView.addObject("cartCount", 0L);
         }
     }
 }

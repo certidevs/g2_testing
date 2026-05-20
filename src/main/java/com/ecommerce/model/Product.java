@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -63,6 +64,9 @@ public class Product {
     @ToString.Exclude
 
     private Category subcategory;
+    // Dentro de Product.java
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER)
+    private List<Review> reviews;
 
 
     public boolean getActive() {

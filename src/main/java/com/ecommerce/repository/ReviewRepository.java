@@ -10,36 +10,7 @@ import java.util.UUID;
 
 public interface ReviewRepository extends JpaRepository<Review, UUID> {
     // Conultas personalizadas
-    static List<Review> findByProduct_idOrderByCreationDateDesc(UUID id) {
-        return null;
-    }
+    List<Review>findByProduct_IdOrderByCreationDateDesc( UUID id);
 
-    // Traer review por producto
-    List<Review> findByProductId(UUID productId);
-
-    //Filtrar reviews por valoración
-    List<Review> findByRating(Integer rating);
-
-    // Ordenar reviews de mejor a peor
-    List<Review> findAllByOrderByRatingDesc();
-
-    // Ordenar reviews de peor a mejor
-    List<Review> findAllByOrderByRatingAsc();
-
-    // Filtrar reviews por fecha de creación
-    List<Review> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
-
-    // Filtar por reseñas verificadas
-    List<Review> findByVerified(Boolean verified);
-
-    // Contar numero total de reseñas de cada producto
-    Long countByProductId(UUID productId);
-
-    // Obtener reseñas de un usuario específico
-    List<Review> findByUserId(UUID userId);
-
-    // Filtrar mejores reviews por categoría
-    List<Review> findByProductSubcategory(Category category);
-
-
+    List<Review> findByProductId(UUID id);
 }

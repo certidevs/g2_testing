@@ -54,25 +54,37 @@ public class FavoriteController {
 
     // Agregar a favoritos
     @PostMapping("/favorites/add/{productId}")
-    public String addFavorite(@PathVariable UUID productId) {
-        List<User> users = userRepository.findAll();
+    public String addFavorite(@PathVariable UUID productId, java.security.Principal principal) {
 
-        if (!users.isEmpty()) {
-            User user = users.get(0);
-            Optional<Product> productOpt = productRepository.findById(productId);
+        // 1. Si el usuario intenta la acción sin estar logueado, lo mandamos al login
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-            if (productOpt.isPresent() &&
-                favoriteRepository.findByUserIdAndProductId(user.getId(), productId).isEmpty()) {
+        // 2. Buscamos de forma segura al usuario autenticado por su nombre de usuario (o email)
+        Optional<User> userOpt = userRepository.findByUsername(principal.getName());
+        Optional<Product> productOpt = productRepository.findById(productId);
 
+        if (userOpt.isPresent() && productOpt.isPresent()) {
+            User user = userOpt.get();
+            Product product = productOpt.get();
+
+            // 3. Comprobamos si ya lo tenía en favoritos para no duplicar
+            boolean notInFavorites = favoriteRepository
+                    .findByUserIdAndProductId(user.getId(), productId)
+                    .isEmpty();
+
+            if (notInFavorites) {
                 Favorite favorite = Favorite.builder()
                         .user(user)
-                        .product(productOpt.get())
+                        .product(product)
                         .build();
 
                 favoriteRepository.save(favorite);
             }
         }
 
+        // Redirigimos de vuelta al detalle del producto de forma limpia
         return "redirect:/products/" + productId;
     }
 

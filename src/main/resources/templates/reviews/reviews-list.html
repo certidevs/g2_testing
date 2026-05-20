@@ -27,8 +27,6 @@
                     <th>Producto</th>
                     <th>Usuario</th>
                     <th class="text-center">Estado</th>
-                    <th class="text-center">Verificación</th>
-                    <th class="text-end">Acciones</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -50,16 +48,8 @@
                         <span th:if="${review.user != null}" th:text="${review.user.name}">Usuario</span>
                         <span th:unless="${review.user != null}" class="text-muted">Anónimo</span>
                     </td>
-                    <td class="text-center">
-                        <span th:if="${review.status != null}"
-                              th:class="|badge ${review.status.name() == 'APPROVED' ? 'bg-success' : (review.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning')}|"
-                              th:text="${review.status.name()}">PENDING_APPROVAL</span>
-                        <span th:unless="${review.status != null}" class="badge bg-secondary">SIN_ESTADO</span>
-                    </td>
-                    <td class="text-center">
-                        <span th:if="${review.verified}" class="badge bg-info">Verificada</span>
-                        <span th:unless="${review.verified}" class="badge bg-secondary">No verificada</span>
-                    </td>
+
+
                     <td class="text-end">
                         <a th:href="@{/reviews/{id}(id=${review.id})}" class="btn btn-outline-primary btn-sm">
                             <i class="fa-regular fa-eye me-1"></i>Detalle

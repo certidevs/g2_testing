@@ -1,7 +1,6 @@
 package com.ecommerce.model;
 
 
-import com.ecommerce.model.enums.ReviewStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
@@ -30,35 +29,30 @@ public class Review {
     @Max(5)
     private Integer rating;
 
-    // Review's title
+    // Review titulo
     @Column(length = 1000)
-
     private String title;
+
+    // Review mensaje
     @Column(length = 1000)
-    // Review's message
     private String message;
 
-    // Review's really verificated?
-    private Boolean verified;
 
-    // Creation date
-    private LocalDateTime creationDate;
-
-    // Modified date
+    // Creacion tiempo
     @Builder.Default
-    private LocalDateTime modifiedDate = LocalDateTime.now();
+    private LocalDateTime creationDate = LocalDateTime.now();
+
+
 
     // Product
+    //muchas reviews para un producto
     @ManyToOne
     private Product product;
 
-    // Review status
-    @Enumerated(EnumType.STRING)
-    private ReviewStatus status;
 
     // User
+    // muchos reviews para un usuario
     @ManyToOne
     private User user;
 
-    // Listado de reviews para admin para aprobar o desaprobar con estados
 }

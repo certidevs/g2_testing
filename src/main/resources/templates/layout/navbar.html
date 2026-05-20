@@ -48,11 +48,11 @@
                 </li>
                 <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
-                       th:href="@{/templates/users/profile}">
+                       th:href="@{/users/profile}">
                         <i class="fa-solid fa-user text-secondary"></i> Perfil
                     </a>
                 </li>
-                                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/favorites}">
                         <i class="fa-solid fa-heart text-danger"></i> Me gustan
@@ -128,12 +128,13 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="prodDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Productos
-                        </a><ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="prodDropdown">
-                        <li><a class="dropdown-item" th:href="@{/products}">Moda de Verano</a></li>
-                        <li><a class="dropdown-item" th:href="@{/products}">OFERTAS ESPECIALES</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" th:href="@{/products}">Ver todos</a></li>
-                    </ul>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="prodDropdown">
+                            <li><a class="dropdown-item" th:href="@{/products}">Moda de Verano</a></li>
+                            <li><a class="dropdown-item" th:href="@{/products}">OFERTAS ESPECIALES</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/products}">Ver todos</a></li>
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" th:href="@{/purchases}">
@@ -148,10 +149,10 @@
                         <i class="fa-solid fa-sliders"></i>
                     </button>
                     <form class="d-flex w-100" th:action="@{/products/search}" method="get">
-                        <label>
+                        <label class="w-100 m-0">
                             <input class="form-control me-2" type="search" name="query" placeholder="Buscar...">
                         </label>
-                        <button class="btn btn-outline-light" type="submit">
+                        <button class="btn btn-outline-light ms-2" type="submit">
                             <i class="fa-solid fa-search"></i>
                         </button>
                     </form>
@@ -161,8 +162,7 @@
                 <ul class="navbar-nav ms-auto gap-2">
                     <li>
                         <a class="btn btn-secondary" th:href="@{/register}">
-                            <i class=""></i>
-                            <span></span>
+                            <i class="fa-solid fa-user-plus me-1"></i> Registro
                         </a>
                     </li>
                     <li class="nav-item">
@@ -180,7 +180,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/templates/users/profile}">
+                        <a class="nav-link" th:href="@{/users/profile}">
                             <i class="fa-solid fa-user"></i>
                         </a>
                     </li>
@@ -205,4 +205,3 @@
 </div>
 </body>
 </html>
-

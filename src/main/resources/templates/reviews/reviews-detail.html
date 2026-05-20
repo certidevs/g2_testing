@@ -13,20 +13,17 @@
 
     <div class="row">
         <div class="col-lg-8">
-            <!-- Card principal de la reseña -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <!-- Título y Rating -->
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h5 class="card-title mb-0">
                             <i class="fa-solid fa-star text-warning me-2"></i>
-                            <span th:text="${review.title}">Título de la reseña</span>
+                            <span th:text="${review.title != null ? review.title : 'Sin título'}">Título de la reseña</span>
                         </h5>
-                        
-                        <!-- Rating con estrellas -->
+
                         <div class="text-end">
                             <div class="mb-1">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}" 
+                                <span th:each="i : ${#numbers.sequence(1, 5)}"
                                       th:class="${i <= review.rating ? 'fa-solid fa-star text-warning' : 'fa-regular fa-star text-muted'}"
                                       class="me-1"></span>
                             </div>
@@ -34,13 +31,11 @@
                         </div>
                     </div>
 
-                    <!-- Mensaje completo -->
                     <div class="mb-3">
                         <h6 class="text-muted mb-2">Comentario:</h6>
                         <p class="card-text" th:text="${review.message}">Mensaje completo de la reseña...</p>
                     </div>
 
-                    <!-- Información adicional -->
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <small class="text-muted">
@@ -49,136 +44,50 @@
                                 <span th:text="${#temporals.format(review.creationDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:00</span>
                             </small>
                         </div>
-                        <div class="col-md-6" th:if="${review.modifiedDate != review.creationDate}">
-                            <small class="text-muted">
-                                <i class="fa-regular fa-clock me-1"></i>
-                                <strong>Última modificación:</strong>
-                                <span th:text="${#temporals.format(review.modifiedDate, 'dd/MM/yyyy HH:mm')}">01/01/2024 12:30</span>
-                            </small>
-                        </div>
                     </div>
 
-                    <!-- Estado y Verificación -->
-                    <div class="d-flex gap-2 mb-3">
-                        <span th:if="${review.status}" 
-                              th:class="|badge ${review.status.name() == 'APPROVED' ? 'bg-success' : (review.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning')}|">
-                            <i th:class="|fa-solid ${review.status.name() == 'APPROVED' ? 'fa-check-circle' : (review.status.name() == 'REJECTED' ? 'fa-times-circle' : 'fa-clock')} me-1|"></i>
-                            <span th:text="${review.status.name()}">PENDING_APPROVAL</span>
-                        </span>
-                        
-                        <span th:if="${review.verified}" 
-                              class="badge bg-info">
-                            <i class="fa-solid fa-check-circle me-1"></i>Verificada
-                        </span>
-                        
-                        <span th:unless="${review.verified}" 
-                              class="badge bg-secondary">
-                            <i class="fa-regular fa-circle me-1"></i>No verificada
-                        </span>
-                    </div>
-
-                    <!-- Información del producto y usuario -->
                     <div class="row">
                         <div class="col-md-6" th:if="${review.product}">
                             <small class="text-muted">
                                 <i class="fa-solid fa-box me-1"></i>
                                 <strong>Producto:</strong>
-                                <a th:href="@{/products/{id}(id=${review.product.id})}" 
-                                   th:text="${review.product.title}" 
+                                <a th:href="@{/products/{id}(id=${review.product.id})}"
+                                   th:text="${review.product.title}"
                                    class="text-decoration-none">Nombre del producto</a>
                             </small>
                         </div>
-                        <div class="col-md-6" th:if="${review.user}">
+                        <div class="col-md-6">
                             <small class="text-muted">
                                 <i class="fa-solid fa-user me-1"></i>
                                 <strong>Usuario:</strong>
-                                <span th:text="${review.user.name}">Nombre de usuario</span>
+                                <span th:text="${review.user != null ? review.user.name : 'Usuario Anónimo'}">Nombre de usuario</span>
                             </small>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Acciones -->
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h6 class="card-title mb-3">Acciones</h6>
                     <div class="d-flex gap-2 flex-wrap">
+
+                        <button type="button" class="btn btn-warning btn-sm text-dark fw-bold"
+                                data-bs-toggle="modal" data-bs-target="#editReviewModal">
+                            <i class="fa-solid fa-pen-to-square me-1"></i> Editar Reseña
+                        </button>
+
                         <a th:href="@{/reviews/delete/{id}(id=${review.id})}"
                            class="btn btn-danger btn-sm"
                            onclick="return confirm('¿Estás seguro de que quieres eliminar esta reseña?')">
                             <i class="fa-solid fa-trash me-1"></i> Eliminar Reseña
                         </a>
-                        
-                        <!-- Acciones administrativas -->
-                        <button th:if="${review.status.name() == 'PENDING_APPROVAL'}"
-                                class="btn btn-success btn-sm"
-                                onclick="alert('Función de aprobar reseña no implementada aún')">
-                            <i class="fa-solid fa-check me-1"></i> Aprobar
-                        </button>
-                        
-                        <button th:if="${review.status.name() == 'PENDING_APPROVAL'}"
-                                class="btn btn-warning btn-sm"
-                                onclick="alert('Función de rechazar reseña no implementada aún')">
-                            <i class="fa-solid fa-times me-1"></i> Rechazar
-                        </button>
-                        
-                        <button th:unless="${review.verified}"
-                                class="btn btn-info btn-sm"
-                                onclick="alert('Función de verificar reseña no implementada aún')">
-                            <i class="fa-solid fa-check-circle me-1"></i> Verificar
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Sidebar -->
         <div class="col-lg-4">
-            <!-- Otras reseñas del mismo producto -->
-            <div class="card shadow-sm mb-3" th:if="${review.product}">
-                <div class="card-body">
-                    <h6 class="card-title mb-3">
-                        <i class="fa-solid fa-star text-warning me-1"></i>
-                        Otras reseñas de este producto
-                    </h6>
-
-                    <!-- Sin reseñas relacionadas -->
-                    <div class="text-center text-muted py-3"
-                         th:if="${relatedReviews == null or #lists.isEmpty(relatedReviews)}">
-                        <i class="fa-regular fa-comment-dots fa-2x mb-2"></i>
-                        <p class="mb-0"><small>No hay otras reseñas para este producto</small></p>
-                    </div>
-
-                    <!-- Listado de reseñas relacionadas -->
-                    <div th:unless="${relatedReviews == null or #lists.isEmpty(relatedReviews)}">
-                        <div th:each="related : ${relatedReviews}"
-                             class="border-bottom pb-2 mb-2">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <small class="fw-semibold text-truncate me-2"
-                                       th:text="${related.title}">Título</small>
-                                <span th:class="|badge ${related.status != null and related.status.name() == 'APPROVED' ? 'bg-success' : (related.status != null and related.status.name() == 'REJECTED' ? 'bg-danger' : 'bg-warning')} text-nowrap|"
-                                      style="font-size:0.65rem"
-                                      th:text="${related.status != null ? related.status.name() : ''}">Estado</span>
-                            </div>
-                            <div class="my-1">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                      th:class="${i <= related.rating ? 'fa-solid fa-star text-warning' : 'fa-regular fa-star text-muted'}"
-                                      style="font-size:0.75rem"></span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted"
-                                       th:text="${related.user != null ? related.user.name : 'Anónimo'}">Usuario</small>
-                                <a th:href="@{/reviews/{id}(id=${related.id})}"
-                                   class="btn btn-outline-secondary btn-sm py-0 px-1"
-                                   style="font-size:0.7rem">Ver</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Estadísticas -->
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h6 class="card-title mb-3">
@@ -194,12 +103,53 @@
                             <i class="fa-solid fa-star me-1"></i>
                             <strong>Rating:</strong> <span th:text="${review.rating}">5</span>/5
                         </div>
-                        <div>
-                            <i class="fa-solid fa-shield-alt me-1"></i>
-                            <strong>Estado:</strong> <span th:text="${review.status.name()}">PENDING_APPROVAL</span>
-                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editReviewModalLabel">
+                        <i class="fa-solid fa-pen text-warning me-2"></i>Editar Reseña
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <form th:action="@{/reviews/edit/{id}(id=${review.id})}" method="post">
+                    <div class="modal-body text-start">
+
+                        <div class="mb-3">
+                            <label for="editTitle" class="form-label fw-bold">Título de la reseña:</label>
+                            <input type="text" class="form-control" id="editTitle" name="title"
+                                   th:value="${review.title}" required maxlength="100">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editRating" class="form-label fw-bold">Puntuación:</label>
+                            <select class="form-select" id="editRating" name="rating" required>
+                                <option value="5" th:selected="${review.rating == 5}">★★★★★ (5 - Excelente)</option>
+                                <option value="4" th:selected="${review.rating == 4}">★★★★☆ (4 - Bueno)</option>
+                                <option value="3" th:selected="${review.rating == 3}">★★★☆☆ (3 - Regular)</option>
+                                <option value="2" th:selected="${review.rating == 2}">★★☆☆☆ (2 - Malo)</option>
+                                <option value="1" th:selected="${review.rating == 1}">★☆☆☆☆ (1 - Pésimo)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editMessage" class="form-label fw-bold">Tu comentario:</label>
+                            <textarea class="form-control" id="editMessage" name="message" rows="4" required
+                                      th:text="${review.message}"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-warning btn-sm text-dark fw-bold">Guardar Cambios</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

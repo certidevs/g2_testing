@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -56,7 +57,14 @@ public class SecurityConfig
                   .defaultSuccessUrl("/products/")
                   .permitAll()
         );
-
+// AVISO: Esta combinación permite añadir comentarios pero abre una vulnerabilidad CSRF.
+// Cualquiera podría forzar a un usuario autenticado a postear una review falsa.
+        http.csrf(csrf -> csrf
+            .ignoringRequestMatchers("/products/*/reviews/add")
+    );
+http.sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+    );
         return http.build();
     }
 }

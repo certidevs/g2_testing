@@ -2,9 +2,6 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Review;
-import com.ecommerce.model.User;
-import com.ecommerce.model.Brand;
-import com.ecommerce.model.Category;
 import com.ecommerce.model.enums.ProductStockStatus;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
@@ -12,7 +9,6 @@ import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.repository.BrandRepository;
 import com.ecommerce.repository.CategoryRepository;
-import com.ecommerce.service.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,7 +25,7 @@ public class ProductControler {
     private ReviewRepository  reviewRepository;
     private FavoriteRepository favoriteRepository;
     private UserRepository userRepository;
-    private ReviewService reviewService;
+
     private BrandRepository brandRepository;
     private CategoryRepository categoryRepository;
 
@@ -50,7 +46,7 @@ public class ProductControler {
             Product product = productOptional.get();
             // TODO cambiar products a product porque es solo uno
             model.addAttribute("product", product);
-            List<Review> reviews = reviewService.getApprovedReviewsByProduct(id);
+            List<Review> reviews = reviewRepository.findByProductId(id);
             model.addAttribute("reviews", reviews);
 
         } else {
