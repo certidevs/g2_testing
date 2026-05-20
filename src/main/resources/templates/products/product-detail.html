@@ -10,6 +10,7 @@
                 <div>
                     <h1 class="mb-2" th:text="${'Producto: ' + product.title}">Producto</h1>
                     <p class="mb-2 fs-5" th:text="${product.longDescription != null ? product.longDescription : 'Sin descripción'}">Descripción</p>
+
                     <div class="mb-3">
                         <a class="btn btn-danger btn-sm" th:href="@{/products/deactivate/{id}(id=${product.id})}">
                             <i class="fa-solid fa-ban"></i> Desactivar
@@ -19,13 +20,40 @@
                         </a>
                     </div>
 
-                    <span class="badge bg-success me-1" style="font-size: 1.5rem; padding: 10px 15px;">
-                        <i class="fa-solid fa-euro-sign me-1"></i>
-                        <span th:text="${product.price != null ? product.price  : 'GRATIS'}"></span>
-                    </span>
-                    <span class="badge bg-light text-dark border me-1">
-                        Stock: <span th:text="${product.stock}">0</span> uds
-                    </span>
+                    <!-- SECCIÓN DE PRECIOS CON DESCUENTO ADAPTADA -->
+                    <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+
+                        <!-- CASO CON DESCUENTO ACTIVO -->
+                        <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}" class="d-content">
+                            <!-- Precio original tachado -->
+                            <span class="text-muted text-decoration-line-through fs-4 me-2"
+                                  th:text="${product.price != null ? #numbers.formatCurrency(product.price) : '0.00 €'}">0.00 €</span>
+
+                            <!-- Precio final rebajado -->
+                            <span class="badge bg-danger text-white me-2" style="font-size: 1.5rem; padding: 10px 15px;">
+                                <i class="fa-solid fa-euro-sign me-1"></i>
+                                <span th:text="${#numbers.formatDecimal(product.finalPrice, 1, 2)}">0.00</span>
+                            </span>
+
+                            <!-- Cartelito con el % de ahorro -->
+                            <span class="badge bg-danger animate__animated animate__pulse animate__infinite">
+                                <i class="fa-solid fa-fire me-1"></i>Ahorras <span th:text="${product.discountPercentage}">0</span>%
+                            </span>
+                        </div>
+
+                        <!-- CASO SIN DESCUENTO -->
+                        <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
+                            <span class="badge bg-success me-1" style="font-size: 1.5rem; padding: 10px 15px;">
+                                <i class="fa-solid fa-euro-sign me-1"></i>
+                                <span th:text="${product.price != null ? product.price : 'GRATIS'}"></span>
+                            </span>
+                        </div>
+
+                        <!-- Stock global -->
+                        <span class="badge bg-light text-dark border p-2 fs-6 ms-auto">
+                            Stock: <span th:text="${product.stock}">0</span> uds
+                        </span>
+                    </div>
 
                     <p th:if="${product.brand != null}" class="mt-2 mb-1">
                         <strong>Marca:</strong> <span th:text="${product.brand.name}">Sin marca</span>
@@ -36,8 +64,14 @@
                 </div>
             </div>
 
-            <div th:if="${product.imageUrl != null}" class="mb-3">
-                <img th:src="${product.imageUrl}" alt="Imagen del producto" class="img-fluid rounded">
+            <div th:if="${product.imageUrl != null}" class="mb-3 position-relative">
+                <!-- BADGE FLOTANTE SOBRE LA IMAGEN PRINCIPAL (Solo si tiene descuento) -->
+                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                     class="position-absolute top-0 start-0 m-3 badge bg-danger fs-5 shadow-sm z-3">
+                    <i class="fa-solid fa-tag me-1"></i>
+                    <span th:text="|-${product.discountPercentage}%|">-20%</span>
+                </div>
+                <img th:src="${product.imageUrl}" alt="Imagen del producto" class="img-fluid rounded shadow-sm w-100">
             </div>
 
             <p th:if="${product.shortDescription != null}" th:text="${product.shortDescription}"></p>
@@ -125,6 +159,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
 
+                        <!-- Tu acción de añadir reseña configurada en el formulario -->
                         <form th:action="@{/products/{id}/reviews/add(id=${product.id})}" method="post">
                             <div class="modal-body">
 

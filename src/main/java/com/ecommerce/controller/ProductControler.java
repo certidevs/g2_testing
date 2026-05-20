@@ -29,9 +29,9 @@ public class ProductControler {
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
 
-    // ==========================================
+
     //          VISTAS PÚBLICAS DE LA TIENDA
-    // ==========================================
+
 
     @GetMapping("/products")
     public String products(Model model) {
@@ -70,9 +70,9 @@ public class ProductControler {
     }
 
 
-    // ==========================================
-    //        PANEL DE GESTIÓN / ADMINISTRACIÓN
-    // ==========================================
+
+    //    //        PANEL DE GESTIÓN / ADMINISTRACIÓN
+
 
     // Nueva ruta para ver el listado de administración con la tabla y los modales
     @GetMapping("/admin/products/list")
