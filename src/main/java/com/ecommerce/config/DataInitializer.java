@@ -264,7 +264,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.STANDARD)
                 .totalPrice(50.00)
-                .userComment("Me ha llegado el producto en mal estado")
+                .userComment("Necesito que me lo entreguen por la tarde, a partir de las 17:00, porque trabajo hasta esa hora. Gracias!")
                 .build();
 
         var purchase2 = Purchase.builder()
@@ -277,7 +277,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.EXPRESS)
                 .totalPrice(15.45)
-                .userComment("El producto ha llegado bien pero he tardado mucho más de lo esperado teniendo en cuenta que era EXPRESS")
+                .userComment("Por favor, entregadlo lo antes posible, es un regalo para el cumpleaños de mi hermano que es el día 1 de julio. Si no es posible la entrega antes del 1 de julio, por favor cancelad la compra. Gracias!")
                 .build();
 
         var purchase3 = Purchase.builder()
