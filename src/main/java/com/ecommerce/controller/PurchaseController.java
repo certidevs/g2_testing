@@ -1,12 +1,15 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.Purchase;
+import com.ecommerce.model.User;
+import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.service.PurchaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -29,8 +32,12 @@ public class PurchaseController {
     // Muestra la lista de todas las compras
     @Transactional
     @GetMapping("purchases")
-    public String listPurchases(Model model) {
-        model.addAttribute("purchases", purchaseRepository.findAll());
+    public String listPurchases(Model model, @AuthenticationPrincipal User user) {
+        if (user.getRole().equals(Role.ROLE_ADMIN)) {
+            model.addAttribute("purchases", purchaseRepository.findAll());
+        } else {
+            model.addAttribute("purchases", purchaseRepository.findByUserId(getCurrentUserId(user)));
+        }
         return "purchases/purchase-list";
     }
 
@@ -52,8 +59,8 @@ public class PurchaseController {
 
     // Procesa el formulario para crear una nueva compra
     @PostMapping("purchases")
-    public String createPurchase(@ModelAttribute Purchase newPurchase) {
-        purchaseService.createPurchase(newPurchase);
+    public String createPurchase(@ModelAttribute Purchase newPurchase, @AuthenticationPrincipal User user) {
+        purchaseService.createPurchase(newPurchase, user);
         return "redirect:/purchases";
     }
 
@@ -67,24 +74,15 @@ public class PurchaseController {
 
     // Agrega un producto a la compra
     @GetMapping("purchases/add/{productId}")
-    public String addProduct(@PathVariable UUID productId) {
-
-        // TODO [Requiere reemplazar el usuario simulado por el usuario autenticado en la aplicación en la función de agregar un producto al carrito del usuario actual]
-        // ID temporal simulado para identificar al usuario actual en esta petición
-        UUID currentUserId = UUID.randomUUID();
-        Purchase purchase = purchaseService.addProductToCart(productId, currentUserId);
+    public String addProduct(@PathVariable UUID productId, @AuthenticationPrincipal User user) {
+        Purchase purchase = purchaseService.addProductToCart(productId, user);
         return "redirect:/purchases/" + purchase.getId();
     }
 
     // Muestra el carrito de compras del usuario actual, que es la compra con estatus iniciado (INITIATED) asociada al usuario actual, si no hay ninguna compra iniciada para el usuario actual, se muestra un carrito vacío
     @GetMapping("/purchases/{id}/cart")
-    public String showCart(Model model) {
-
-        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
-        // ID temporal simulado para identificar al usuario actual
-        UUID currentUserId = UUID.randomUUID();
-
-        Optional<Purchase> purchaseOptional = purchaseService.getOrCreateCartForUser(currentUserId);
+    public String showCart(Model model, @AuthenticationPrincipal User user) {
+        Optional<Purchase> purchaseOptional = purchaseService.getOrCreateCartForUser(user.getId());
 
         // Si hay un carrito iniciado para el usuario actual, pasamos el modelo a la vista
         if (purchaseOptional.isPresent()) {
@@ -111,23 +109,23 @@ public class PurchaseController {
 
     // Incrementar cantidad desde los detalles de la compra
     @GetMapping("purchases/{purchaseId}/lines/add/{productId}")
-    public String incrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId) {
-        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
-        // ID temporal simulado para identificar al usuario actual
-        UUID currentUserId = UUID.randomUUID();
-
-        purchaseService.addProductToCart(productId, currentUserId);
+    public String incrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId, @AuthenticationPrincipal User user) {
+        purchaseService.addProductToCart(productId, user);
         return "redirect:/purchases/" + purchaseId;
     }
 
     // Decrementar cantidad desde los detalles de la compra
     @GetMapping("purchases/{purchaseId}/lines/remove/{productId}")
-    public String decrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId) {
-        // ---- [ CAMBIAR EL ID TEMPORAL ] ----
-        // ID temporal simulado para identificar al usuario actual
-        UUID currentUserId = UUID.randomUUID();
-
-        purchaseService.removeProductFromCart(productId, currentUserId);
+    public String decrementLineQuantity(@PathVariable UUID purchaseId, @PathVariable UUID productId, @AuthenticationPrincipal User user) {
+        purchaseService.removeProductFromCart(productId, user);
         return "redirect:/purchases/" + purchaseId;
+    }
+
+    // Función auxiliar para obtener el ID del usuario actual de forma segura, si el usuario es null, devuelve null
+    private UUID getCurrentUserId(User user) {
+        if (user != null) {
+            return user.getId();
+        }
+        return null;
     }
 }
