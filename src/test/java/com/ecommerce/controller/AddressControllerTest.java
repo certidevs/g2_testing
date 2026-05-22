@@ -56,7 +56,7 @@ class AddressControllerTest {
                 .password("password1")
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build());
 
         address1 = Address.builder()

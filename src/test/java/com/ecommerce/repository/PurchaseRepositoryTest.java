@@ -58,7 +58,7 @@ class PurchaseRepositoryTest {
                 .password("password1")
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         user2 = User.builder()
@@ -70,7 +70,7 @@ class PurchaseRepositoryTest {
                 .password("password2")
                 .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
                 .gender(Gender.FEMALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         userRepository.saveAll(List.of(user1, user2));
