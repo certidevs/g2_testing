@@ -3,6 +3,7 @@ package com.ecommerce.service;
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
+import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,7 +29,7 @@ public class PurchaseService {
     private final PurchaseLineRepository purchaseLineRepository;
 
     // Crea una nueva compra, calculando el total a partir de las líneas de compra y estableciendo la fecha de compra
-    public void createPurchase(Purchase purchase) {
+    public void createPurchase(Purchase purchase, User user) {
         double total = 0.0;
         for (PurchaseLine line : purchase.getPurchaseLines()) {
             line.setPurchase(purchase);
@@ -35,6 +37,7 @@ public class PurchaseService {
         }
         purchase.setTotalAmount(total);
         purchase.setPurchaseDate(LocalDateTime.now());
+        purchase.setUser(user);
         purchaseRepository.save(purchase);
     }
 
@@ -42,7 +45,9 @@ public class PurchaseService {
 
     // Agrega un producto al carrito de compras del usuario
     @Transactional
-    public Purchase addProductToCart(UUID productId, UUID currentUserId) {
+    public Purchase addProductToCart(UUID productId, User user) {
+        UUID currentUserId = getCurrentUserId(user);
+
         // Verifieca que el producto exista
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -61,7 +66,7 @@ public class PurchaseService {
             purchase = purchaseOptional.get();
         } else {
             purchase = new Purchase();
-            // TODO purchase.setUser(currentUser);
+            purchase.setUser(user);
             purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
             purchase.setCreationDate(LocalDateTime.now());
             purchase.setTotalPrice(0.0);
@@ -88,12 +93,15 @@ public class PurchaseService {
             purchaseLine.setQuantity(purchaseLine.getQuantity() + 1);
 
             //  Mantener el estado del objeto compra actualizado con los cambios en las líneas de compra
-            if (purchase.getLines() != null) {
-                for (PurchaseLine l : purchase.getLines()) {
-                    if (l.getProduct().getId().equals(product.getId())) {
-                        l.setQuantity(purchaseLine.getQuantity());
-                    }
+            boolean lineSynchronized = false;
+            for (PurchaseLine l : getMutableLines(purchase)) {
+                if (l.getProduct().getId().equals(product.getId())) {
+                    l.setQuantity(purchaseLine.getQuantity());
+                    lineSynchronized = true;
                 }
+            }
+            if (!lineSynchronized) {
+                getMutableLines(purchase).add(purchaseLine);
             }
         } else {
             // Si el producto no tiene una línea de compra en la compra, se crea una nueva línea de compra con cantidad 1 y se asocia al producto y a la compra
@@ -101,14 +109,14 @@ public class PurchaseService {
             purchaseLine.setProduct(product);
             purchaseLine.setPurchase(purchase);
             purchaseLine.setQuantity(1);
-            purchase.getLines().add(purchaseLine);
+            getMutableLines(purchase).add(purchaseLine);
         }
 
         purchaseLineRepository.save(purchaseLine);
 
         // Calcula el precio total de la compra sumando el precio de cada línea de compra (price * quantity) y lo actualiza en la compra
         double totalPrice = 0.0;
-        for (PurchaseLine line : purchase.getLines()) {
+        for (PurchaseLine line : getMutableLines(purchase)) {
             totalPrice += line.getProduct().getPrice() * line.getQuantity();
         }
 
@@ -122,7 +130,9 @@ public class PurchaseService {
 
     // Resta un producto o disminuye su cantidad en el carrito de compras del usuario
     @Transactional
-    public Purchase removeProductFromCart(UUID productId, UUID currentUserId) {
+    public Purchase removeProductFromCart(UUID productId, User user) {
+        UUID currentUserId = getCurrentUserId(user);
+
         // Verifica que el usuario tenga un carrito de compras iniciado
         Purchase purchase = purchaseRepository.findFirstByUserIdAndPurchaseStatus(currentUserId, PurchaseStatus.INITIATED)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active cart found"));
@@ -138,22 +148,26 @@ public class PurchaseService {
             purchaseLineRepository.save(purchaseLine);
 
             // Mantener el estado sincronizado en memoria
-            if (purchase.getLines() != null) {
-                for (PurchaseLine l : purchase.getLines()) {
-                    if (l.getProduct().getId().equals(productId)) {
-                        l.setQuantity(purchaseLine.getQuantity());
-                    }
+            boolean lineSynchronized = false;
+            for (PurchaseLine l : getMutableLines(purchase)) {
+                if (l.getProduct().getId().equals(productId)) {
+                    l.setQuantity(purchaseLine.getQuantity());
+                    lineSynchronized = true;
                 }
+            }
+            // En caso de que la línea no esté sincronizada en memoria, la agregamos para mantener el estado actualizado
+            if (!lineSynchronized) {
+                getMutableLines(purchase).add(purchaseLine);
             }
         } else {
             // Si queda solo una unidad, eliminamos la línea por completo
-            purchase.getLines().remove(purchaseLine);
+            getMutableLines(purchase).remove(purchaseLine);
             purchaseLineRepository.delete(purchaseLine);
         }
 
         // Volvemos a calcular el precio total actualizado de la compra
         double totalPrice = 0.0;
-        for (PurchaseLine line : purchase.getLines()) {
+        for (PurchaseLine line : getMutableLines(purchase)) {
             totalPrice += line.getProduct().getPrice() * line.getQuantity();
         }
         purchase.setTotalPrice(totalPrice);
@@ -164,6 +178,22 @@ public class PurchaseService {
     // Verifica si el usuario tiene un carrito de compra iniciado, si lo tiene, lo devuelve, si no, devuelve un Optional vacío
     public Optional<Purchase> getOrCreateCartForUser(UUID currentUserId) {
         return purchaseRepository.findFirstByUserIdAndPurchaseStatus(currentUserId, PurchaseStatus.INITIATED);
+    }
+
+    // Función auxiliar para obtener el ID del usuario autenticado
+    private UUID getCurrentUserId(User user) {
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authenticated user is required");
+        }
+        return user.getId();
+    }
+
+    // Asegura que las operaciones de carrito puedan trabajar aunque la lista de líneas venga sin inicializar
+    private List<PurchaseLine> getMutableLines(Purchase purchase) {
+        if (purchase.getLines() == null) {
+            purchase.setLines(new ArrayList<>());
+        }
+        return purchase.getLines();
     }
 
     // Verifica que la compra exista y tenga líneas de compra antes de marcarla como finalizada
