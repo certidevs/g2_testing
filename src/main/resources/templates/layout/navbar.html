@@ -32,7 +32,7 @@
                     </a>
                 </li>
                 <li class="list-group-item list-group-item-action p-0">
-                    <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
+                    <a sec:authorize="isAuthenticated()" class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/purchases}">
                         <i class="fa-solid fa-ticket text-success"></i> Compras
                     </a>
@@ -143,7 +143,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/purchases}">
+                        <a sec:authorize="isAuthenticated()" class="nav-link" th:href="@{/purchases}">
                             <i class="fa-solid fa-ticket me-1"></i> Compras
                         </a>
                     </li>

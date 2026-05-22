@@ -1,6 +1,7 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.model.Purchase;
+import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.PurchaseLineRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -90,7 +92,11 @@ public class PurchaseController {
             model.addAttribute("cart", cart);
 
             // Pasamos las línes de la compra al modelo, si no hay líneas, se pasará un array vacío, para mostrar un carrito vacío en la vista
-            model.addAttribute("lines", cart.getPurchaseLines());
+//            model.addAttribute("lines", cart.getPurchaseLines());
+
+            List<PurchaseLine> lines = purchaseLineRepository.findByPurchaseId(cart.getId());
+            model.addAttribute("lines", lines);
+
         } else {
             // Si no hay ningún carrito iniciado para el usuario actual, pasamos un carrito vacío al modelo, con líneas vacías, para mostrar un carrito vacío en la vista
             model.addAttribute("cart", null);
