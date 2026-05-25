@@ -9,7 +9,7 @@
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title" id="sidebarMenuLabel">
-                <i class="fa-solid fa-bars-staggered me-2 text-primary"></i>Menú
+                <i class="fa-solid fa-bars-staggered"></i> Menú
             </h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
@@ -22,13 +22,13 @@
                 <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/products}">
-                        <i class="fa-solid fa-gears"></i> Productos
+                        <i class="fa-solid fa-shop"></i></i> Productos
                     </a>
                 </li>
                 <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/categories/tree}">
-                        <i class="fa-solid fa-table-list text-primary"></i> Categorías
+                        <i class="fa-solid fa-table-list"></i> Categorías
                     </a>
                 </li>
                 <li class="list-group-item list-group-item-action p-0">
@@ -40,57 +40,57 @@
                 <li class="list-group-item list-group-item-action p-0">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/reviews}">
-                        <i class="fa-solid fa-star text-warning"></i> Reseñas
+                        <i class="fa-solid fa-star-half-stroke"></i> Reseñas
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action mt-2">
+                <li class="list-group-item list-group-item-action mt-2" sec:authorize="isAuthenticated()">
                     <span class="text-muted small text-uppercase fw-bold px-1">Mi cuenta</span>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="isAuthenticated()">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/users/profile}">
                         <i class="fa-solid fa-user text-secondary"></i> Perfil
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="isAuthenticated()">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/favorites}">
                         <i class="fa-solid fa-heart text-danger"></i> Me gustan
                     </a>
                 </li>
 
-                <li class="list-group-item list-group-item-action mt-2">
+                <li class="list-group-item list-group-item-action mt-2" sec:authorize="hasRole('ADMIN')">
                     <span class="text-muted small text-uppercase fw-bold px-1">Admin</span>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/admin/users}">
                         <i class="fa-solid fa-users-gear text-primary"></i> Gestionar usuarios
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        sec:authorize="hasRole('ADMIN')" th:href="@{/admin/products/list}">
                         <i class="fa-solid fa-gears text-danger"></i> Admin Productos
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/products/new}">
                         <i class="fa-solid fa-bowl-food text-primary"></i> Crear Productos
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark" th:href="@{/categories/new}">
                         <i class="fa-regular fa-square-plus"></i> Crear Categoria
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0" >
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark" th:href="@{/categories}">
                         <i class="fa-solid fa-layer-group"></i> Categoria Admin
                     </a>
                 </li>
-                <li class="list-group-item list-group-item-action p-0">
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="hasRole('ADMIN')">
                     <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
                        th:href="@{/h2-console}" target="_blank">
                         <i class="fa-solid fa-database text-muted"></i> H2 Console
