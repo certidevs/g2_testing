@@ -26,6 +26,16 @@ public interface CategoryRepository extends JpaRepository<Category, UUID>
 
     boolean existsByParentIsNullAndSlug(String slug);
 
+    // Obtiene todas las categorías raíz activas y carga sus hijos en la misma consulta
+    @Query("""
+    select distinct c
+    from Category c
+    left join fetch c.children
+    where c.parent is null
+      and c.active = true
+    """)
+    List<Category> findActiveRootCategoriesWithChildren();
+
     // Trae categorías raíz y sus hijos en una sola consulta
     @Query("select distinct c from Category c left join fetch c.children where c.parent is null")
     List<Category> findAllRootWithChildren();

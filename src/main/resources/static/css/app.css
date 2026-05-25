@@ -49,3 +49,26 @@ h1, h2, h3, .navbar-brand {
 .text-muted {
     color: #666 !important;
 }
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu.no-children > .dropdown-menu {
+    display: none;
+}
+
+.dropdown-submenu > .dropdown-toggle::after {
+    float: right;
+    margin-top: 0.5em;
+}

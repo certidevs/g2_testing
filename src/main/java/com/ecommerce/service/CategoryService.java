@@ -4,11 +4,12 @@ import com.ecommerce.dto.CategoryRequestDto;
 import com.ecommerce.dto.CategoryResponseDto;
 import com.ecommerce.model.Category;
 import com.ecommerce.repository.CategoryRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -182,6 +183,19 @@ public class CategoryService
         return ids;
     }
 
+    /**
+     * Obtiene las categorías raíz activas, las convierte a DTO filtrando solo hijos activos
+     * y devuelve la lista ordenada alfabéticamente por nombre. Ejecutado en modo read‑only
+     * al tratarse únicamente de una operación de lectura.
+     */
+    @Transactional(readOnly = true)
+    public List<CategoryResponseDto> findActiveRootCategoriesForNavbar() {
+        return categoryRepository.findActiveRootCategoriesWithChildren()
+                .stream()
+                .map(this::toResponseDtoWithOnlyActiveChildren)
+                .sorted(Comparator.comparing(CategoryResponseDto::getName))
+                .toList();
+    }
 
     /**
      * Recorre recursivamente el árbol de categorías y añade cada id a la lista
@@ -254,6 +268,31 @@ public class CategoryService
                         category.getChildren()// obtener hijos desde la entidad
                                 .stream()
                                 .map(this::toResponseDtoWithChildren) // mapeo recursivo
+                                .toList()
+                )
+                .build();
+    }
+
+    /**
+     * Convierte una categoría en un DTO incluyendo solo los hijos activos,
+     * aplicando la misma conversión de forma recursiva y ordenando los hijos
+     * alfabéticamente por nombre.
+     */
+    private CategoryResponseDto toResponseDtoWithOnlyActiveChildren(Category category) {
+        return CategoryResponseDto.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .slug(category.getSlug())
+                .description(category.getDescription())
+                .active(category.getActive())
+                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .parentName(category.getParent() != null ? category.getParent().getName() : null)
+                .children(
+                        category.getChildren()
+                                .stream()
+                                .filter(child -> Boolean.TRUE.equals(child.getActive()))
+                                .map(this::toResponseDtoWithOnlyActiveChildren)
+                                .sorted(Comparator.comparing(CategoryResponseDto::getName))
                                 .toList()
                 )
                 .build();
