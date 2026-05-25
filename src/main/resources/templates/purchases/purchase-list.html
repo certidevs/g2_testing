@@ -14,7 +14,11 @@
         <!-- TÍTULO DE LA PÁGINA -->
         <div>
             <div class="text-uppercase text-muted small fw-semibold">Gestión de pedidos</div>
-            <h1 class="mb-1">Compras</h1>
+            <br>
+            <!-- MENSAJE DE BIENVENIDA CON NOMBRE DE USUARIO -->
+            <div style="font-size: 1.5rem; font-weight: bold;" class="text-muted medium">
+                ¡Hola de nuevo, <span style="font-size: 1.5rem; font-weight: bold;" th:text="${#authentication.name}"></span>!
+            </div>
         </div>
 
         <!--  BOTÓN DE CREAR COMPRA -->
@@ -24,7 +28,7 @@
         </a>
     </div>
 
-    <!-- PRIMER BLOQUE DE INFORMACIÓN -->
+    <!-- BLOQUE DE INFORMACIÓN -->
     <div class="row g-3 mb-4">
 
         <!-- NÚMERO DE COMPRAS REGISTRADAS -->
@@ -32,13 +36,35 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div class="text-muted small">Compras registradas</div>
-                    <div class="h3 mb-0" th:text="${purchases != null ? purchases.size() : 0}">0</div>
+                    <div style="font-size: 1.5rem" th:text="${purchases != null ? purchases.size() : 0}">0</div>
                 </div>
             </div>
         </div>
+
+    <!-- SEGUNDO BLOQUE DE INFORMACIÓN - CORREO ELECTRÓNICO -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Correo</div>
+                    <div style="font-size: 1.5rem" th:text="${#authentication.principal != null ? #authentication.principal.email : 'Sin correo'}">Sin correo</div>
+                </div>
+            </div>
+        </div>
+
+    <!-- TERCER BLOQUE DE INFORMACIÓN - DIRECCIÓN DE ENVÍO -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Dirección de envío</div>
+                    <!-- [PENDIENTE DE IMPLEMENTACIÓN | AGREGAR PARA QUE APAREZCA LA DIRECCIÓN DE ENVÍO AÑADIDA] -->
+                    <!-- [PENDIENTE DE IMPLEMENTACIÓN | AGREGAR OPCIÓN PARA CAMBIAR LA DIRECCIÓN O AÑADIR OTRA] -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- SEGUNDO BLOQUE DE INFORMACIÓN - CONDICIÓN VISUAL SI NO HAY COMPRAS REGISTRADAS -->
+    <!-- LISTA DE LAS COMPRAS - CONDICIÓN VISUAL SI NO HAY COMPRAS REGISTRADAS -->
     <div th:if="${purchases == null or purchases.isEmpty()}" class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
 
@@ -54,7 +80,7 @@
         </div>
     </div>
 
-    <!-- SEGUNDO BLOQUE DE INFORMACIÓN - CONDICIÓN VISUAL SI HAY COMPRAS REGISTRADAS -->
+    <!-- LISTA DE LAS COMPRAS - CONDICIÓN VISUAL SI HAY COMPRAS REGISTRADAS -->
     <div th:if="${purchases != null and !purchases.isEmpty()}" class="card border-0 shadow-sm">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
