@@ -137,8 +137,8 @@
         <div th:if="${lines == null or lines.isEmpty()}" class="card-body text-center py-5">
             <i class="fa-solid fa-basket-shopping fa-2x text-muted mb-3"></i>
             <h3 class="h6">La compra no tiene productos</h3>
-            <a th:href="@{/purchases/{id}/cart(id=${purchase.id})}" class="btn btn-outline-primary mt-2">
-                Ir al carrito
+            <a th:href="@{/products}" class="btn btn-outline-primary mt-2">
+                Ir a productos
             </a>
         </div>
 
