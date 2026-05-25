@@ -37,6 +37,11 @@ public class PurchaseService {
         }
         purchase.setTotalAmount(total);
         purchase.setPurchaseDate(LocalDateTime.now());
+        purchase.setPaymentStatus(PaymentStatus.PENDING);
+        purchase.setProcessStatus(ProcessStatus.PENDING);
+        purchase.setShippingMode(ShippingMode.STANDARD);
+        purchase.setShippingStatus(ShippingStatus.PENDING);
+        purchase.setUserComment("Sin comentario adicional para el envío");
         purchase.setUser(user);
         purchaseRepository.save(purchase);
     }
