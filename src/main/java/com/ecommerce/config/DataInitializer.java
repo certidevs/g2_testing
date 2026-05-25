@@ -143,7 +143,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .build()));
         Category electronicaRoot = categoryRepo.findBySlug("electronica")
                 .orElseGet(() -> categoryRepo.save(Category.builder()
-                        .name("informatica")
+                        .name("Informatica")
                         .slug("informatica")
                         .description("informatica y tecnologias")
                         .active(true)
@@ -187,17 +187,17 @@ public class DataInitializer  implements CommandLineRunner {
                         .build()));
         Category moviles = categoryRepo.findBySlug("moviles")
                 .orElseGet(() -> categoryRepo.save(Category.builder()
-                        .name("moviles")
+                        .name("Moviles")
                         .slug("movil")
-                        .description("moviles y tablets")
+                        .description("Moviles y tablets")
                         .active(true)
                         .parent(electronicaRoot)
                         .build()));
         Category portatil = categoryRepo.findBySlug("portatil")
                 .orElseGet(() -> categoryRepo.save(Category.builder()
-                        .name("portatil")
+                        .name("Portatil")
                         .slug("portatil")
-                        .description("portatiles")
+                        .description("Portatiles")
                         .active(true)
                         .parent(electronicaRoot)
                         .build()));
