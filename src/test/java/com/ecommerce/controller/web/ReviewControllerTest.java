@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest // Levanta todo el contexto real de Spring
-@AutoConfigureMockMvc // Permite usar MockMvc para simular peticiones HTTP
+@AutoConfigureMockMvc(addFilters = false)// Permite usar MockMvc para simular peticiones HTTP
 @Transactional // Limpia la base de datos al terminar cada test para no dejar basura
 class ReviewControllerTest {
 

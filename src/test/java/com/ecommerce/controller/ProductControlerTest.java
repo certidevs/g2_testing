@@ -21,13 +21,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @SpringBootTest // Activa Spring
-@AutoConfigureMockMvc // Activa MockMvc para testing de controller
+@AutoConfigureMockMvc(addFilters = false) // Activa MockMvc para testing de controller
 @Transactional // deshace los cambios al final de cada test para no afectar al siguiente test
 
 class ProductControlerTest {
 
-    @Autowired
-    ProductControler productControler;
     @Autowired
     ProductRepository productRepository;
     @Autowired
@@ -117,7 +115,7 @@ class ProductControlerTest {
                 .param("price", "9.99")
                 .param("stockStatus", "STOCK")
         ).andExpect(status().is3xxRedirection())
-         .andExpect(redirectedUrlPattern("/products*"));
+         .andExpect(redirectedUrlPattern("/admin/products/list*"));
 
 
         //count products

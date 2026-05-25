@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,13 +24,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 @ActiveProfiles("test")
 class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    PasswordEncoder encoder;
 
     @Autowired
     MockMvc mockMvc;
@@ -43,9 +46,10 @@ class UserControllerTest {
         user1 = userRepository.save(User.builder()
                 .name("Juan")
                 .lastName("Pérez")
+                .username("juan.perez")
                 .email("juan.perez@gmail.com")
                 .phone("123456789")
-                .password("password123")
+                .password(encoder.encode("123456"))
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
                 .role(Role.ROLE_CUSTOMER)
@@ -55,9 +59,10 @@ class UserControllerTest {
         user2 = userRepository.save(User.builder()
                 .name("María")
                 .lastName("García")
+                .username("maria.garcia")
                 .email("maria.garcia@gmail.com")
                 .phone("987654321")
-                .password("password456")
+                .password(encoder.encode("123456"))
                 .birthday(LocalDateTime.of(1985, Month.MARCH, 15, 0, 0))
                 .gender(Gender.FEMALE)
                 .role(Role.ROLE_ADMIN)
@@ -67,9 +72,10 @@ class UserControllerTest {
         user3 = userRepository.save(User.builder()
                 .name("Carlos")
                 .lastName("López")
+                .username("carlos.lopez")
                 .email("carlos.lopez@gmail.com")
                 .phone("555555555")
-                .password("password789")
+                .password(encoder.encode("123456"))
                 .birthday(LocalDateTime.of(1995, Month.JULY, 20, 0, 0))
                 .gender(Gender.MALE)
                 .role(Role.ROLE_CUSTOMER)
