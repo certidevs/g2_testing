@@ -41,7 +41,7 @@ public class UserRepositoryTest {
             .phone("123456789")
             .password("password1")
             .gender(Gender.MALE)
-            .role(Role.CUSTOMER)
+            .role(Role.ROLE_CUSTOMER)
             .creationDate(now)
             .addresses(new ArrayList<>()) // Inicializar para evitar null
             .build());
@@ -54,7 +54,7 @@ public class UserRepositoryTest {
             .phone("987654321")
             .password("password2")
             .gender(Gender.FEMALE)
-            .role(Role.ADMIN)
+            .role(Role.ROLE_ADMIN)
             .creationDate(twoWeeksAgo)
             .addresses(new ArrayList<>()) // Inicializar para evitar null
             .build());
@@ -67,7 +67,7 @@ public class UserRepositoryTest {
             .phone("555555555")
             .password("password3")
             .gender(Gender.FEMALE)
-            .role(Role.CUSTOMER)
+            .role(Role.ROLE_CUSTOMER)
             .creationDate(oneMonthAgo)
             .addresses(new ArrayList<>()) // Inicializar para evitar null
             .build());
@@ -178,19 +178,19 @@ public class UserRepositoryTest {
 
     @Test
     void findByRole() {
-        Role role = Role.CUSTOMER;
+        Role role = Role.ROLE_CUSTOMER;
 
         List<User> users = userRepository.findByRole(role);
 
         assertEquals(2, users.size()); // John and Alice
         for (User user : users) {
-            assertEquals(Role.CUSTOMER, user.getRole());
+            assertEquals(Role.ROLE_CUSTOMER, user.getRole());
         }
     }
 
     @Test
     void findByRole_NotFound() {
-        Role role = Role.ADMIN; // Solo hay 1 admin (Jane)
+        Role role = Role.ROLE_ADMIN; // Solo hay 1 admin (Jane)
 
         List<User> users = userRepository.findByRole(role);
 

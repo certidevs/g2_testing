@@ -44,7 +44,7 @@ public class AddressRepositoryTest {
             .phone("123456789")
             .password("password1")
             .gender(Gender.MALE)
-            .role(Role.CUSTOMER)
+            .role(Role.ROLE_CUSTOMER)
             .creationDate(java.time.LocalDateTime.now())
             .addresses(new ArrayList<>())
             .build());
@@ -57,7 +57,7 @@ public class AddressRepositoryTest {
             .phone("987654321")
             .password("password2")
             .gender(Gender.FEMALE)
-            .role(Role.ADMIN)
+            .role(Role.ROLE_ADMIN)
             .creationDate(java.time.LocalDateTime.now())
             .addresses(new ArrayList<>())
             .build());
@@ -290,7 +290,7 @@ public class AddressRepositoryTest {
             .phone("555555555")
             .password("password3")
             .gender(Gender.FEMALE)
-            .role(Role.CUSTOMER)
+            .role(Role.ROLE_CUSTOMER)
             .creationDate(java.time.LocalDateTime.now())
             .addresses(new ArrayList<>())
             .build());
@@ -339,7 +339,7 @@ public class AddressRepositoryTest {
             .phone("666666666")
             .password("password4")
             .gender(Gender.OTHER)
-            .role(Role.CUSTOMER)
+            .role(Role.ROLE_CUSTOMER)
             .creationDate(java.time.LocalDateTime.now())
             .addresses(new ArrayList<>())
             .build());

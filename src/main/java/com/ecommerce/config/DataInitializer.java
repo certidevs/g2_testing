@@ -33,6 +33,7 @@ public class DataInitializer  implements CommandLineRunner {
         System.out.println("HOLA DESDE DATA INITIALIZER");
         //if (productRepo.count() > 0) return;
 
+        // -------- USUARIOS --------
         var user1 = User.builder()
                 .name("User 1")
                 .username("user1")
@@ -68,9 +69,10 @@ public class DataInitializer  implements CommandLineRunner {
                 .gender(Gender.MALE)
                 .role(Role.ROLE_ADMIN)
                 .build();
+
         userRepo.saveAll(List.of(user1, user2, adminUser));
 
-        // Crear direcciones de prueba
+        // -------- DIRECCIONES --------
         var address1 = Address.builder()
                 .street("Calle Mayor")
                 .number("123")
@@ -119,6 +121,8 @@ public class DataInitializer  implements CommandLineRunner {
 
         addressRepo.saveAll(List.of(address1, address2, address3, address4));
 
+        // -------- MARCAS --------
+
         var brand1 = brandRepo.save(Brand.builder()
                 .name("Nike")
                 .nif("123456789")
@@ -128,7 +132,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .active(true)
                 .build());
 
-        // --- Crear categorías iniciales (si no existen) ---
+        // -------- CATEGORÍAS INICIALES (SI NO EXISTEN) --------
         Category ropaRoot = categoryRepo.findBySlug("ropa")
                 .orElseGet(() -> categoryRepo.save(Category.builder()
                         .name("Ropa")
@@ -199,8 +203,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .build()));
 
 
-// --- fin categorías ---
-
+        // -------- PRODUCTOS --------
         var product1 = productRepo.save(Product.builder()
                 .title("Camiseta Blanca")
                 .subcategory(camisetas)
@@ -247,13 +250,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .stock(10)
                 .price(2500.00).brand(brand1).build());
 
-
-
-
-
-
-
-
+        // -------- COMPRAS --------
         var purchase1 = Purchase.builder()
                 .user(user1)
                 .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
@@ -264,7 +261,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.STANDARD)
                 .totalPrice(50.00)
-                .userComment("Me ha llegado el producto en mal estado")
+                .userComment("Necesito que me lo entreguen por la tarde, a partir de las 17:00, porque trabajo hasta esa hora. Gracias!")
                 .build();
 
         var purchase2 = Purchase.builder()
@@ -277,7 +274,7 @@ public class DataInitializer  implements CommandLineRunner {
                 .shippingStatus(ShippingStatus.DELIVERED)
                 .shippingMode(ShippingMode.EXPRESS)
                 .totalPrice(15.45)
-                .userComment("El producto ha llegado bien pero he tardado mucho más de lo esperado teniendo en cuenta que era EXPRESS")
+                .userComment("Por favor, entregadlo lo antes posible, es un regalo para el cumpleaños de mi hermano que es el día 1 de julio. Si no es posible la entrega antes del 1 de julio, por favor cancelad la compra. Gracias!")
                 .build();
 
         var purchase3 = Purchase.builder()
@@ -307,13 +304,15 @@ public class DataInitializer  implements CommandLineRunner {
                 .build();
 
         purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
-        // purchase lines asociadas a la compra 1: (el usuario añade 3 productos a la compra 1)
+
+        // -------- LÍNEAS DE COMPRA --------
+        // Líneas de compra asociadas a la compra 1: (el usuario añade 3 productos a la compra 1)
         purchaseLineRepo.saveAll(List.of(
                 PurchaseLine.builder().quantity(2).product(product1).purchase(purchase1).build(),
                 PurchaseLine.builder().quantity(4).product(product2).purchase(purchase1).build(),
                 PurchaseLine.builder().quantity(1).product(product3).purchase(purchase1).build()
         ));
-        // purchase lines asociadas a la compra 2: el usaurio añade 4 productos a la compra 2)
+        // Líneas de compra asociadas a la compra 2: el usaurio añade 4 productos a la compra 2)
         purchaseLineRepo.saveAll(List.of(
                 PurchaseLine.builder().quantity(1).product(product4).purchase(purchase2).build(),
                 PurchaseLine.builder().quantity(4).product(product1).purchase(purchase2).build(),
@@ -321,7 +320,7 @@ public class DataInitializer  implements CommandLineRunner {
                 PurchaseLine.builder().quantity(6).product(product3).purchase(purchase2).build()
         ));
 
-        // Reseñas de ejemplo
+        // -------- RESEÑAS --------
         var review1 = Review.builder()
                 .title("Camiseta de muy buena calidad")
                 .message("Estoy muy contento con la compra. El tejido es suave y resistente, y la talla es exacta. La recomiendo totalmente.")

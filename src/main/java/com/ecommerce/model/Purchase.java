@@ -48,6 +48,7 @@ public class Purchase {
     private String userComment; // Comentario opcional del usuario para la entrega de la compra
 
     // Asociación con el usuario que realizó la compra, una compra pertenece a un solo usuario, pero un usuario puede tener varias compras
+    @ToString.Exclude
     @ManyToOne
     private User user;
 

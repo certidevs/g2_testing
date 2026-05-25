@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false) // Desactiva security para las pruebas
 @Transactional
 @ActiveProfiles("test")
 class PurchaseControllerTest {
@@ -90,7 +90,7 @@ class PurchaseControllerTest {
                 .password("password1")
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         user2 = User.builder()
@@ -102,7 +102,7 @@ class PurchaseControllerTest {
                 .password("password2")
                 .birthday(LocalDateTime.of(1995, Month.JUNE, 15, 0, 0))
                 .gender(Gender.FEMALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .build();
 
         userRepository.saveAll(List.of(user1, user2));
@@ -251,7 +251,7 @@ class PurchaseControllerTest {
 
         // Cuando hagamos pruebas que tengamos que verificar la lógica de service utilizaremos verify,
         // de tal manera se comprueba que se han llamado a los métodos correspondientes del servicio con los argumentos esperados, lo que nos permite asegurarnos de que la lógica de negocio se está ejecutando correctamente durante las pruebas
-        verify(purchaseService).createPurchase(any(Purchase.class));
+        verify(purchaseService).createPurchase(any(Purchase.class), nullable(User.class));
     }
 
     // Verifica que al eliminar una compra se redirige a la lista de compras
@@ -270,13 +270,13 @@ class PurchaseControllerTest {
     void addProductRedirectsToPurchaseDetail() throws Exception {
         Purchase cart = Purchase.builder().build();
         cart.setId(purchase3.getId());
-        when(purchaseService.addProductToCart(eq(product1.getId()), any(UUID.class))).thenReturn(cart);
+        when(purchaseService.addProductToCart(eq(product1.getId()), nullable(User.class))).thenReturn(cart);
 
         mockMvc.perform(get("/purchases/add/{productId}", product1.getId()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/purchases/" + purchase3.getId()));
 
-        verify(purchaseService).addProductToCart(eq(product1.getId()), any(UUID.class));
+        verify(purchaseService).addProductToCart(eq(product1.getId()), nullable(User.class));
     }
 
     // Verifica que al eliminar un producto de la compra se redirige al detalle de la compra
@@ -323,7 +323,7 @@ class PurchaseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
 
-        verify(purchaseService).addProductToCart(eq(product1.getId()), any(UUID.class));
+        verify(purchaseService).addProductToCart(eq(product1.getId()), nullable(User.class));
     }
 
     // Verifica que al eliminar un producto de la compra se redirige al detalle de la compra
@@ -333,6 +333,6 @@ class PurchaseControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
 
-        verify(purchaseService).removeProductFromCart(eq(product1.getId()), any(UUID.class));
+        verify(purchaseService).removeProductFromCart(eq(product1.getId()), nullable(User.class));
     }
 }

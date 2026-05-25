@@ -48,7 +48,7 @@ class UserControllerTest {
                 .password("password123")
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .creationDate(LocalDateTime.now())
                 .build());
 
@@ -60,7 +60,7 @@ class UserControllerTest {
                 .password("password456")
                 .birthday(LocalDateTime.of(1985, Month.MARCH, 15, 0, 0))
                 .gender(Gender.FEMALE)
-                .role(Role.ADMIN)
+                .role(Role.ROLE_ADMIN)
                 .creationDate(LocalDateTime.now())
                 .build());
 
@@ -72,7 +72,7 @@ class UserControllerTest {
                 .password("password789")
                 .birthday(LocalDateTime.of(1995, Month.JULY, 20, 0, 0))
                 .gender(Gender.MALE)
-                .role(Role.CUSTOMER)
+                .role(Role.ROLE_CUSTOMER)
                 .creationDate(LocalDateTime.now())
                 .build());
     }
@@ -107,7 +107,7 @@ class UserControllerTest {
                 .andExpect(model().attribute("user", hasProperty("name", is("Juan"))))
                 .andExpect(model().attribute("user", hasProperty("lastName", is("Pérez"))))
                 .andExpect(model().attribute("user", hasProperty("email", is("juan.perez@gmail.com"))))
-                .andExpect(model().attribute("user", hasProperty("role", is(Role.CUSTOMER))));
+                .andExpect(model().attribute("user", hasProperty("role", is(Role.ROLE_CUSTOMER))));
     }
 
     @Test
