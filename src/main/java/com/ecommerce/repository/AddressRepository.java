@@ -4,6 +4,7 @@ import com.ecommerce.model.Address;
 import com.ecommerce.model.User;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
+import org.jspecify.annotations.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -41,4 +42,6 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     
     // Find addresses by user and type
     List<Address> findByUserAndAddressType(User user, AddressType addressType);
+
+    @Nullable Object findByUserId(UUID currentUserId);
 }

@@ -4,6 +4,7 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
+import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.UserRepository;
@@ -30,6 +31,7 @@ public class PurchaseController {
     private final PurchaseLineRepository purchaseLineRepository;
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
 
     // Muestra la lista de todas las compras
     @Transactional
@@ -53,10 +55,15 @@ public class PurchaseController {
 
     // Muestra el formulario para crear una nueva compra
     @GetMapping("purchases/new")
-    public String showCreatePurchaseForm(Model model) {
-        model.addAttribute("purchase", new Purchase());
-        model.addAttribute("users", userRepository.findAll());
-        return "purchases/purchase-form";
+    public String showCreatePurchaseForm(Model model, @AuthenticationPrincipal User user) {
+        if(purchaseService.getOrCreateCartForUser(getCurrentUserId(user)).isPresent()) {
+            return "redirect:/purchases";
+        }
+        else{
+            model.addAttribute("purchase", new Purchase());
+            model.addAttribute("addresses", addressRepository.findByUserId(getCurrentUserId(user)));
+            return "purchases/purchase-form";
+        }
     }
 
     // Procesa el formulario para crear una nueva compra

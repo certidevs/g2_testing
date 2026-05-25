@@ -30,20 +30,26 @@ public class PurchaseService {
 
     // Crea una nueva compra, calculando el total a partir de las líneas de compra y estableciendo la fecha de compra
     public void createPurchase(Purchase purchase, User user) {
-        double total = 0.0;
-        for (PurchaseLine line : purchase.getPurchaseLines()) {
-            line.setPurchase(purchase);
-            total += line.getPrice() * line.getQuantity();
+        if(getOrCreateCartForUser(user.getId()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has an active cart");
         }
-        purchase.setTotalAmount(total);
-        purchase.setPurchaseDate(LocalDateTime.now());
-        purchase.setPaymentStatus(PaymentStatus.PENDING);
-        purchase.setProcessStatus(ProcessStatus.PENDING);
-        purchase.setShippingMode(ShippingMode.STANDARD);
-        purchase.setShippingStatus(ShippingStatus.PENDING);
-        purchase.setUserComment("Sin comentario adicional para el envío");
-        purchase.setUser(user);
-        purchaseRepository.save(purchase);
+        else{
+            double total = 0.0;
+            for (PurchaseLine line : purchase.getPurchaseLines()) {
+                line.setPurchase(purchase);
+                total += line.getPrice() * line.getQuantity();
+            }
+            purchase.setTotalAmount(total);
+            purchase.setPurchaseDate(LocalDateTime.now());
+            purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
+            purchase.setPaymentStatus(PaymentStatus.PENDING);
+            purchase.setProcessStatus(ProcessStatus.PENDING);
+            purchase.setShippingMode(ShippingMode.STANDARD);
+            purchase.setShippingStatus(ShippingStatus.PENDING);
+            purchase.setUserComment("Sin comentario adicional para el envío");
+            purchase.setUser(user);
+            purchaseRepository.save(purchase);
+        }
     }
 
     // ---- [ AGREGAR AL CARRITO DE COMPRAS ] ----

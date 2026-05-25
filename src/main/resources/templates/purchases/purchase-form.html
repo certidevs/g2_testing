@@ -40,16 +40,7 @@
                 <div class="card-body">
                     <div class="row g-3">
 
-                        <!-- SELECT PARA CLIENTE -->
-                        <div class="col-md-6">
-                            <label for="user" class="form-label">Cliente</label>
-                            <select class="form-select" id="user" th:field="*{user}">
-                                <option value="">Selecciona usuario</option>
-                                <option th:each="user : ${users}"
-                                        th:value="${user.id}"
-                                        th:text="${user.name != null and user.lastName != null ? user.name + ' ' + user.lastName : user.username}"></option>
-                            </select>
-                        </div>
+                        <!-- [PENDIENTE] DIRECCIÓN DE ENVÍO -->
 
                         <!-- SELECT PARA MODO DE ENVÍO-->
                         <div class="col-md-6">
