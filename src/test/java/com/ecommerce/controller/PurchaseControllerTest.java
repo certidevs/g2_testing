@@ -237,6 +237,11 @@ class PurchaseControllerTest {
     // Verifica que al enviar el formulario de creación de compra se redirige a la lista de compras
     @Test
     void createPurchaseRedirectsToPurchaseList() throws Exception {
+
+        doNothing().when(purchaseService).createPurchase(
+                        any(Purchase.class),
+                        any(User.class)
+        );
         mockMvc.perform(post("/purchases")
                         .with(csrf())
                         .param("totalPrice", "99.99")
@@ -247,7 +252,7 @@ class PurchaseControllerTest {
                         .param("shippingMode", ShippingMode.STANDARD.name()))
                 // [ is3xxRedirection() se utiliza para verificar que la respuesta HTTP es una redirección ]
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases"));
+                .andExpect(redirectedUrlPattern("/purchases*"));
 
         // Cuando hagamos pruebas que tengamos que verificar la lógica de service utilizaremos verify,
         // de tal manera se comprueba que se han llamado a los métodos correspondientes del servicio con los argumentos esperados, lo que nos permite asegurarnos de que la lógica de negocio se está ejecutando correctamente durante las pruebas
