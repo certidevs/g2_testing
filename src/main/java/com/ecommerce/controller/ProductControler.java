@@ -34,8 +34,13 @@ public class ProductControler {
 
 
     @GetMapping("/products")
-    public String products(Model model) {
-        model.addAttribute("products", productRepository.findAll());
+    public String products(Model model, @RequestParam(required = false) String category) {
+        if(category != null) {
+            model.addAttribute("products", productRepository.findBySubcategorySlug(category));
+        } else {
+            model.addAttribute("products", productRepository.findAll());
+        }
+
         model.addAttribute("saludo", "MODA DE VERANO");
         return "products/product-list";
     }

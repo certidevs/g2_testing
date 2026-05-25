@@ -250,75 +250,75 @@ public class DataInitializer  implements CommandLineRunner {
                         .stock(10)
                 .price(2500.00).brand(brand1).build());
 
-        // -------- COMPRAS --------
-        var purchase1 = Purchase.builder()
-                .user(user1)
-                .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
-                .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
-                .purchaseStatus(PurchaseStatus.FINISHED)
-                .paymentStatus(PaymentStatus.PAID)
-                .processStatus(ProcessStatus.COMPLETED)
-                .shippingStatus(ShippingStatus.DELIVERED)
-                .shippingMode(ShippingMode.STANDARD)
-                .totalPrice(50.00)
-                .userComment("Necesito que me lo entreguen por la tarde, a partir de las 17:00, porque trabajo hasta esa hora. Gracias!")
-                .build();
-
-        var purchase2 = Purchase.builder()
-                .user(user2)
-                .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
-                .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
-                .purchaseStatus(PurchaseStatus.FINISHED)
-                .paymentStatus(PaymentStatus.PAID)
-                .processStatus(ProcessStatus.COMPLETED)
-                .shippingStatus(ShippingStatus.DELIVERED)
-                .shippingMode(ShippingMode.EXPRESS)
-                .totalPrice(15.45)
-                .userComment("Por favor, entregadlo lo antes posible, es un regalo para el cumpleaños de mi hermano que es el día 1 de julio. Si no es posible la entrega antes del 1 de julio, por favor cancelad la compra. Gracias!")
-                .build();
-
-        var purchase3 = Purchase.builder()
-                .user(user1)
-                .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
-                .finishedDate(null)
-                .purchaseStatus(PurchaseStatus.INITIATED)
-                .paymentStatus(PaymentStatus.PENDING)
-                .processStatus(ProcessStatus.PENDING)
-                .shippingStatus(ShippingStatus.PENDING)
-                .shippingMode(ShippingMode.PREMIUM)
-                .totalPrice(150.75)
-                .userComment(null)
-                .build();
-
-        var purchase4 = Purchase.builder()
-                .user(user2)
-                .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
-                .finishedDate(null)
-                .purchaseStatus(PurchaseStatus.INACTIVE)
-                .paymentStatus(PaymentStatus.PENDING)
-                .processStatus(ProcessStatus.PENDING)
-                .shippingStatus(ShippingStatus.PENDING)
-                .shippingMode(ShippingMode.STANDARD)
-                .totalPrice(73.00)
-                .userComment(null)
-                .build();
-
-        purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
-
-        // -------- LÍNEAS DE COMPRA --------
-        // Líneas de compra asociadas a la compra 1: (el usuario añade 3 productos a la compra 1)
-        purchaseLineRepo.saveAll(List.of(
-                PurchaseLine.builder().quantity(2).product(product1).purchase(purchase1).build(),
-                PurchaseLine.builder().quantity(4).product(product2).purchase(purchase1).build(),
-                PurchaseLine.builder().quantity(1).product(product3).purchase(purchase1).build()
-        ));
-        // Líneas de compra asociadas a la compra 2: el usaurio añade 4 productos a la compra 2)
-        purchaseLineRepo.saveAll(List.of(
-                PurchaseLine.builder().quantity(1).product(product4).purchase(purchase2).build(),
-                PurchaseLine.builder().quantity(4).product(product1).purchase(purchase2).build(),
-                PurchaseLine.builder().quantity(6).product(product2).purchase(purchase2).build(),
-                PurchaseLine.builder().quantity(6).product(product3).purchase(purchase2).build()
-        ));
+//        // -------- COMPRAS --------
+//        var purchase1 = Purchase.builder()
+//                .user(user1)
+//                .creationDate(LocalDateTime.of(2026, Month.MARCH, 15, 12, 45))
+//                .finishedDate(LocalDateTime.of(2026, Month.APRIL, 28, 17, 30))
+//                .purchaseStatus(PurchaseStatus.FINISHED)
+//                .paymentStatus(PaymentStatus.PAID)
+//                .processStatus(ProcessStatus.COMPLETED)
+//                .shippingStatus(ShippingStatus.DELIVERED)
+//                .shippingMode(ShippingMode.STANDARD)
+//                .totalPrice(50.00)
+//                .userComment("Necesito que me lo entreguen por la tarde, a partir de las 17:00, porque trabajo hasta esa hora. Gracias!")
+//                .build();
+//
+//        var purchase2 = Purchase.builder()
+//                .user(user2)
+//                .creationDate(LocalDateTime.of(2025, Month.JUNE, 10, 18, 35))
+//                .finishedDate(LocalDateTime.of(2025, Month.DECEMBER, 25, 16, 15))
+//                .purchaseStatus(PurchaseStatus.FINISHED)
+//                .paymentStatus(PaymentStatus.PAID)
+//                .processStatus(ProcessStatus.COMPLETED)
+//                .shippingStatus(ShippingStatus.DELIVERED)
+//                .shippingMode(ShippingMode.EXPRESS)
+//                .totalPrice(15.45)
+//                .userComment("Por favor, entregadlo lo antes posible, es un regalo para el cumpleaños de mi hermano que es el día 1 de julio. Si no es posible la entrega antes del 1 de julio, por favor cancelad la compra. Gracias!")
+//                .build();
+//
+//        var purchase3 = Purchase.builder()
+//                .user(user1)
+//                .creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50))
+//                .finishedDate(null)
+//                .purchaseStatus(PurchaseStatus.INITIATED)
+//                .paymentStatus(PaymentStatus.PENDING)
+//                .processStatus(ProcessStatus.PENDING)
+//                .shippingStatus(ShippingStatus.PENDING)
+//                .shippingMode(ShippingMode.PREMIUM)
+//                .totalPrice(150.75)
+//                .userComment(null)
+//                .build();
+//
+//        var purchase4 = Purchase.builder()
+//                .user(user2)
+//                .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 8, 30))
+//                .finishedDate(null)
+//                .purchaseStatus(PurchaseStatus.INACTIVE)
+//                .paymentStatus(PaymentStatus.PENDING)
+//                .processStatus(ProcessStatus.PENDING)
+//                .shippingStatus(ShippingStatus.PENDING)
+//                .shippingMode(ShippingMode.STANDARD)
+//                .totalPrice(73.00)
+//                .userComment(null)
+//                .build();
+//
+//        purchaseRepo.saveAll(List.of(purchase1, purchase2, purchase3, purchase4));
+//
+//        // -------- LÍNEAS DE COMPRA --------
+//        // Líneas de compra asociadas a la compra 1: (el usuario añade 3 productos a la compra 1)
+//        purchaseLineRepo.saveAll(List.of(
+//                PurchaseLine.builder().quantity(2).product(product1).purchase(purchase1).build(),
+//                PurchaseLine.builder().quantity(4).product(product2).purchase(purchase1).build(),
+//                PurchaseLine.builder().quantity(1).product(product3).purchase(purchase1).build()
+//        ));
+//        // Líneas de compra asociadas a la compra 2: el usaurio añade 4 productos a la compra 2)
+//        purchaseLineRepo.saveAll(List.of(
+//                PurchaseLine.builder().quantity(1).product(product4).purchase(purchase2).build(),
+//                PurchaseLine.builder().quantity(4).product(product1).purchase(purchase2).build(),
+//                PurchaseLine.builder().quantity(6).product(product2).purchase(purchase2).build(),
+//                PurchaseLine.builder().quantity(6).product(product3).purchase(purchase2).build()
+//        ));
 
         // -------- RESEÑAS --------
         var review1 = Review.builder()

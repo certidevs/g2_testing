@@ -46,4 +46,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByAvailableTrue();
 
 
+    // TODO crear query  @query filtre por subcategory.slug OR subcategory.parent.slug
+    List<Product> findBySubcategorySlug(String slug);
+
 }
