@@ -32,18 +32,23 @@ public class ProductControler {
 
     //          VISTAS PÚBLICAS DE LA TIENDA
 
-
     @GetMapping("/products")
-    public String products(Model model, @RequestParam(required = false) String category) {
-        if(category != null) {
+    public String listProducts(Model model, @RequestParam(required = false) String category) {
+
+        // los productos en oferta (los que tienen más de 0% de descuento)
+        List<Product> ofertas = productRepository.findByDiscountPercentageGreaterThan(0);
+        model.addAttribute("discountedProducts", ofertas);
+
+        if (category != null && !category.isBlank()) {
             model.addAttribute("products", productRepository.findBySubcategorySlug(category));
         } else {
-            model.addAttribute("products", productRepository.findAll());
+            model.addAttribute("products", productRepository.findByAvailableTrue());
         }
 
-        model.addAttribute("saludo", "MODA DE VERANO");
+        model.addAttribute("saludo", "NUESTRA TIENDA");
         return "products/product-list";
     }
+
 
     @GetMapping("products/{id}")
     public String productsDetail(@PathVariable UUID id, Model model) {
