@@ -3,10 +3,11 @@
 <head th:replace="~{layout/head :: head('Productos')}">
 </head>
 <body class="d-flex flex-column min-vh-100">
-<nav th:replace="~{layout/navbar :: navbar}"></nav>
-<main class="container flex-grow-1">
 
-    <!-- Carousel de Videos -->
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="flex-grow-1">
+
     <div id="carouselExampleIndicators" class="carousel slide mb-5 shadow">
         <div class="carousel-indicators">
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -35,184 +36,169 @@
             <span class="visually-hidden">Siguiente</span>
         </button>
     </div>
-    <div th:if="${discountedProducts != null and !discountedProducts.isEmpty()}" class="mb-5">
-        <h2 class="fw-bold text-danger mb-4">
-            <i class="fa-solid fa-fire-flame-curved me-2"></i>¡Grandes Ofertas de Verano!<i class="fa-solid fa-fire-flame-curved me-2"></i>
-        </h2>
 
-        <div id="discountCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-inner">
+    <div class="container">
 
-                <div th:each="prod, iter : ${discountedProducts}"
-                     th:if="${iter.index % 3 == 0}"
-                     th:class="|carousel-item ${iter.index == 0 ? 'active' : ''}|">
+        <div th:if="${discountedProducts != null and !discountedProducts.isEmpty()}" class="mb-5">
+            <h2 class="fw-bold text-danger mb-4">
+                <i class="fa-solid fa-fire-flame-curved me-2"></i>¡Grandes Ofertas de Verano!<i class="fa-solid fa-fire-flame-curved me-2"></i>
+            </h2>
 
-                    <div class="row g-3 px-5"> <div class="col-md-4">
-                        <div class="card h-100 shadow-sm position-relative border-danger">
-                            <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
-                                <i class="fa-solid fa-tag me-1"></i>
-                                <span th:text="|-${discountedProducts[iter.index].discountPercentage}%|">-20%</span>
-                            </div>
-                            <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
-                                <img th:src="${discountedProducts[iter.index].imageUrl}" th:alt="${discountedProducts[iter.index].title}" class="w-100 h-100 object-fit-contain">
-                            </div>
-                            <div class="card-body d-flex flex-column py-2">
-                                <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index].title}">Producto</h6>
-                                <div class="mt-auto">
-                                    <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index].price)}">0.00 €</span>
-                                    <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index].finalPrice)}">0.00 €</span>
+            <div id="discountCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+
+                    <div th:each="prod, iter : ${discountedProducts}"
+                         th:if="${iter.index % 3 == 0}"
+                         th:class="|carousel-item ${iter.index == 0 ? 'active' : ''}|">
+
+                        <div class="row g-3 px-5">
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm position-relative border-danger">
+                                    <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
+                                        <i class="fa-solid fa-tag me-1"></i>
+                                        <span th:text="|-${discountedProducts[iter.index].discountPercentage}%|">-20%</span>
+                                    </div>
+                                    <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
+                                        <img th:src="${discountedProducts[iter.index].imageUrl}" th:alt="${discountedProducts[iter.index].title}" class="w-100 h-100 object-fit-contain">
+                                    </div>
+                                    <div class="card-body d-flex flex-column py-2">
+                                        <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index].title}">Producto</h6>
+                                        <div class="mt-auto">
+                                            <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index].price)}">0.00 €</span>
+                                            <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index].finalPrice)}">0.00 €</span>
+                                        </div>
+                                        <a th:href="@{/products/{id}(id=${discountedProducts[iter.index].id})}" class="btn btn-danger btn-sm w-100 mt-2">
+                                            <i class="fa-solid fa-eye me-1"></i>Ver Oferta
+                                        </a>
+                                    </div>
                                 </div>
-                                <a th:href="@{/products/{id}(id=${discountedProducts[iter.index].id})}" class="btn btn-danger btn-sm w-100 mt-2">
-                                    <i class="fa-solid fa-eye me-1"></i>Ver Oferta
-                                </a>
                             </div>
+
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm position-relative border-danger"
+                                     th:if="${iter.index + 1 < discountedProducts.size() and discountedProducts[iter.index + 1] != null}">
+                                    <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
+                                        <i class="fa-solid fa-tag me-1"></i>
+                                        <span th:text="|-${discountedProducts[iter.index + 1].discountPercentage}%|">-20%</span>
+                                    </div>
+                                    <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
+                                        <img th:src="${discountedProducts[iter.index + 1].imageUrl}" th:alt="${discountedProducts[iter.index + 1].title}" class="w-100 h-100 object-fit-contain">
+                                    </div>
+                                    <div class="card-body d-flex flex-column py-2">
+                                        <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index + 1].title}">Producto</h6>
+                                        <div class="mt-auto">
+                                            <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 1].price)}">0.00 €</span>
+                                            <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 1].finalPrice)}">0.00 €</span>
+                                        </div>
+                                        <a th:href="@{/products/{id}(id=${discountedProducts[iter.index + 1].id})}" class="btn btn-danger btn-sm w-100 mt-2">
+                                            <i class="fa-solid fa-eye me-1"></i>Ver Chollo
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm position-relative border-danger"
+                                     th:if="${iter.index + 2 < discountedProducts.size() and discountedProducts[iter.index + 2] != null}">
+                                    <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
+                                        <i class="fa-solid fa-tag me-1"></i>
+                                        <span th:text="|-${discountedProducts[iter.index + 2].discountPercentage}%|">-20%</span>
+                                    </div>
+                                    <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
+                                        <img th:src="${discountedProducts[iter.index + 2].imageUrl}" th:alt="${discountedProducts[iter.index + 2].title}" class="w-100 h-100 object-fit-contain">
+                                    </div>
+                                    <div class="card-body d-flex flex-column py-2">
+                                        <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index + 2].title}">Producto</h6>
+                                        <div class="mt-auto">
+                                            <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 2].price)}">0.00 €</span>
+                                            <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 2].finalPrice)}">0.00 €</span>
+                                        </div>
+                                        <a th:href="@{/products/{id}(id=${discountedProducts[iter.index + 2].id})}" class="btn btn-danger btn-sm w-100 mt-2">
+                                            <i class="fa-solid fa-eye me-1"></i>Ver Chollo
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
+                </div>
 
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm position-relative border-danger"
-                                 th:if="${iter.index + 1 < discountedProducts.size() and discountedProducts[iter.index + 1] != null}">
-                                <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
-                                    <i class="fa-solid fa-tag me-1"></i>
-                                    <span th:text="|-${discountedProducts[iter.index + 1].discountPercentage}%|">-20%</span>
-                                </div>
-                                <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
-                                    <img th:src="${discountedProducts[iter.index + 1].imageUrl}" th:alt="${discountedProducts[iter.index + 1].title}" class="w-100 h-100 object-fit-contain">
-                                </div>
-                                <div class="card-body d-flex flex-column py-2">
-                                    <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index + 1].title}">Producto</h6>
-                                    <div class="mt-auto">
-                                        <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 1].price)}">0.00 €</span>
-                                        <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 1].finalPrice)}">0.00 €</span>
-                                    </div>
-                                    <a th:href="@{/products/{id}(id=${discountedProducts[iter.index + 1].id})}" class="btn btn-danger btn-sm w-100 mt-2">
-                                        <i class="fa-solid fa-eye me-1"></i>Ver Chollo
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <div class="card h-100 shadow-sm position-relative border-danger"
-                                 th:if="${iter.index + 2 < discountedProducts.size() and discountedProducts[iter.index + 2] != null}">
-                                <div class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
-                                    <i class="fa-solid fa-tag me-1"></i>
-                                    <span th:text="|-${discountedProducts[iter.index + 2].discountPercentage}%|">-20%</span>
-                                </div>
-                                <div style="height: 150px; overflow: hidden; background-color: white;" class="p-2">
-                                    <img th:src="${discountedProducts[iter.index + 2].imageUrl}" th:alt="${discountedProducts[iter.index + 2].title}" class="w-100 h-100 object-fit-contain">
-                                </div>
-                                <div class="card-body d-flex flex-column py-2">
-                                    <h6 class="card-title text-truncate fw-bold mb-1" th:text="${discountedProducts[iter.index + 2].title}">Producto</h6>
-                                    <div class="mt-auto">
-                                        <span class="text-muted text-decoration-line-through small me-1" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 2].price)}">0.00 €</span>
-                                        <span class="text-danger fw-bold fs-5" th:text="${#numbers.formatCurrency(discountedProducts[iter.index + 2].finalPrice)}">0.00 €</span>
-                                    </div>
-                                    <a th:href="@{/products/{id}(id=${discountedProducts[iter.index + 2].id})}" class="btn btn-danger btn-sm w-100 mt-2">
-                                        <i class="fa-solid fa-eye me-1"></i>Ver Chollo
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div> </div>
-
+                <button class="carousel-control-prev" type="button" data-bs-target="#discountCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#discountCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
             </div>
-
-            <button class="carousel-control-prev" type="button" data-bs-target="#discountCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-                <span class="visually-hidden">Anterior</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#discountCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
-                <span class="visually-hidden">Siguiente</span>
-            </button>
         </div>
-    </div>
 
-    <!-- Cabecera de listado -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">Productos</h1>
-        <span class="badge bg-secondary fs-6" th:text="|${#lists.size(products)} resultados|">0 resultados</span>
-    </div>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-center mt-5 mb-4 fw-bold" th:text="${saludo}">Productos</h1>
+            <span class="badge bg-secondary fs-6" th:text="|${#lists.size(products)} resultados|">0 resultados</span>
+        </div>
 
-    <!-- Grid de Productos -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-        <div class="col" th:each="product : ${products}">
-
-            <!-- Card con posición relativa para que el badge se monte correctamente -->
-            <div class="card card-restaurant h-100 shadow-sm position-relative">
-
-                <!-- BADGE DE DESCUENTO: Controla que no sea nulo y que sea mayor que cero -->
-                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
-                     class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
-                    <i class="fa-solid fa-tag me-1"></i>
-                    <span th:text="|-${product.discountPercentage}%|">-20%</span>
-                </div>
-
-                <!-- Imagen del Producto -->
-                <div class="card-img-top" style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
-                    <img th:src="${product.imageUrl}"
-                         th:alt="${product.title}"
-                         class="w-100 h-100 object-fit-cover">
-                </div>
-
-                <!-- Cuerpo de la Tarjeta (Arreglado el cierre de etiquetas HTML) -->
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">
-                        <i class="fa-solid fa-store text-primary me-2"></i>
-                        <span th:text="${product.title}">Nombre</span>
-                    </h5>
-
-                    <!-- Marca -->
-                    <div class="mb-3">
-                        <span class="badge bg-secondary">
-                            <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
-                        </span>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-5">
+            <div class="col" th:each="product : ${products}">
+                <div class="card card-restaurant h-100 shadow-sm position-relative">
+                    <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                         class="position-absolute top-0 start-0 m-2 badge bg-danger fs-6 shadow-sm z-3">
+                        <i class="fa-solid fa-tag me-1"></i>
+                        <span th:text="|-${product.discountPercentage}%|">-20%</span>
                     </div>
 
-                    <!-- Bloque de precios dinámico según el descuento -->
-                    <div class="mt-auto mb-3">
-                        <!-- Muestra esto si tiene descuento real -->
-                        <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}">
-                            <span class="text-muted text-decoration-line-through me-2 small"
-                                  th:text="${#numbers.formatCurrency(product.price)}">0.00 €</span>
-                            <span class="badge bg-danger fs-5">
-                                <i class="fa-solid fa-euro-sign me-1"></i>
-                                <span th:text="${#numbers.formatDecimal(product.finalPrice, 1, 2)}">0</span>
+                    <div class="card-img-top" style="height: 200px; overflow: hidden; background-color: #f5f5f5;">
+                        <img th:src="${product.imageUrl}" th:alt="${product.title}" class="w-100 h-100 object-fit-cover">
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <i class="fa-solid fa-store text-primary me-2"></i>
+                            <span th:text="${product.title}">Nombre</span>
+                        </h5>
+
+                        <div class="mb-3">
+                            <span class="badge bg-secondary">
+                                <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">NotFound</span>
                             </span>
                         </div>
 
-                        <!-- Muestra esto si es nulo o es cero (Sin Descuento) -->
-                        <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
-                            <span class="badge bg-success fs-5">
-                                <i class="fa-solid fa-euro-sign me-1"></i>
-                                <span th:text="${product.price}">0</span>
-                            </span>
+                        <div class="mt-auto mb-3">
+                            <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                <span class="text-muted text-decoration-line-through me-2 small" th:text="${#numbers.formatCurrency(product.price)}">0.00 €</span>
+                                <span class="badge bg-danger fs-5">
+                                    <i class="fa-solid fa-euro-sign me-1"></i>
+                                    <span th:text="${#numbers.formatDecimal(product.finalPrice, 1, 2)}">0</span>
+                                </span>
+                            </div>
+                            <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                <span class="badge bg-success fs-5">
+                                    <i class="fa-solid fa-euro-sign me-1"></i>
+                                    <span th:text="${product.price}">0</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a th:href="@{/purchases/add/{id}(id=${product.id})}" class="btn btn-success btn-sm w-100">
+                                <i class="fa-solid fa-shopping-cart me-1"></i> Comprar
+                            </a>
                         </div>
                     </div>
 
-                    <!-- Botón Comprar -->
-                    <div>
-                        <a th:href="@{/purchases/add/{id}(id=${product.id})}" class="btn btn-success btn-sm w-100">
-                            <i class="fa-solid fa-shopping-cart me-1"></i> Comprar
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fa-regular fa-eye me-1"></i> Ver Producto
                         </a>
                     </div>
                 </div>
-
-                <!-- Footer de la Tarjeta -->
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <a th:href="@{/products/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm w-100">
-                        <i class="fa-regular fa-eye me-1"></i> Ver Producto
-                    </a>
-                </div>
-
-            </div> <!-- /card -->
-        </div> <!-- /col -->
-    </div> <!-- /row -->
-
-    <footer th:replace="~{layout/footer :: footer}"></footer>
+            </div>
+        </div>
+    </div> <footer th:replace="~{layout/footer :: footer}"></footer>
     <script th:replace="~{layout/footer :: scripts}"></script>
+
 </main>
 </body>
 </html>
