@@ -49,4 +49,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     // TODO crear query  @query filtre por subcategory.slug OR subcategory.parent.slug
     List<Product> findBySubcategorySlug(String slug);
 
+
+// Opción A: Buscar productos que tengan un porcentaje de descuento mayor que 0
+    List<Product> findByDiscountPercentageGreaterThan(int percentage);
 }
