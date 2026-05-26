@@ -72,3 +72,21 @@ h1, h2, h3, .navbar-brand {
     float: right;
     margin-top: 0.5em;
 }
+
+/* Centra las flechas negras de Bootstrap y evita que interfieran visualmente con los bordes de las tarjetas */
+#discountCarousel .carousel-control-prev,
+#discountCarousel .carousel-control-next {
+    width: 4%;
+    opacity: 0.8;
+}
+
+#discountCarousel .carousel-control-prev:hover,
+#discountCarousel .carousel-control-next:hover {
+    opacity: 1;
+}
+
+/* Cambia el tamaño de los iconos redondeados de las flechas para que no tapen el contenido */
+#discountCarousel .carousel-control-prev-icon,
+#discountCarousel .carousel-control-next-icon {
+    background-size: 50%;
+}
