@@ -70,7 +70,8 @@ public class SecurityConfig
 @Bean
 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-    http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**"));
+    // El widget envía JSON desde un JS estático; ignoramos CSRF solo para este endpoint.
+    http.csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/chatbot"));
 
     http.headers(headers -> headers.frameOptions(frame -> frame.sameOrigin())); // h2 usa iframes
 
@@ -78,7 +79,10 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             auth -> auth
                     // ORDEN IMPORTANTE
                     .requestMatchers("/h2-console/**").permitAll()
-                    .requestMatchers("/hola", "/adios", "/login", "/register", "/css/**", "/images/**", "/webjars/**").permitAll()
+                    .requestMatchers("/hola", "/adios", "/login", "/register", "/chatbot", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                    // El chatbot puede responder a visitantes; el historial sí exige login.
+                    .requestMatchers(HttpMethod.POST, "/api/chatbot").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/chatbot/history", "/chatbot/history/*").authenticated()
 
                     .requestMatchers(HttpMethod.GET, "/products").permitAll()
                     .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")

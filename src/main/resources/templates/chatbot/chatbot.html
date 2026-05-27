@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Asistente IA')}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="flex-grow-1">
+    <section class="chatbot-shell">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-9 col-xl-8">
+                    <div class="chatbot-panel shadow-sm">
+                        <div class="chatbot-header">
+                            <div>
+                                <p class="text-uppercase text-muted small fw-bold mb-1">Asistente de compra</p>
+                                <h1 class="h3 fw-bold mb-0">Chatbot con IA</h1>
+                            </div>
+                            <span class="badge text-bg-primary">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1"></i> IA
+                            </span>
+                        </div>
+
+                        <div id="chatMessages" class="chatbot-messages" data-chatbot-page-messages aria-live="polite">
+                            <div class="chat-message bot">
+                                <div class="chat-bubble">
+                                    Hola, soy el asistente de Los B€ZO$. Puedo ayudarte a elegir productos, comparar ofertas o resolver dudas de compra.
+                                </div>
+                            </div>
+                        </div>
+
+                        <form id="chatForm" class="chatbot-form" data-chatbot-form data-chatbot-messages-target="[data-chatbot-page-messages]">
+                            <label class="visually-hidden" for="chatInput">Mensaje</label>
+                            <input id="chatInput"
+                                   class="form-control"
+                                   data-chatbot-input
+                                   type="text"
+                                   maxlength="800"
+                                   autocomplete="off"
+                                   placeholder="Pregúntame por ofertas, marcas o recomendaciones..."
+                                   required>
+                            <button id="chatSubmit" class="btn btn-primary" data-chatbot-submit type="submit">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span class="visually-hidden">Enviar</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>

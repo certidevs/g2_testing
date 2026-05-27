@@ -71,6 +71,10 @@ public class UserService implements UserDetailsService {
         return userRepository.findFirstByEmail(email);
     }
 
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public User findProfileByEmail(String email) {
         return userRepository.findFirstByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

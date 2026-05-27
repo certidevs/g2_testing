@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Historial IA')}">
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="flex-grow-1">
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+            <div>
+                <p class="text-uppercase text-muted small fw-bold mb-1">Asistente IA</p>
+                <h1 class="h3 fw-bold mb-0">Historial de chats</h1>
+            </div>
+            <a class="btn btn-primary" th:href="@{/chatbot}">
+                <i class="fa-solid fa-plus me-1"></i> Nuevo chat
+            </a>
+        </div>
+
+        <div th:if="${#lists.isEmpty(conversations)}" class="alert alert-info">
+            Todavía no tienes conversaciones guardadas.
+        </div>
+
+        <div class="list-group shadow-sm" th:if="${!#lists.isEmpty(conversations)}">
+            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-3"
+               th:each="conversation : ${conversations}"
+               th:href="@{/chatbot/history/{id}(id=${conversation.id})}">
+                <div>
+                    <h2 class="h6 fw-bold mb-1" th:text="${conversation.title}">Consulta</h2>
+                    <p class="small text-muted mb-0">
+                        <i class="fa-regular fa-message me-1"></i>
+                        <span th:text="${#lists.size(conversation.messages)}">0</span> mensajes
+                    </p>
+                </div>
+                <span class="small text-muted"
+                      th:text="${#temporals.format(conversation.updatedAt, 'dd/MM/yyyy HH:mm')}">26/05/2026 12:00</span>
+            </a>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>

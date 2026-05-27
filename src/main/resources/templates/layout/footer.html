@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="">
 <body>
 <footer th:fragment="footer" class="bg-white border-top mt-5 py-4">
     <div class="container text-center small text-muted">
@@ -7,7 +7,71 @@
             <i class="fa-regular fa-copyright"></i> 2026 Ecommerce — Los B€ZO$
         </p>
     </div>
+    <!-- Se inyecta en el footer para que aparezca en todas las páginas que usan el layout. -->
+    <div th:replace="~{layout/footer :: chatbot-widget}"></div>
 </footer>
-<script th:fragment="scripts" th:src="@{/webjars/bootstrap/5.3.8/dist/js/bootstrap.bundle.min.js}"></script>
+<!-- Widget flotante del chatbot: botón circular + ventana de conversación. -->
+<div th:fragment="chatbot-widget" class="chatbot-widget" data-chatbot-widget>
+    <button class="chatbot-widget-toggle shadow"
+            type="button"
+            data-chatbot-toggle
+            aria-label="Abrir asistente IA"
+            aria-expanded="false">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <section class="chatbot-widget-window shadow-lg" data-chatbot-window aria-hidden="true">
+        <div class="chatbot-widget-header">
+            <div>
+                <p class="text-uppercase small fw-bold mb-0">Asistente IA</p>
+                <span class="small">Los B€ZO$</span>
+            </div>
+            <div class="d-flex gap-2">
+                <!-- El historial solo aparece si Spring Security detecta un usuario autenticado. -->
+                <a class="btn btn-sm btn-outline-light"
+                   th:href="@{/chatbot/history}"
+                   sec:authorize="isAuthenticated()"
+                   aria-label="Ver historial IA">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </a>
+                <button class="btn btn-sm btn-outline-light"
+                        type="button"
+                        data-chatbot-toggle
+                        aria-label="Cerrar asistente IA">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="chatbot-messages chatbot-widget-messages" data-chatbot-messages aria-live="polite">
+            <div class="chat-message bot">
+                <div class="chat-bubble">
+                    Hola, soy el asistente de Los B€ZO$. Puedo ayudarte con productos, ofertas y dudas de compra.
+                </div>
+            </div>
+        </div>
+
+        <form class="chatbot-form chatbot-widget-form" data-chatbot-form>
+            <label class="visually-hidden" for="chatbotWidgetInput">Mensaje</label>
+            <input id="chatbotWidgetInput"
+                   class="form-control"
+                   data-chatbot-input
+                   type="text"
+                   maxlength="800"
+                   autocomplete="off"
+                   placeholder="Pregúntame algo..."
+                   required>
+            <button class="btn btn-primary" data-chatbot-submit type="submit">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span class="visually-hidden">Enviar</span>
+            </button>
+        </form>
+    </section>
+</div>
+<th:block th:fragment="scripts">
+    <script th:src="@{/webjars/bootstrap/5.3.8/dist/js/bootstrap.bundle.min.js}"></script>
+    <!-- JS único compartido por el widget flotante y la página completa del chatbot. -->
+    <script th:src="@{/js/chatbot.js}"></script>
+</th:block>
 </body>
 </html>

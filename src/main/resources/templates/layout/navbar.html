@@ -43,6 +43,18 @@
                         <i class="fa-solid fa-star-half-stroke"></i> Reseñas
                     </a>
                 </li>
+                <li class="list-group-item list-group-item-action p-0">
+                    <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
+                       th:href="@{/chatbot}">
+                        <i class="fa-solid fa-robot"></i> Asistente IA
+                    </a>
+                </li>
+                <li class="list-group-item list-group-item-action p-0" sec:authorize="isAuthenticated()">
+                    <a class="d-flex align-items-center gap-2 px-3 py-2 text-decoration-none text-dark"
+                       th:href="@{/chatbot/history}">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Historial IA
+                    </a>
+                </li>
                 <li class="list-group-item list-group-item-action mt-2" sec:authorize="isAuthenticated()">
                     <span class="text-muted small text-uppercase fw-bold px-1">Mi cuenta</span>
                 </li>
@@ -197,6 +209,11 @@
                     <li class="nav-item">
                         <a sec:authorize="isAuthenticated()" class="nav-link" th:href="@{/purchases}">
                             Compras
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/chatbot}">
+                            <i class="fa-solid fa-robot me-1"></i> Asistente IA
                         </a>
                     </li>
                 </ul>
