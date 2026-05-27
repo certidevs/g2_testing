@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
@@ -73,11 +74,13 @@ class ReviewControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = "ADMIN") // Esto salta el formulario de login
     void addReview() throws Exception {
         long totalAntes = reviewRepo.count();
 
         // POST /products/{id}/reviews/add -> El formulario del modal para añadir opiniones
         mockMvc.perform(post("/products/" + product.getId() + "/reviews/add")
+                        .param("title", "Me encantó")
                         .param("rating", "5")
                         .param("message", "Excelente compra"))
                 .andExpect(status().is3xxRedirection());

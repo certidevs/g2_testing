@@ -72,7 +72,7 @@ class ProductControlerTest {
 
         mockMvc.perform(get("/products/deactivate/" + id))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/products*"));
+                .andExpect(redirectedUrlPattern("/admin/products/list*"));
 
         // traer producto de base de datos y comprobar que available es false
         Product productDB = productRepository.findById(id).orElseThrow();
@@ -88,7 +88,7 @@ class ProductControlerTest {
 
         mockMvc.perform(get("/products/activate/" + id))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/products*"));
+                .andExpect(redirectedUrlPattern("/admin/products/list*"));
 
         // traer producto de base de datos y comprobar que available es true
         Product productDB = productRepository.findById(id).orElseThrow();
