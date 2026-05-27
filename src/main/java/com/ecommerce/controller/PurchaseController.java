@@ -29,7 +29,6 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-    private final FavoriteRepository favoriteRepository;
 
     // Muestra la lista de todas las compras
     @Transactional
@@ -60,7 +59,6 @@ public class PurchaseController {
         else{
             model.addAttribute("purchase", new Purchase());
             model.addAttribute("addresses", addressRepository.findByUser(user));
-            model.addAttribute("favorites", favoriteRepository.findByUser(user));
             return "purchases/purchase-form";
         }
     }
