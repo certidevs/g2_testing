@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/head :: head('Direcciones')}">
+<head th:replace="~{layout/head :: head('Direcciones de envío')}">
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 <main class="container flex-grow-1">
-    <h1 class="mb-3">Direcciones</h1>
+    <h1 class="mb-3">Direcciones de envío</h1>
     
     <div th:if="${addresses != null and !addresses.isEmpty()}" class="table-responsive">
+
+        <a th:href="@{/addresses/new}" class="btn btn-primary">
+            <i class="fa-solid fa-plus me-1"></i>
+            Agregar dirección
+        </a>
+
+        <br>
+
         <table class="table table-hover align-middle table-bordered border-success">
             <thead class="table-dark">
                 <tr>
