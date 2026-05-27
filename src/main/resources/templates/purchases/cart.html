@@ -32,8 +32,33 @@
     <!-- CONDICIÓN VISUAL SI EL CARRITO ESTÁ VACÍO -->
     <div th:if="${cart == null}" class="card border-0 shadow-sm">
         <div class="card-body text-center py-5">
-            <i class="fa-solid fa-cart-shopping fa-2x text-muted mb-3"></i>
-            <h2 class="h5">El carrito está vacío</h2>
+
+            <!-- MENSAJE PRINCIPAL -->
+            <h2 class="h5">
+                ¿No has empezado todavía tu compra?
+            </h2>
+
+            <br>
+
+            <!-- BOTÓN DE VOLVER A PRODUCTOS -->
+            <div class="row">
+                <div class="col">
+                    <a href="/products" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        Volver a productos
+                    </a>
+                </div>
+            </div>
+
+            <!-- BOTÓN DE VOLVER A EL LISTADO DE COMPRAS -->
+            <div class="row my-3">
+                <div class="col">
+                    <a href="/purchases" class="btn btn-outline-secondary">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Volver a compras
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -51,7 +76,7 @@
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body">
-                        <div class="text-muted small">Líneas</div>
+                        <div class="text-muted small">Productos</div>
                         <div class="h4 mb-0" th:text="${lines != null ? lines.size() : 0}">0</div>
                     </div>
                 </div>
