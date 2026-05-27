@@ -1,14 +1,25 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.dto.AddressRequestDto;
+import com.ecommerce.dto.UserRequestDto;
 import com.ecommerce.model.Address;
+import com.ecommerce.model.Purchase;
+import com.ecommerce.model.User;
+import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.AddressRepository;
+import com.ecommerce.service.AddressService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,12 +29,16 @@ import java.util.UUID;
 public class AddressController {
 
     private final AddressRepository addressRepository;
+    private final AddressService addressService;
 
     @GetMapping("/addresses")
-    public String listAddresses(Model model) {
-        List<Address> addresses = addressRepository.findAll();
-        model.addAttribute("addresses", addresses);
-        return "addresses/addresses-list";
+    public String listAddresses(Model model, @AuthenticationPrincipal User user) {
+        if (user.getRole().equals(Role.ROLE_ADMIN)) {
+            model.addAttribute("addresses", addressRepository.findAll());
+        } else {
+            model.addAttribute("addresses", addressRepository.findByUser(user));
+        }
+        return "addresses/address-list";
     }
 
     @GetMapping("/addresses/{id}")
@@ -32,5 +47,20 @@ public class AddressController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         model.addAttribute("address", address);
         return "addresses/address-detail";
+    }
+
+    // Muestra el formulario para agregar una nueva dirección de envío
+    @GetMapping("addresses/new")
+    public String showCreatePurchaseForm(Model model, @AuthenticationPrincipal User user) {
+        model.addAttribute("purchase", new Purchase());
+        model.addAttribute("addresses", addressRepository.findByUser(user));
+        return "addresses/address-form";
+    }
+
+    // Procesa el formulario para agregar una nueva dirección
+    @PostMapping("/addresses")
+    public String addAddress(@Valid @ModelAttribute AddressRequestDto form, @AuthenticationPrincipal User user) {
+        addressService.addAddress(form, user);
+        return "redirect:/addresses";
     }
 }

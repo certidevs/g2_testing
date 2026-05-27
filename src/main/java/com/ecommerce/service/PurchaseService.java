@@ -1,10 +1,8 @@
 package com.ecommerce.service;
 
-import com.ecommerce.model.Product;
-import com.ecommerce.model.Purchase;
-import com.ecommerce.model.PurchaseLine;
-import com.ecommerce.model.User;
+import com.ecommerce.model.*;
 import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
@@ -27,29 +25,44 @@ public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final ProductRepository productRepository;
     private final PurchaseLineRepository purchaseLineRepository;
+    private final AddressRepository addressRepository;
 
     // Crea una nueva compra, calculando el total a partir de las líneas de compra y estableciendo la fecha de compra
     public void createPurchase(Purchase purchase, User user) {
+
         if(getOrCreateCartForUser(user.getId()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already has an active cart");
+
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "User already has an active cart"
+            );
         }
-        else{
-            double total = 0.0;
-            for (PurchaseLine line : purchase.getPurchaseLines()) {
-                line.setPurchase(purchase);
-                total += line.getPrice() * line.getQuantity();
-            }
-            purchase.setTotalAmount(total);
-            purchase.setPurchaseDate(LocalDateTime.now());
-            purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
-            purchase.setPaymentStatus(PaymentStatus.PENDING);
-            purchase.setProcessStatus(ProcessStatus.PENDING);
-            purchase.setShippingMode(ShippingMode.STANDARD);
-            purchase.setShippingStatus(ShippingStatus.PENDING);
-            purchase.setUserComment("Sin comentario adicional para el envío");
-            purchase.setUser(user);
-            purchaseRepository.save(purchase);
+
+        double total = 0.0;
+
+        for (PurchaseLine line : purchase.getPurchaseLines()) {
+            line.setPurchase(purchase);
+            total += line.getPrice() * line.getQuantity();
         }
+
+        Address address = addressRepository
+                .findById(purchase.getAddressId())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Address not found"
+                ));
+
+        purchase.setAddress(address);
+        purchase.setTotalAmount(total);
+        purchase.setPurchaseDate(LocalDateTime.now());
+        purchase.setPurchaseStatus(PurchaseStatus.INITIATED);
+        purchase.setPaymentStatus(PaymentStatus.PENDING);
+        purchase.setProcessStatus(ProcessStatus.PENDING);
+        purchase.setShippingStatus(ShippingStatus.PENDING);
+
+        purchase.setUser(user);
+
+        purchaseRepository.save(purchase);
     }
 
     // ---- [ AGREGAR AL CARRITO DE COMPRAS ] ----

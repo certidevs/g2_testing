@@ -40,8 +40,6 @@
                 <div class="card-body">
                     <div class="row g-3">
 
-                        <!-- [PENDIENTE] DIRECCIÓN DE ENVÍO -->
-
                         <!-- SELECT PARA MODO DE ENVÍO-->
                         <div class="col-md-6">
                             <label for="shippingMode" class="form-label">Modo de envío</label>
@@ -53,16 +51,49 @@
                             </select>
                         </div>
 
-                        <!-- [PENDIENTE DE AÑADIR COMENTARIO ADICIONAL PARA ESPECIFICACIONES DE ENVÍO] -->
-                        <div class="col-md-6">
-                            <label for="userComment" class="form-label">Comentario adicional</label>
-                            <textarea class="form-control" id="userComment" th:field="*{userComment}" rows="3"></textarea>
+                        <!-- DIRECCIÓN DE ENVÍO -->
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label for="addressId"
+                                       class="form-label mb-0">
+                                    Dirección de envío
+                                </label>
+                                <a th:href="@{/addresses/new}"
+                                   class="btn btn-sm btn-outline-primary">
+
+                                    <i class="fa-solid fa-plus me-1"></i>
+                                    Nueva dirección
+                                </a>
+                            </div>
+
+                            <select class="form-select"
+                                    id="addressId"
+                                    th:field="*{addressId}">
+                                <option value="">
+                                    Selecciona una dirección
+                                </option>
+
+                                <option th:each="address : ${addresses}"
+                                        th:value="${address.id}"
+                                        th:text="${address.street + ', ' + address.city}">
+                                </option>
+                            </select>
+
                         </div>
 
-                        <!-- [PENDIENTE DE DISCUTIR SI AGREGAR CARRITO DENTRO DE LA CREACIÓN DE LA COMPRA]-->
-
-                        <!-- [PENDIENTE DE DISCUTIR SI AGREGAR LA DIRECCIÓN ADRESS DENTRO DE ESTA VISTA] -->
-
+                        <!-- COMENTARIO ADICIONAL PARA LA ENTREGA -->
+                        <div class="col-12">
+                            <label for="userComment"
+                                   class="form-label">
+                                Comentario adicional para la entrega
+                            </label>
+                            <textarea class="form-control"
+                                      id="userComment"
+                                      th:field="*{userComment}"
+                                      rows="4"
+                                      placeholder="Añade instrucciones para la entrega si lo necesitas">
+                            </textarea>
+                        </div>
                     </div>
                 </div>
 
@@ -75,8 +106,7 @@
                     </a>
 
                     <!-- BOTÓN CREAR COMPRA -->
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-check me-1"></i>
+                    <button type="submit" class="btn btn-outline-primary">
                         Crear compra
                     </button>
                 </div>

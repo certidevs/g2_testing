@@ -153,6 +153,7 @@ public class CategoryController
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
                 .active(category.getActive())
                 .parentId(category.getParentId())
                 .build();

@@ -60,7 +60,7 @@
 
                             <!-- Descripción (form-floating con textarea) -->
                             <div class="form-floating mb-3">
-                  <textarea id="description"
+                            <textarea id="description"
                             th:field="*{description}"
                             placeholder="Descripción de la categoría"
                             class="form-control rounded-3 shadow-sm"
@@ -69,6 +69,32 @@
                                 <label for="description">Descripción</label>
                                 <div class="form-text text-muted">Breve descripción que aparecerá en la tienda (opcional).</div>
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <!-- Imagen URL-->
+                            <div class="mb-3">
+                                <label for="imageUrl" class="form-label">URL de imagen</label>
+                                <input type="url"
+                                       class="form-control"
+                                       id="imageUrl"
+                                       th:field="*{imageUrl}"
+                                       placeholder="https://ejemplo.com/imagen.jpg">
+
+                                <div class="text-danger"
+                                     th:if="${#fields.hasErrors('imageUrl')}"
+                                     th:errors="*{imageUrl}">
+                                </div>
+                            </div>
+
+                            <!-- Vista Previa de la Imagen URL-->
+                            <div class="mb-3" th:if="${category.imageUrl != null and !#strings.isEmpty(category.imageUrl)}">
+                                <label class="form-label">Vista previa</label>
+                                <div>
+                                    <img th:src="*{imageUrl}"
+                                         alt="Vista previa"
+                                         class="img-thumbnail"
+                                         style="max-height: 180px; object-fit: cover;">
+                                </div>
                             </div>
 
                             <!-- Parent select -->

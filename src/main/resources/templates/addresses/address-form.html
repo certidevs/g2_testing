@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/security">
+
+<head th:replace="~{layout/head :: head('Añadir nueva dirección')}"></head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="container flex-grow-1 py-4">
+
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+        <div>
+
+            <!-- BOTÓN PARA VOLVER A LISTA DE COMPRAS -->
+            <a th:href="@{/purchases}" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Volver
+            </a>
+
+            <!-- TÍTULO DE LA PÁGINA -->
+            <div class="text-uppercase text-muted small fw-semibold">Nueva dirección</div>
+            <h1 class="mb-1">Agregar dirección de envío</h1>
+        </div>
+    </div>
+
+    <!-- FORMULARIO PARA AGREGAR NUEVA DIRECCIÓN DE ENVÍO -->
+    <div class="row g-4 justify-content-center">
+        <div class="col-lg-8">
+
+            <!-- FORMULARIO SE ENVÍA A /ADDRESSES CON POSTMAPPING Y SE VÍNCULA AL OBJETO "ADDRESS" DEL MODELO-->
+            <form th:action="@{/purchases}" method="post" th:object="${purchase}" class="card border-0 shadow-sm">
+
+                <!-- TOKEN CSRF -->
+                <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <!-- TÍTULO DE FORMULARIO -->
+                <div class="card-header bg-white">
+                    <h2 class="h5 mb-0">Datos de la dirección de envío</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <!-- PAÍS -->
+                        <div class="col-md-6">
+                            <label for="country" class="form-label"> País </label>
+                            <textarea
+                                    class="form-control"
+                                    id="country"
+                                    th:field="*{country}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- CIUDAD -->
+                        <div class="col-md-6">
+                            <label for="city" class="form-label"> Ciudad </label>
+                            <textarea
+                                    class="form-control"
+                                    id="city"
+                                    th:field="*{city}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- ESTADO O PROVINCIA -->
+                        <div class="col-md-6">
+                            <label for="state" class="form-label"> Estado o provincia </label>
+                            <textarea
+                                    class="form-control"
+                                    id="state"
+                                    th:field="*{state}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- ZIPCODE -->
+                        <div class="col-md-6">
+                            <label for="zipCode" class="form-label"> Código postal </label>
+                            <textarea
+                                    class="form-control"
+                                    id="zipCode"
+                                    th:field="*{zipCode}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- CALLE -->
+                        <div class="col-md-6">
+                            <label for="street" class="form-label"> Calle </label>
+                            <textarea
+                                    class="form-control"
+                                    id="street"
+                                    th:field="*{street}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- NÚMERO DE LA CALLE -->
+                        <div class="col-md-6">
+                            <label for="number" class="form-label"> Número de la calle </label>
+                            <textarea
+                                    class="form-control"
+                                    id="number"
+                                    th:field="*{number}"
+                                    rows="3"
+                                    required>
+                            </textarea>
+                        </div>
+
+                        <!-- [PENDIENTE DE AÑADIR COMENTARIO ADICIONAL PARA ESPECIFICACIONES DE ENVÍO] -->
+                        <div class="col-md-6">
+                            <label for="complement" class="form-label">Comentario adicional</label>
+                            <textarea class="form-control" id="complement" th:field="*{complement}" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DEBAJO DE FORMULARIO -->
+                <div class="card-footer bg-white d-flex flex-column flex-sm-row justify-content-end gap-2">
+
+                    <!-- BOTÓN CANCELAR -->
+                    <a th:href="@{/purchases}" class="btn btn-outline-secondary">
+                        Cancelar
+                    </a>
+
+                    <!-- BOTÓN CREAR COMPRA -->
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-check me-1"></i>
+                        Agregar dirección
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+
+</body>
+</html>

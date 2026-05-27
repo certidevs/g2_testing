@@ -3,6 +3,7 @@ package com.ecommerce.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 import java.util.UUID;
 
@@ -24,6 +25,10 @@ public class CategoryRequestDto
 
     @Size(max = 500, message = "La descripción no puede superar 500 caracteres")
     private String description;
+
+    @URL(message = "Debe ser una URL valida")
+    @Size(max = 500, message = "La URL de la imagen no puede superar 500 caracteres")
+    private String imageUrl;
 
     private Boolean active;
 

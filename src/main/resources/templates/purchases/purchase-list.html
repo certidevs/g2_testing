@@ -142,15 +142,15 @@
                                 <i class="fa-regular fa-eye"></i>
                             </a>
 
-                            <!-- BOTÓN PARA FINALIZAR COMPRA SI NO ESTÁ EL ESTADO DE LA COMPRA FINALIZADO -->
+                            <!-- BOTÓN PARA IR AL CARRITO DE LA COMPRA SI NO ESTÁ EL ESTADO DE LA COMPRA FINALIZADO -->
                             <a th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"
-                               th:href="@{/purchases/{id}/finish(id=${purchase.id})}"
-                               class="btn btn-sm btn-outline-success" title="Finalizar compra">
-                                <i class="fa-solid fa-check"></i>
+                               th:href="@{/purchases/{id}/cart(id=${purchase.id})}"
+                               class="btn btn-sm btn-outline-success" title="Ir al carrito">
+                                <i class="fa-solid fa-cart-arrow-down"></i>
                             </a>
 
                             <!-- BOTÓN DE BORRAR COMPRA -->
-                            <a th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
+                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
                                class="btn btn-sm btn-outline-danger"
                                title="Borrar compra"
                                onclick="return confirm('¿Seguro que quieres borrar esta compra?');">

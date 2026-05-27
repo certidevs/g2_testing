@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface AddressRepository extends JpaRepository<Address, UUID> {
-    // Consultas personalizadas para direcciones
-    
+
     // Find addresses by user
     List<Address> findByUser(User user);
     
@@ -43,5 +42,4 @@ public interface AddressRepository extends JpaRepository<Address, UUID> {
     // Find addresses by user and type
     List<Address> findByUserAndAddressType(User user, AddressType addressType);
 
-    @Nullable Object findByUserId(UUID currentUserId);
 }

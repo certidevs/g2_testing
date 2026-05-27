@@ -106,6 +106,7 @@ public class CategoryService
                 .name(dto.getName())
                 .slug(dto.getSlug())
                 .description(dto.getDescription())
+                .imageUrl(dto.getImageUrl())
                 .active(dto.getActive())
                 .parent(parent)
                 .build();
@@ -148,6 +149,7 @@ public class CategoryService
         category.setName(dto.getName());
         category.setSlug(dto.getSlug());
         category.setDescription(dto.getDescription());
+        category.setImageUrl(dto.getImageUrl());
         category.setActive(dto.getActive());
         category.setParent(parent);
 
@@ -241,6 +243,7 @@ public class CategoryService
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
                 .active(category.getActive())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)
@@ -261,6 +264,7 @@ public class CategoryService
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
                 .active(category.getActive())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)
@@ -284,6 +288,7 @@ public class CategoryService
                 .name(category.getName())
                 .slug(category.getSlug())
                 .description(category.getDescription())
+                .imageUrl(category.getImageUrl())
                 .active(category.getActive())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)

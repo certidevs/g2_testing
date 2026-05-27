@@ -30,6 +30,9 @@ public class Category
     @Column(length = 500)
     private String description;
 
+    @Column(name = "image_url", nullable = false, length = 500)
+    private String imageUrl;
+
     @Builder.Default
     @Column(nullable = false)
     private Boolean active = true;
