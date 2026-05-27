@@ -138,6 +138,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Ropa")
                         .slug("ropa")
                         .description("Ropa y prendas deportivas")
+                        .imageUrl("https://armariosalcala.com/wp-content/uploads/551ce816214c7ed15c93c3d195840fbe.jpg")
                         .active(true)
                         .parent(null)
                         .build()));
@@ -146,6 +147,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Informatica")
                         .slug("informatica")
                         .description("informatica y tecnologias")
+                        .imageUrl("https://media.adeo.com/mkp/54f2844efecc96ca9d51b1bc00d19a46/media.jpg?width=3000&height=3000&format=jpg&quality=80&fit=bounds")
                         .active(true)
                         .parent(null)
                         .build()));
@@ -163,6 +165,7 @@ public class DataInitializer  implements CommandLineRunner {
                             .name("Camisetas")
                             .slug("camisetas")
                             .description("Camisetas y tops")
+                            .imageUrl("https://static2.goldengoose.com/public/Style/ECOMM/GMP01220.P000638-10363.jpg?im=Resize=(1200)")
                             .active(true)
                             .parent(ropaRoot)
                             .build());
@@ -173,6 +176,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Pantalones")
                         .slug("pantalones")
                         .description("Pantalones deportivos y de entrenamiento")
+                        .imageUrl("https://www.masuniformes.com/cdnassets/ADV210899-NEGRO-1_l.jpg")
                         .active(true)
                         .parent(ropaRoot)
                         .build()));
@@ -182,6 +186,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Calzado")
                         .slug("calzado")
                         .description("Zapatillas y calzado deportivo")
+                        .imageUrl("https://media-rockport.fra1.digitaloceanspaces.com/media-rockport/product/images/019b6ff9-8bce-706f-9012-7d4868c79897_CHARLESROADPLAINTOE-JBL61-RZ.jpg")
                         .active(true)
                         .parent(ropaRoot)
                         .build()));
@@ -190,6 +195,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Moviles")
                         .slug("movil")
                         .description("Moviles y tablets")
+                        .imageUrl("https://dam.elcorteingles.es/producto/www-001094612301195-00.jpg?impolicy=frontWeb&width=1200&shape=square")
                         .active(true)
                         .parent(electronicaRoot)
                         .build()));
@@ -198,6 +204,7 @@ public class DataInitializer  implements CommandLineRunner {
                         .name("Portatil")
                         .slug("portatil")
                         .description("Portatiles")
+                        .imageUrl("https://img.pccomponentes.com/pcblog/104/mejores-portatiles-ligeros.jpg")
                         .active(true)
                         .parent(electronicaRoot)
                         .build()));
