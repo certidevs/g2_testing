@@ -85,7 +85,7 @@
                 <div class="mb-4">
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-muted">Subtotal del carrito</span>
-                        <span class="fw-semibold" th:text="${#numbers.formatCurrency(orderSubtotal ?: 124.90)}">124,90 €</span>
+                        <span class="fw-semibold" th:text="${#numbers.formatCurrency(orderSubtotal != null ? orderSubtotal : 124.90)}">124,90 €</span>
                     </div>
                 </div>
             </div>

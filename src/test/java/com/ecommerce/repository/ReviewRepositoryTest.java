@@ -27,7 +27,6 @@ class ReviewRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Creamos y guardamos un producto básico para poder asignárselo a las reseñas
         producto = new Product();
         producto.setTitle("Producto Prueba");
         producto.setPrice(20.0);

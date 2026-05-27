@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest // Levanta todo el contexto real de Spring
-@AutoConfigureMockMvc(addFilters = false)// Permite usar MockMvc para simular peticiones HTTP
-@Transactional // Limpia la base de datos al terminar cada test para no dejar basura
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
+@Transactional
 class ReviewControllerTest {
 
     @Autowired
@@ -39,7 +39,6 @@ class ReviewControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Creamos y guardamos un product básico para los tests
         product = Product.builder()
                 .title("Teclado Gaming")
                 .price(59.99)
@@ -47,7 +46,6 @@ class ReviewControllerTest {
                 .build();
         product = productRepo.save(product);
 
-        // Creamos y guardamos una review base para el test de borrar y editar
         review = Review.builder()
                 .title("Buen product")
                 .rating(4)
@@ -82,7 +80,7 @@ class ReviewControllerTest {
         mockMvc.perform(post("/products/" + product.getId() + "/reviews/add")
                         .param("rating", "5")
                         .param("message", "Excelente compra"))
-                .andExpect(status().is3xxRedirection()); // Redirige al detalle del product
+                .andExpect(status().is3xxRedirection());
 
         // Verificamos que se haya guardado una fila más en la base de datos
         assertEquals(totalAntes + 1, reviewRepo.count());

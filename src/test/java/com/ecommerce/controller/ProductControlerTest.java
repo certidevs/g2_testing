@@ -20,9 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-@SpringBootTest // Activa Spring
+@SpringBootTest
 @AutoConfigureMockMvc(addFilters = false) // Activa MockMvc para testing de controller
-@Transactional // deshace los cambios al final de cada test para no afectar al siguiente test
+@Transactional
 
 class ProductControlerTest {
 
