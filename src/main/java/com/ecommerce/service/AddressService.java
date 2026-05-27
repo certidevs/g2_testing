@@ -19,6 +19,22 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final UserRepository usersRepository;
 
+    public void addAddress(AddressRequestDto form, User user){
+
+        Address address = new Address();
+        address.setCountry(form.getCountry());
+        address.setCity(form.getCity());
+        address.setState(form.getState());
+        address.setZipCode(form.getZipCode());
+        address.setStreet(form.getStreet());
+        address.setNumber(form.getNumber());
+        address.setAddressType(form.getAddressType());
+
+        address.setComplement(form.getComplement());
+        address.setUser(user);
+        addressRepository.save(address);
+    }
+
     /**
      * Recupera todas las direcciones y las transforma a DTO de respuesta.
      */
