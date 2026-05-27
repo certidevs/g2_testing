@@ -232,6 +232,9 @@ public class PurchaseService {
         }
 
         // Actualiza el estatus de la compra a finalizada y establece la fecha de finalización a la fecha y hora actual, luego guarda los cambios en la base de datos
+        purchase.setPaymentStatus(PaymentStatus.PAID);
+        purchase.setProcessStatus(ProcessStatus.COMPLETED);
+        purchase.setShippingStatus(ShippingStatus.DELIVERED);
         purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
         purchase.setFinishedDate(LocalDateTime.now());
         purchaseRepository.save(purchase);
