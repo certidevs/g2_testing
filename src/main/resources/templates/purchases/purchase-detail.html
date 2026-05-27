@@ -23,8 +23,6 @@
             <div class="text-muted small font-monospace" th:text="${purchase.id}"></div>
         </div>
 
-        <!-- [PENDIENTE DE AGREGAR, NOMBRE DE USUARIO, GMAIL, ID, Y Nº DE PEDIDOS ASOCIADOS A CURRENT USER] -->
-
         <div class="d-flex flex-wrap gap-2">
 
             <!--  BOTÓN CARRITO -->
@@ -176,7 +174,6 @@
                     <!-- PRECIO TOTAL DE LÍNEA DE COMPRA DE PRODUCTO (SUBTOTAL) -->
                     <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2) + ' €'}"></td>
 
-                    <!-- [PENDIENTE DE CORREGIR] BOTONES DE RESTAR Y SUMAR CANTIDAD -->
                     <td>
                         <div class="d-flex justify-content-end gap-2">
 
