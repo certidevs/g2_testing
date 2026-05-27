@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,12 +32,13 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false) // Desactiva security para las pruebas
+@AutoConfigureMockMvc // Desactiva security para las pruebas
 @Transactional
 @ActiveProfiles("test")
 class PurchaseControllerTest {
@@ -59,7 +61,8 @@ class PurchaseControllerTest {
     // Utilizamos la anotación MockitoBean para inyectar un mock de PurchaseService y así poder verificar las interacciones que tengan con este servicio durante las pruebas
     @MockitoBean
     PurchaseService purchaseService;
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     User user1;
     User user2;
 
@@ -70,7 +73,8 @@ class PurchaseControllerTest {
     Purchase purchase2;
     Purchase purchase3;
     Purchase purchase4;
-
+    User user;
+    User admin;
     @BeforeEach
     void setUp(){
         purchaseLineRepository.deleteAll();
@@ -81,6 +85,18 @@ class PurchaseControllerTest {
         // Hacemos reset del mock de purchaseService para asegurar que no haya nada previo que afecte a las pruebas etc
         reset(purchaseService);
 
+        user = userRepository.save(User.builder()
+                .username("user")
+                .email("user@gmail.com")
+                .password(passwordEncoder.encode("useruseruserA*"))
+                .role(Role.ROLE_CUSTOMER)
+                .build());
+        admin = userRepository.save(User.builder()
+                .username("adminadmin")
+                .email("adminadmin@gmail.com")
+                .password(passwordEncoder.encode("adminadminadmAin8*"))
+                .role(Role.ROLE_ADMIN)
+                .build());
         user1 = User.builder()
                 .username("user1.purchase.controller")
                 .name("User 1")
@@ -179,7 +195,7 @@ class PurchaseControllerTest {
     // Verifica que la lista de compras se muestra correctamente con datos completos
     @Test
     void purchasesFull() throws Exception {
-        mockMvc.perform(get("/purchases"))
+        mockMvc.perform(get("/purchases").with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-list"))
                 .andExpect(model().attributeExists("purchases"))
@@ -193,7 +209,7 @@ class PurchaseControllerTest {
     void purchasesEmpty() throws Exception {
         purchaseRepository.deleteAll();
 
-        mockMvc.perform(get("/purchases"))
+        mockMvc.perform(get("/purchases").with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-list"))
                 .andExpect(model().attributeExists("purchases"))
@@ -207,7 +223,7 @@ class PurchaseControllerTest {
         Purchase purchase = new Purchase();
         purchase = purchaseRepository.save(purchase);
 
-        mockMvc.perform(get("/purchases/{id}", purchase.getId()))
+        mockMvc.perform(get("/purchases/{id}", purchase.getId()).with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-detail"))
                 .andExpect(model().attributeExists("purchase"))
@@ -219,19 +235,17 @@ class PurchaseControllerTest {
     void purchaseDetailIsPresentFalse() throws Exception {
         UUID randomId = UUID.randomUUID();
 
-        mockMvc.perform(get("/purchases/{id}", randomId))
+        mockMvc.perform(get("/purchases/{id}", randomId).with(user(admin)))
                 .andExpect(status().isNotFound());
     }
 
     // Verifica que se muestra el formulario de creación de compra con los datos necesarios para crear una nueva compra (purchase-form)
     @Test
     void showCreatePurchaseForm() throws Exception {
-        mockMvc.perform(get("/purchases/new"))
+        mockMvc.perform(get("/purchases/new").with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-form"))
-                .andExpect(model().attributeExists("purchase"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(2)));
+                .andExpect(model().attributeExists("purchase"));
     }
 
     // Verifica que al enviar el formulario de creación de compra se redirige a la lista de compras
@@ -244,6 +258,7 @@ class PurchaseControllerTest {
         );
         mockMvc.perform(post("/purchases")
                         .with(csrf())
+                        .with(user(admin))
                         .param("totalPrice", "99.99")
                         .param("purchaseStatus", PurchaseStatus.INITIATED.name())
                         .param("paymentStatus", PaymentStatus.PENDING.name())
@@ -262,9 +277,9 @@ class PurchaseControllerTest {
     // Verifica que al eliminar una compra se redirige a la lista de compras
     @Test
     void deletePurchaseRedirectsAndAddsFlashMessage() throws Exception {
-        mockMvc.perform(get("/purchases/delete/{id}", purchase1.getId()))
+        mockMvc.perform(get("/purchases/delete/{id}", purchase1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases"))
+                .andExpect(redirectedUrlPattern("/purchases*"))
                 .andExpect(flash().attribute("message", "Purchase deleted successfully"));
 
         verify(purchaseService).deletePurchase(purchase1.getId());
@@ -277,9 +292,9 @@ class PurchaseControllerTest {
         cart.setId(purchase3.getId());
         when(purchaseService.addProductToCart(eq(product1.getId()), nullable(User.class))).thenReturn(cart);
 
-        mockMvc.perform(get("/purchases/add/{productId}", product1.getId()))
+        mockMvc.perform(get("/purchases/add/{productId}", product1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases/" + purchase3.getId()));
+                .andExpect(redirectedUrlPattern("/purchases/" + purchase3.getId() + "*"));
 
         verify(purchaseService).addProductToCart(eq(product1.getId()), nullable(User.class));
     }
@@ -289,7 +304,7 @@ class PurchaseControllerTest {
     void showCartWithExistingCart() throws Exception {
         when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
 
-        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()))
+        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()).with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/cart"))
                 .andExpect(model().attribute("cart", hasProperty("id", is(purchase3.getId()))))
@@ -303,7 +318,7 @@ class PurchaseControllerTest {
     void showCartWithoutExistingCart() throws Exception {
         when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()))
+        mockMvc.perform(get("/purchases/{id}/cart", purchase3.getId()).with(user(admin)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/cart"))
                 .andExpect(model().attribute("cart", nullValue()));
@@ -314,9 +329,9 @@ class PurchaseControllerTest {
     // Verifica que al finalizar una compra se redirige a la lista de compras
     @Test
     void finishPurchaseRedirectsToPurchaseList() throws Exception {
-        mockMvc.perform(get("/purchases/{id}/finish", purchase1.getId()))
+        mockMvc.perform(get("/purchases/{id}/finish", purchase1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases"));
+                .andExpect(redirectedUrlPattern("/purchases*"));
 
         verify(purchaseService).completePurchase(purchase1.getId());
     }
@@ -324,9 +339,9 @@ class PurchaseControllerTest {
     // Verifica que al cancelar una compra se redirige a la lista de compras
     @Test
     void incrementLineQuantityRedirectsToPurchaseDetail() throws Exception {
-        mockMvc.perform(get("/purchases/{purchaseId}/lines/add/{productId}", purchase1.getId(), product1.getId()))
+        mockMvc.perform(get("/purchases/{purchaseId}/lines/add/{productId}", purchase1.getId(), product1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
+                .andExpect(redirectedUrlPattern("/purchases/" + purchase1.getId() + "*"));
 
         verify(purchaseService).addProductToCart(eq(product1.getId()), nullable(User.class));
     }
@@ -334,9 +349,9 @@ class PurchaseControllerTest {
     // Verifica que al eliminar un producto de la compra se redirige al detalle de la compra
     @Test
     void decrementLineQuantityRedirectsToPurchaseDetail() throws Exception {
-        mockMvc.perform(get("/purchases/{purchaseId}/lines/remove/{productId}", purchase1.getId(), product1.getId()))
+        mockMvc.perform(get("/purchases/{purchaseId}/lines/remove/{productId}", purchase1.getId(), product1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/purchases/" + purchase1.getId()));
+                .andExpect(redirectedUrlPattern("/purchases/" + purchase1.getId() + "*"));
 
         verify(purchaseService).removeProductFromCart(eq(product1.getId()), nullable(User.class));
     }

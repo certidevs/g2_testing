@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -22,11 +23,12 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
 class AddressControllerTest {
@@ -36,6 +38,8 @@ class AddressControllerTest {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     MockMvc mockMvc;
@@ -44,9 +48,23 @@ class AddressControllerTest {
     Address address1;
     Address address2;
     Address address3;
-
+    User user;
+    User admin;
     @BeforeEach
     void setUp() {
+        user = userRepository.save(User.builder()
+                .username("user")
+                .email("user@gmail.com")
+                .password(passwordEncoder.encode("useruseruserA*"))
+                .role(Role.ROLE_CUSTOMER)
+                .build());
+        admin = userRepository.save(User.builder()
+                .username("adminadmin")
+                .email("adminadmin@gmail.com")
+                .password(passwordEncoder.encode("adminadminadmAin8*"))
+                .role(Role.ROLE_ADMIN)
+                .build());
+
         user1 = userRepository.save(User.builder()
                 .username("user1.address.controller")
                 .name("User 1")
@@ -98,9 +116,9 @@ class AddressControllerTest {
     // Verifica que la lista de direcciones se muestra correctamente con datos completos
     @Test
     void listAddressesFull() throws Exception {
-        mockMvc.perform(get("/addresses"))
+        mockMvc.perform(get("/addresses").with(user(admin)))
                 .andExpect(status().isOk())
-                .andExpect(view().name("addresses/addresses-list"))
+                .andExpect(view().name("addresses/address-list"))
                 .andExpect(model().attributeExists("addresses"))
                 .andExpect(model().attribute("addresses", hasSize(3)))
                 .andExpect(model().attribute("addresses", hasItem(hasProperty("id", is(address1.getId())))))
@@ -113,9 +131,9 @@ class AddressControllerTest {
     void listAddressesEmpty() throws Exception {
         addressRepository.deleteAll();
 
-        mockMvc.perform(get("/addresses"))
+        mockMvc.perform(get("/addresses").with(user(user)))
                 .andExpect(status().isOk())
-                .andExpect(view().name("addresses/addresses-list"))
+                .andExpect(view().name("addresses/address-list"))
                 .andExpect(model().attributeExists("addresses"))
                 .andExpect(model().attribute("addresses", hasSize(0)));
     }
@@ -123,7 +141,7 @@ class AddressControllerTest {
     // Verifica que se muestra la vista de detalle de una dirección específica con datos completos
     @Test
     void addressDetailFound() throws Exception {
-        mockMvc.perform(get("/addresses/{id}", address1.getId()))
+        mockMvc.perform(get("/addresses/{id}", address1.getId()).with(user(user)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addresses/address-detail"))
                 .andExpect(model().attributeExists("address"))
@@ -142,7 +160,7 @@ class AddressControllerTest {
     void addressDetailNotFound() throws Exception {
         UUID randomId = UUID.randomUUID();
 
-        mockMvc.perform(get("/addresses/{id}", randomId))
+        mockMvc.perform(get("/addresses/{id}", randomId).with(user(user)))
                 .andExpect(status().isNotFound());
     }
 }

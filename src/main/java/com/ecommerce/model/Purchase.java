@@ -4,6 +4,7 @@ import com.ecommerce.model.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -58,6 +59,14 @@ public class Purchase {
     @ToString.Exclude
     @ManyToOne
     private User user;
+
+//    `private String cardOwner;
+//    private String cardNumber;
+//    private String ccv;
+//    private LocalDate expirationDate;
+//    private String discountCode;
+//    private Double discountPercentage;
+//    private Double tip;
 
     // Asociación con las líneas de compra, una compra puede tener varias líneas, cada línea representa un producto comprado con su cantidad y precio
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
