@@ -47,6 +47,13 @@ public class Purchase {
 
     private String userComment; // Comentario opcional del usuario para la entrega de la compra
 
+    @Transient
+    private UUID addressId; // Identificador para la dirección de envío (campo temporal utilizado para el form de purchases)
+
+    @ManyToOne
+    @JoinColumn(name = "address_id")
+    private Address address; // Asociación con la entidad de las direcciones de envío
+
     // Asociación con el usuario que realizó la compra, una compra pertenece a un solo usuario, pero un usuario puede tener varias compras
     @ToString.Exclude
     @ManyToOne

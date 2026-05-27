@@ -4,10 +4,7 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
-import com.ecommerce.repository.AddressRepository;
-import com.ecommerce.repository.PurchaseLineRepository;
-import com.ecommerce.repository.PurchaseRepository;
-import com.ecommerce.repository.UserRepository;
+import com.ecommerce.repository.*;
 import com.ecommerce.service.PurchaseService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +29,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final FavoriteRepository favoriteRepository;
 
     // Muestra la lista de todas las compras
     @Transactional
@@ -61,7 +59,8 @@ public class PurchaseController {
         }
         else{
             model.addAttribute("purchase", new Purchase());
-            model.addAttribute("addresses", addressRepository.findByUserId(getCurrentUserId(user)));
+            model.addAttribute("addresses", addressRepository.findByUser(user));
+            model.addAttribute("favorites", favoriteRepository.findByUser(user));
             return "purchases/purchase-form";
         }
     }
