@@ -54,16 +54,31 @@
                         <!-- DIRECCIÓN DE ENVÍO -->
                         <div class="col-12">
                             <div class="d-flex justify-content-between align-items-center mb-2">
+
                                 <label for="addressId"
                                        class="form-label mb-0">
                                     Dirección de envío
                                 </label>
-                                <a th:href="@{/addresses/new}"
-                                   class="btn btn-sm btn-outline-primary">
 
-                                    <i class="fa-solid fa-plus me-1"></i>
-                                    Nueva dirección
-                                </a>
+                                <div class="d-flex gap-2">
+
+                                    <!-- BOTÓN EDITAR DIRECCIONES -->
+                                    <a th:href="@{/addresses}"
+                                       class="btn btn-sm btn-outline-secondary">
+
+                                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                                        Editar direcciones
+                                    </a>
+
+                                    <!-- BOTÓN NUEVA DIRECCIÓN -->
+                                    <a th:href="@{/addresses/new}"
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        <i class="fa-solid fa-plus me-1"></i>
+                                        Nueva dirección
+                                    </a>
+
+                                </div>
                             </div>
 
                             <select class="form-select"
