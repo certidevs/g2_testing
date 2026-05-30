@@ -1,45 +1,268 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/head :: head('Detalle de Dirección')}">
-</head>
-<body class="d-flex flex-column min-vh-100">
+
+<head th:replace="~{layout/head :: head('Editar dirección')}"></head>
+
+<body class="d-flex flex-column min-vh-100 bg-light">
+
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
-<main class="container flex-grow-1">
-    <div th:if="${address != null}" class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                <i class="fa-solid fa-location-dot me-2"></i>
-                Detalle de Dirección
-            </h5>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <p><strong>Tipo:</strong> <span th:text="${address.addressType}">PRIMARY</span></p>
-                    <p><strong>Calle:</strong> <span th:text="${address.street}">Calle Principal</span></p>
-                    <p><strong>Número:</strong> <span th:text="${address.number}">123</span></p>
-                    <p><strong>Ciudad:</strong> <span th:text="${address.city}">Madrid</span></p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Estado:</strong> <span th:text="${address.state}">Madrid</span></p>
-                    <p><strong>País:</strong> <span th:text="${address.country}">España</span></p>
-                    <p><strong>Código Postal:</strong> <span th:text="${address.zipCode}">28001</span></p>
-                </div>
-            </div>
-            <div class="mt-3">
-                <a th:href="@{/addresses}" class="btn btn-secondary">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Volver
+
+<main class="container flex-grow-1 py-4">
+
+    <!-- SI EXISTE LA DIRECCIÓN -->
+    <div th:if="${address != null}">
+
+        <!-- CABECERA -->
+        <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
+
+            <div>
+
+                <!-- BOTÓN VOLVER -->
+                <a th:href="@{/addresses}"
+                   class="btn btn-sm btn-outline-secondary mb-3">
+
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Volver
                 </a>
+
+                <div class="text-uppercase text-muted small fw-semibold">
+                    Gestión de direcciones
+                </div>
+
+                <h1 class="mb-1">
+                    Editar dirección
+                </h1>
+
+                <p class="text-muted mb-0">
+                    Modifica la información de esta dirección.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- FORMULARIO -->
+        <div class="row justify-content-center">
+
+            <div class="col-lg-8">
+
+                <form th:action="@{/addresses/{id}(id=${address.id})}"
+                      method="post"
+                      th:object="${address}"
+                      class="card border-0 shadow-sm">
+
+                    <!-- TOKEN CSRF -->
+                    <input th:if="${_csrf != null}"
+                           type="hidden"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+
+                    <!-- METODO PUT -->
+                    <input type="hidden" name="_method" value="put">
+
+                    <!-- HEADER -->
+                    <div class="card-header bg-white">
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <h2 class="h5 mb-0">
+                                <i class="fa-solid fa-location-dot me-2 text-primary"></i>
+                                Información de la dirección
+                            </h2>
+
+                            <span class="badge rounded-pill text-bg-secondary"
+                                  th:text="${address.addressType}">
+                                PRIMARY
+                            </span>
+
+                        </div>
+                    </div>
+
+                    <!-- BODY -->
+                    <div class="card-body">
+                        <div class="row g-3">
+
+                            <!-- TIPO -->
+                            <div class="col-md-6">
+
+                                <label for="addressType"
+                                       class="form-label">
+                                    Tipo de dirección
+                                </label>
+
+                                <select id="addressType"
+                                        class="form-select"
+                                        th:field="*{addressType}"
+                                        required>
+
+                                    <option value="">
+                                        Selecciona un tipo
+                                    </option>
+
+                                    <option value="PRIMARY">
+                                        Principal
+                                    </option>
+
+                                    <option value="SECONDARY">
+                                        Secundaria
+                                    </option>
+
+                                    <option value="WORK">
+                                        Trabajo
+                                    </option>
+
+                                </select>
+                            </div>
+
+                            <!-- CALLE -->
+                            <div class="col-md-8">
+
+                                <label for="street"
+                                       class="form-label">
+                                    Calle
+                                </label>
+
+                                <input type="text"
+                                       id="street"
+                                       class="form-control"
+                                       th:field="*{street}"
+                                       placeholder="Ej: Gran Vía"
+                                       required
+                                       minlength="3"
+                                       maxlength="100">
+                                </div>
+
+                            <!-- NÚMERO -->
+                            <div class="col-md-4">
+
+                                <label for="number"
+                                       class="form-label">
+                                    Número
+                                </label>
+
+                                <input type="text"
+                                       id="number"
+                                       class="form-control"
+                                       th:field="*{number}"
+                                       placeholder="Ej: 15"
+                                       required
+                                       pattern="[0-9A-Za-z\\-]{1,10}">
+                                </div>
+
+                            <!-- CIUDAD -->
+                            <div class="col-md-6">
+
+                                <label for="city"
+                                       class="form-label">
+                                    Ciudad
+                                </label>
+
+                                <input type="text"
+                                       id="city"
+                                       class="form-control"
+                                       th:field="*{city}"
+                                       placeholder="Ej: Madrid"
+                                       required
+                                       minlength="2"
+                                       maxlength="50">
+                            </div>
+
+                            <!-- ESTADO -->
+                            <div class="col-md-6">
+
+                                <label for="state"
+                                       class="form-label">
+                                    Estado / Provincia
+                                </label>
+
+                                <input type="text"
+                                       id="state"
+                                       class="form-control"
+                                       th:field="*{state}"
+                                       placeholder="Ej: Madrid"
+                                       required
+                                       minlength="2"
+                                       maxlength="50">
+                            </div>
+
+                            <!-- PAÍS -->
+                            <div class="col-md-6">
+
+                                <label for="country"
+                                       class="form-label">
+                                    País
+                                </label>
+
+                                <input type="text"
+                                       id="country"
+                                       class="form-control"
+                                       th:field="*{country}"
+                                       placeholder="Ej: España"
+                                       required
+                                       minlength="2"
+                                       maxlength="50">
+                            </div>
+
+                            <!-- CÓDIGO POSTAL -->
+                            <div class="col-md-6">
+
+                                <label for="zipCode"
+                                       class="form-label">
+                                    Código postal
+                                </label>
+
+                                <input type="text"
+                                       id="zipCode"
+                                       class="form-control"
+                                       th:field="*{zipCode}"
+                                       placeholder="Ej: 28001"
+                                       required
+                                       pattern="[0-9]{5}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER -->
+                    <div class="card-footer bg-white d-flex flex-column flex-sm-row justify-content-end gap-2">
+
+                        <!-- CANCELAR -->
+                        <a th:href="@{/addresses}"
+                           class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <!-- GUARDAR -->
+                        <button type="submit"
+                                class="btn btn-outline-primary"
+                                onclick="return confirm('¿Está seguro de los cambios realizados?')">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            Guardar cambios
+                        </button>
+
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    
-    <div th:if="${address == null}" class="alert alert-danger">
-        <i class="fa-solid fa-exclamation-triangle me-2"></i>
-        Dirección no encontrada.
+
+    <!-- SI NO EXISTE -->
+    <div th:if="${address == null}">
+
+        <div class="alert alert-danger border-0 shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            Dirección no encontrada.
+        </div>
+
+        <a th:href="@{/addresses}"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Volver a direcciones
+        </a>
+
     </div>
 </main>
+
 <footer th:replace="~{layout/footer :: footer}"></footer>
 <script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>

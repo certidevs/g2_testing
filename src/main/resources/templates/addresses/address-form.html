@@ -29,7 +29,7 @@
         <div class="col-lg-8">
 
             <!-- FORMULARIO SE ENVÍA A /ADDRESSES CON POSTMAPPING Y SE VÍNCULA AL OBJETO "ADDRESS" DEL MODELO-->
-            <form th:action="@{/purchases}" method="post" th:object="${purchase}" class="card border-0 shadow-sm">
+            <form th:action="@{/addresses}" method="post" th:object="${address}" class="card border-0 shadow-sm">
 
                 <!-- TOKEN CSRF -->
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -125,7 +125,7 @@
                 <div class="card-footer bg-white d-flex flex-column flex-sm-row justify-content-end gap-2">
 
                     <!-- BOTÓN CANCELAR -->
-                    <a th:href="@{/purchases}" class="btn btn-outline-secondary">
+                    <a th:href="@{/addresses}" class="btn btn-outline-secondary">
                         Cancelar
                     </a>
 
