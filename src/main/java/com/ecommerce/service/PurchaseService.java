@@ -139,11 +139,7 @@ public class PurchaseService {
         purchaseLineRepository.save(purchaseLine);
 
         // Calcula el precio total de la compra sumando el precio de cada línea de compra (price * quantity) y lo actualiza en la compra
-        double totalPrice = 0.0;
-        for (PurchaseLine line : getMutableLines(purchase)) {
-            totalPrice += line.getProduct().getPrice() * line.getQuantity();
-        }
-
+        double totalPrice = calculateTotalPrice(getMutableLines(purchase));
         purchase.setTotalPrice(totalPrice);
 
         // Guarda la compra actualizada
@@ -190,10 +186,7 @@ public class PurchaseService {
         }
 
         // Volvemos a calcular el precio total actualizado de la compra
-        double totalPrice = 0.0;
-        for (PurchaseLine line : getMutableLines(purchase)) {
-            totalPrice += line.getProduct().getPrice() * line.getQuantity();
-        }
+        double totalPrice = calculateTotalPrice(getMutableLines(purchase));
         purchase.setTotalPrice(totalPrice);
 
         return purchaseRepository.save(purchase);
@@ -261,13 +254,9 @@ public class PurchaseService {
             );
         }
 
-        double totalPrice = 0.0;
-
-        for (PurchaseLine line : lines) {
-            totalPrice += line.getProduct().getFinalPrice() * line.getQuantity();
-        }
-
+        double totalPrice = calculateTotalPrice(lines);
         purchase.setTotalPrice(totalPrice);
+
         purchase.setPaymentStatus(PaymentStatus.PAID);
         purchase.setProcessStatus(ProcessStatus.COMPLETED);
         purchase.setShippingStatus(ShippingStatus.PENDING);
@@ -291,6 +280,28 @@ public class PurchaseService {
     private Purchase getPurchaseEntityById(UUID id) {
         return purchaseRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase not found with id: " + id));
+    }
+
+    private double getEffectivePrice(Product product) {
+        if (product.getFinalPrice() != null) {
+            return product.getFinalPrice();
+        }
+
+        return product.getPrice();
+    }
+
+    private double calculateTotalPrice(List<PurchaseLine> lines) {
+        double totalPrice = 0.0;
+
+        for (PurchaseLine line : lines) {
+            Product product = line.getProduct();
+
+            double unitPrice = getEffectivePrice(product);
+
+            totalPrice += unitPrice * line.getQuantity();
+        }
+
+        return totalPrice;
     }
 
     // ---- [ FUNCIONES DE ACTUALIZACIONES NO UTILIZADAS ] ----

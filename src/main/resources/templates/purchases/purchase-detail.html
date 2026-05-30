@@ -85,7 +85,8 @@
                 <div class="card-body">
                     <div class="text-muted small">Total</div>
                     <div class="h4 mb-0 mt-2"
-                         th:text="${purchase.totalPrice != null ? #numbers.formatDecimal(purchase.totalPrice, 1, 2) + ' €' : '0,00 €'}"></div>
+                         th:text="${purchase.totalPrice != null ? #numbers.formatDecimal(purchase.totalPrice, 1, 2) + ' €' : '0,00 €'}">
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,9 +203,7 @@
                     </td>
 
                     <td class="text-end fw-semibold text-success"
-                        th:text="${#numbers.formatDecimal(
-                        line.product.finalPrice != null ? line.product.finalPrice : line.product.price,
-                        1, 2) + ' €'}">
+                        th:text="${#numbers.formatDecimal((line.product.finalPrice != null ? line.product.finalPrice : line.product.price), 1, 2) + ' €'}">
                         0,00 €
                     </td>
 
