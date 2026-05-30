@@ -74,7 +74,7 @@ public class PurchaseController {
     @GetMapping("purchases/delete/{id}")
     public String deletePurchase(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
         purchaseService.deletePurchase(id);
-        redirectAttributes.addFlashAttribute("message", "Purchase deleted successfully");
+        redirectAttributes.addFlashAttribute("message", "La compra se ha eliminado correctamente");
         return "redirect:/purchases";
     }
 
