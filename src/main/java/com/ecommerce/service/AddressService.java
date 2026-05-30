@@ -35,9 +35,6 @@ public class AddressService {
         addressRepository.save(address);
     }
 
-    /**
-     * Recupera todas las direcciones y las transforma a DTO de respuesta.
-     */
     public List<AddressResponseDto> findAll() {
         return addressRepository.findAll()
                 .stream()
@@ -45,41 +42,13 @@ public class AddressService {
                 .toList();
     }
 
-    /**
-     * Busca una direccion por su ID.
-     */
     public AddressResponseDto findById(UUID id) {
         Address address = findAddressEntityById(id);
         return toResponseDto(address);
     }
 
-    /**
-     * Crea una direccion a partir del DTO de entrada.
-     */
-    public AddressResponseDto create(AddressRequestDto dto) {
-        User user = findUserEntityById(dto.getUsersId());
-
-        Address address = Address.builder()
-                .street(dto.getStreet())
-                .number(dto.getNumber())
-                .complement(dto.getComplement())
-                .city(dto.getCity())
-                .state(dto.getState())
-                .country(dto.getCountry())
-                .zipCode(dto.getZipCode())
-                .addressType(dto.getAddressType())
-                .user(user)
-                .build();
-
-        return toResponseDto(addressRepository.save(address));
-    }
-
-    /**
-     * Actualiza una direccion existente.
-     */
-    public AddressResponseDto update(UUID id, AddressRequestDto dto) {
+    public AddressResponseDto updateAddress(UUID id, AddressRequestDto dto) {
         Address address = findAddressEntityById(id);
-        User user = findUserEntityById(dto.getUsersId());
 
         address.setStreet(dto.getStreet());
         address.setNumber(dto.getNumber());
@@ -89,14 +58,10 @@ public class AddressService {
         address.setCountry(dto.getCountry());
         address.setZipCode(dto.getZipCode());
         address.setAddressType(dto.getAddressType());
-        address.setUser(user);
 
         return toResponseDto(addressRepository.save(address));
     }
 
-    /**
-     * Elimina una direccion por su ID.
-     */
     public void delete(UUID id) {
         Address address = findAddressEntityById(id);
         addressRepository.delete(address);
@@ -129,4 +94,3 @@ public class AddressService {
                 .build();
     }
 }
-
