@@ -62,15 +62,13 @@ public class ProfileController {
     }
 
     @PostMapping("/addresses/create")
-    public String createAddress(@RequestParam String email,
-                               AddressRequestDto addressDto,
-                               RedirectAttributes redirectAttributes) {
+    public String createAddress(@RequestParam String email, AddressRequestDto addressDto, RedirectAttributes redirectAttributes) {
         try {
             User user = usersService.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             addressDto.setUsersId(user.getId());
-            addressService.create(addressDto);
+            addressService.addAddress(addressDto, user);
             redirectAttributes.addFlashAttribute("success", "Dirección creada correctamente");
 
         } catch (Exception e) {
@@ -100,7 +98,7 @@ public class ProfileController {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             addressDto.setUsersId(user.getId());
-            addressService.update(id, addressDto);
+            addressService.updateAddress(id, addressDto);
             redirectAttributes.addFlashAttribute("success", "Dirección actualizada correctamente");
 
         } catch (Exception e) {
