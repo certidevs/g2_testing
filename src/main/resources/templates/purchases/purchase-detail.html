@@ -25,8 +25,10 @@
 
         <div class="d-flex flex-wrap gap-2">
 
-            <!--  BOTÓN PARA IR AL PAGO -->
-            <a th:href="@{/purchases/{id}/cart(id=${purchase.id})}" class="btn btn-outline-primary">
+            <!-- BOTÓN PARA IR AL PAGO: SOLO SI LA COMPRA NO ESTÁ FINALIZADA -->
+            <a th:if="${purchase.purchaseStatus.name() != 'FINISHED'}"
+               th:href="@{/purchases/{id}/cart(id=${purchase.id})}"
+               class="btn btn-outline-primary">
                 <i class="fa-regular fa-credit-card"></i>
                 Pagar ahora
             </a>
@@ -137,48 +139,96 @@
         <div th:if="${lines != null and !lines.isEmpty()}" class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
-
-                <!-- ENCABEZADOS DE TABLA -->
                 <tr>
                     <th>Producto</th>
                     <th class="text-center">Cantidad</th>
-                    <th class="text-end">Precio unitario</th>
+                    <th class="text-end">Precio original</th>
+                    <th class="text-center">Descuento</th>
+                    <th class="text-end">Precio final</th>
                     <th class="text-end">Subtotal</th>
-                    <th class="text-end">Ajustar</th>
+
+                    <th th:if="${purchase.purchaseStatus.name() != 'FINISHED'}"
+                        class="text-end">
+                        Ajustar
+                    </th>
                 </tr>
                 </thead>
+
                 <tbody>
                 <tr th:each="line : ${lines}">
-
-                    <!-- NOMBRE DE PRODUCTO + ISBN -->
                     <td>
-                        <div class="fw-semibold" th:text="${line.product.title}"></div>
-                        <div class="text-muted small" th:text="${line.product.isbn != null ? line.product.isbn : 'Sin referencia'}"></div>
+                        <div class="fw-semibold"
+                             th:text="${line.product.title}">
+                            Producto
+                        </div>
+
+                        <div class="text-muted small"
+                             th:text="${line.product.isbn != null ? line.product.isbn : 'Sin referencia'}">
+                            Sin referencia
+                        </div>
                     </td>
 
-                    <!-- CANTIDAD DE PRODUCTO -->
                     <td class="text-center">
-                        <span class="badge rounded-pill text-bg-light border" th:text="${line.quantity}"></span>
+                        <span class="badge rounded-pill text-bg-light border"
+                            th:text="${line.quantity}">
+                             1
+                        </span>
                     </td>
 
-                    <!-- PRECIO UNITARIO DE PRODUCTO -->
-                    <td class="text-end" th:text="${#numbers.formatDecimal(line.product.price, 1, 2) + ' €'}"></td>
+                    <td class="text-end">
+                        <span th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
+                            class="text-muted text-decoration-line-through"
+                            th:text="${#numbers.formatDecimal(line.product.price, 1, 2) + ' €'}">
+                            0,00 €
+                        </span>
 
-                    <!-- PRECIO TOTAL DE LÍNEA DE COMPRA DE PRODUCTO (SUBTOTAL) -->
-                    <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2) + ' €'}"></td>
+                        <span th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
+                              th:text="${#numbers.formatDecimal(line.product.price, 1, 2) + ' €'}">
+                                0,00 €
+                        </span>
+                    </td>
 
-                    <td>
+                    <td class="text-center">
+                        <span th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
+                            class="badge rounded-pill text-bg-danger"
+                            th:text="${#numbers.formatDecimal(line.product.discountPercentage, 1, 0) + '%'}">
+                            0%
+                        </span>
+
+                        <span th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
+                              class="badge rounded-pill text-bg-light border">
+                            Sin descuento
+                        </span>
+                    </td>
+
+                    <td class="text-end fw-semibold text-success"
+                        th:text="${#numbers.formatDecimal(
+                        line.product.finalPrice != null ? line.product.finalPrice : line.product.price,
+                        1, 2) + ' €'}">
+                        0,00 €
+                    </td>
+
+                    <td class="text-end fw-bold text-success"
+                        th:text="${#numbers.formatDecimal(
+                        (line.product.finalPrice != null ? line.product.finalPrice : line.product.price) * line.quantity,
+                        1, 2) + ' €'}">
+                        0,00 €
+                    </td>
+
+                    <td th:if="${purchase.purchaseStatus.name() != 'FINISHED'}"
+                        class="text-end">
+
                         <div class="d-flex justify-content-end gap-2">
 
-                            <!-- BOTÓN DE RESTAR -->
-                            <a th:if="statusPurchase != 'FINISHED'" th:href="@{/purchases/{purchaseId}/lines/remove/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
-                               class="btn btn-sm btn-outline-danger" title="Restar unidad">
+                            <a th:href="@{/purchases/{purchaseId}/lines/remove/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
+                               class="btn btn-sm btn-outline-danger"
+                               title="Restar unidad">
                                 <i class="fa-solid fa-minus"></i>
                             </a>
 
-                            <!-- BOTÓN DE SUMAR -->
-                            <a th:if="statusPurchase != 'FINISHED'" th:href="@{/purchases/{purchaseId}/lines/add/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
-                               class="btn btn-sm btn-outline-success" title="Añadir unidad">
+                            <a th:href="@{/purchases/{purchaseId}/lines/add/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
+                               class="btn btn-sm btn-outline-success"
+                               title="Añadir unidad">
                                 <i class="fa-solid fa-plus"></i>
                             </a>
                         </div>
@@ -186,12 +236,26 @@
                 </tr>
                 </tbody>
 
-                <!-- PRECIO TOTAL COMPRA -->
                 <tfoot class="table-light">
                 <tr>
-                    <th colspan="3" class="text-end">Total de la compra</th>
-                    <th class="text-end" th:text="${purchase.totalPrice != null ? #numbers.formatDecimal(purchase.totalPrice, 1, 2) + ' €' : '0,00 €'}"></th>
-                    <th></th>
+                    <th th:if="${purchase.purchaseStatus.name() != 'FINISHED'}"
+                        colspan="5"
+                        class="text-end">
+                        Total con descuentos
+                    </th>
+
+                    <th th:if="${purchase.purchaseStatus.name() == 'FINISHED'}"
+                        colspan="5"
+                        class="text-end">
+                        Total pagado con descuentos aplicados
+                    </th>
+
+                    <th class="text-end text-success"
+                        th:text="${purchase.totalPrice != null ? #numbers.formatDecimal(purchase.totalPrice, 1, 2) + ' €' : '0,00 €'}">
+                        0,00 €
+                    </th>
+
+                    <th th:if="${purchase.purchaseStatus.name() != 'FINISHED'}"></th>
                 </tr>
                 </tfoot>
             </table>

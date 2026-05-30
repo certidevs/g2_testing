@@ -76,6 +76,18 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    // Simulated card data for academic/testing purposes.
+    // We do NOT store the full card number or CVV.
+    private String cardHolderName;
+
+    private String cardBrand;
+
+    private String cardLastFourDigits;
+
+    private Integer cardExpirationMonth;
+
+    private Integer cardExpirationYear;
+
     // Un usuario tiene MUCHAS direcciones
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @Builder.Default

@@ -1,17 +1,21 @@
 package com.ecommerce.controller;
 
+import com.ecommerce.dto.PaymentCardRequestDto;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.*;
+import com.ecommerce.service.PaymentService;
 import com.ecommerce.service.PurchaseService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -27,6 +31,7 @@ public class PurchaseController {
     private final PurchaseRepository purchaseRepository;
     private final PurchaseLineRepository purchaseLineRepository;
     private final PurchaseService purchaseService;
+    private final PaymentService paymentService;
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
 
@@ -86,25 +91,10 @@ public class PurchaseController {
     }
 
     // Muestra el carrito de compras del usuario actual, que es la compra con estatus iniciado (INITIATED) asociada al usuario actual, si no hay ninguna compra iniciada para el usuario actual, se muestra un carrito vacío
-    @GetMapping("/purchases/{id}/cart")
-    public String showCart(Model model, @AuthenticationPrincipal User user) {
-        Optional<Purchase> purchaseOptional = purchaseService.getOrCreateCartForUser(user.getId());
-
-        // Si hay un carrito iniciado para el usuario actual, pasamos el modelo a la vista
-        if (purchaseOptional.isPresent()) {
-            Purchase cart = purchaseOptional.get();
-            model.addAttribute("cart", cart);
-
-            // Pasamos las línes de la compra al modelo, si no hay líneas, se pasará un array vacío, para mostrar un carrito vacío en la vista
-//            model.addAttribute("lines", cart.getPurchaseLines());
-
-            List<PurchaseLine> lines = purchaseLineRepository.findByPurchaseId(cart.getId());
-            model.addAttribute("lines", lines);
-
-        } else {
-            // Si no hay ningún carrito iniciado para el usuario actual, pasamos un carrito vacío al modelo, con líneas vacías, para mostrar un carrito vacío en la vista
-            model.addAttribute("cart", null);
-        }
+    @GetMapping({"/purchases/cart", "/purchases/{id}/cart"})
+    public String showCart(Model model, @AuthenticationPrincipal User user)
+    {
+        loadCartModel(model, user, new PaymentCardRequestDto());
         return "purchases/cart";
     }
 
@@ -131,11 +121,65 @@ public class PurchaseController {
         return "redirect:/purchases/" + purchaseId;
     }
 
+    @PostMapping("/purchases/cart/pay")
+    public String payCurrentCart(
+            @Valid @ModelAttribute("paymentCard") PaymentCardRequestDto paymentCardRequestDto,
+            BindingResult bindingResult,
+            @AuthenticationPrincipal User user,
+            Model model,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (bindingResult.hasErrors()) {
+            loadCartModel(model, user, paymentCardRequestDto);
+            return "purchases/cart";
+        }
+
+        try {
+            paymentService.saveSimulatedCreditCard(user, paymentCardRequestDto);
+
+            Purchase finishedPurchase = purchaseService.completeCurrentCart(user);
+
+            redirectAttributes.addFlashAttribute(
+                    "message",
+                    "Pago realizado correctamente"
+            );
+
+            return "redirect:/purchases/" + finishedPurchase.getId();
+
+        } catch (ResponseStatusException exception) {
+            loadCartModel(model, user, paymentCardRequestDto);
+            model.addAttribute("errorMessage", exception.getReason());
+            return "purchases/cart";
+
+        } catch (IllegalArgumentException exception) {
+            loadCartModel(model, user, paymentCardRequestDto);
+            model.addAttribute("errorMessage", exception.getMessage());
+            return "purchases/cart";
+        }
+    }
+
     // Función auxiliar para obtener el ID del usuario actual de forma segura, si el usuario es null, devuelve null
     private UUID getCurrentUserId(User user) {
         if (user != null) {
             return user.getId();
         }
         return null;
+    }
+
+    private void loadCartModel(Model model, User user, PaymentCardRequestDto paymentCardRequestDto) {
+        Optional<Purchase> purchaseOptional = purchaseService.getOrCreateCartForUser(user.getId());
+
+        if (purchaseOptional.isPresent()) {
+            Purchase cart = purchaseOptional.get();
+            List<PurchaseLine> lines = purchaseLineRepository.findByPurchaseId(cart.getId());
+
+            model.addAttribute("cart", cart);
+            model.addAttribute("lines", lines);
+        } else {
+            model.addAttribute("cart", null);
+            model.addAttribute("lines", List.of());
+        }
+
+        model.addAttribute("paymentCard", paymentCardRequestDto);
     }
 }

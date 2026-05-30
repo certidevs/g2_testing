@@ -240,6 +240,43 @@ public class PurchaseService {
         purchaseRepository.save(purchase);
     }
 
+    //Para completar el pago a partir del formulario de tarjeta, se usaría completeCurrentCart(user).
+    @Transactional
+    public Purchase completeCurrentCart(User user) {
+        UUID currentUserId = getCurrentUserId(user);
+
+        Purchase purchase = purchaseRepository
+                .findFirstByUserIdAndPurchaseStatus(currentUserId, PurchaseStatus.INITIATED)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "No active cart found"
+                ));
+
+        List<PurchaseLine> lines = purchaseLineRepository.findByPurchaseId(purchase.getId());
+
+        if (lines == null || lines.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Can not finish a purchase without lines"
+            );
+        }
+
+        double totalPrice = 0.0;
+
+        for (PurchaseLine line : lines) {
+            totalPrice += line.getProduct().getFinalPrice() * line.getQuantity();
+        }
+
+        purchase.setTotalPrice(totalPrice);
+        purchase.setPaymentStatus(PaymentStatus.PAID);
+        purchase.setProcessStatus(ProcessStatus.COMPLETED);
+        purchase.setShippingStatus(ShippingStatus.PENDING);
+        purchase.setPurchaseStatus(PurchaseStatus.FINISHED);
+        purchase.setFinishedDate(LocalDateTime.now());
+
+        return purchaseRepository.save(purchase);
+    }
+
     // Muestra todas las compras
     public List<Purchase> getAllPurchases() {
         return purchaseRepository.findAll();
