@@ -1,9 +1,8 @@
 package com.ecommerce.controller;
 
 import com.ecommerce.dto.AddressRequestDto;
-import com.ecommerce.dto.UserRequestDto;
+import com.ecommerce.dto.AddressResponseDto;
 import com.ecommerce.model.Address;
-import com.ecommerce.model.Purchase;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.AddressRepository;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -51,8 +49,8 @@ public class AddressController {
 
     // Muestra el formulario para agregar una nueva dirección de envío
     @GetMapping("addresses/new")
-    public String showCreatePurchaseForm(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("purchase", new Purchase());
+    public String showCreateAddressForm(Model model, @AuthenticationPrincipal User user) {
+        model.addAttribute("address", new Address());
         model.addAttribute("addresses", addressRepository.findByUser(user));
         return "addresses/address-form";
     }
@@ -62,5 +60,30 @@ public class AddressController {
     public String addAddress(@Valid @ModelAttribute AddressRequestDto form, @AuthenticationPrincipal User user) {
         addressService.addAddress(form, user);
         return "redirect:/addresses";
+    }
+
+    // Edita una dirección de envío existente
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable UUID id, Model model) {
+
+        AddressResponseDto address = addressService.findById(id);
+        model.addAttribute("address", address);
+
+        return "addresses/edit";
+    }
+
+    // Procesa el formulario para editar una dirección
+    @PostMapping("/{id}")
+    public String update(@PathVariable UUID addressId, @ModelAttribute AddressRequestDto address) {
+        addressService.updateAddress(addressId, address);
+
+        return "redirect:/addresses" + addressId;
+    }
+
+    @GetMapping("addresses/delete/{id}")
+    public String deleteAddress(@PathVariable UUID addressId, RedirectAttributes redirectAttributes){
+        addressService.delete(addressId);
+        redirectAttributes.addFlashAttribute("message", "La dirección se ha eliminado correctamente");
+        return "redirect:/addresses/" + addressId;
     }
 }
