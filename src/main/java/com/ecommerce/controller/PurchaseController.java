@@ -5,6 +5,7 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.Role;
+import com.ecommerce.model.enums.ShippingMode;
 import com.ecommerce.repository.*;
 import com.ecommerce.service.PaymentService;
 import com.ecommerce.service.PurchaseService;
@@ -125,10 +126,24 @@ public class PurchaseController {
     public String payCurrentCart(
             @Valid @ModelAttribute("paymentCard") PaymentCardRequestDto paymentCardRequestDto,
             BindingResult bindingResult,
+            @RequestParam(required = false) UUID addressId,
+            @RequestParam(required = false) ShippingMode shippingMode,
             @AuthenticationPrincipal User user,
             Model model,
             RedirectAttributes redirectAttributes
     ) {
+        if (addressId == null) {
+            loadCartModel(model, user, paymentCardRequestDto);
+            model.addAttribute("errorMessage", "Debes seleccionar una dirección de envío");
+            return "purchases/cart";
+        }
+
+        if (shippingMode == null) {
+            loadCartModel(model, user, paymentCardRequestDto);
+            model.addAttribute("errorMessage", "Debes seleccionar un tipo de envío");
+            return "purchases/cart";
+        }
+
         if (bindingResult.hasErrors()) {
             loadCartModel(model, user, paymentCardRequestDto);
             return "purchases/cart";
@@ -137,7 +152,11 @@ public class PurchaseController {
         try {
             paymentService.saveSimulatedCreditCard(user, paymentCardRequestDto);
 
-            Purchase finishedPurchase = purchaseService.completeCurrentCart(user);
+            Purchase finishedPurchase = purchaseService.completeCurrentCart(
+                    user,
+                    addressId,
+                    shippingMode
+            );
 
             redirectAttributes.addFlashAttribute(
                     "message",
@@ -181,5 +200,8 @@ public class PurchaseController {
         }
 
         model.addAttribute("paymentCard", paymentCardRequestDto);
+
+        model.addAttribute("addresses", addressRepository.findByUser(user));
+        model.addAttribute("shippingModes", ShippingMode.values());
     }
 }

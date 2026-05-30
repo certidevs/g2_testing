@@ -153,6 +153,80 @@
                                    th:name="${_csrf.parameterName}"
                                    th:value="${_csrf.token}" />
 
+                            <!-- DATOS DE ENVÍO -->
+                            <div class="mb-4">
+                                <h6 class="fw-bold mb-3 border-bottom pb-2">
+                                    Datos de envío
+                                </h6>
+
+                                <!-- DIRECCIÓN DE ENVÍO -->
+                                <div class="mb-3">
+                                    <label for="addressId"
+                                           class="form-label small fw-bold text-muted text-uppercase">
+                                        Dirección de envío
+                                    </label>
+
+                                    <select class="form-select form-select-lg fs-6"
+                                            id="addressId"
+                                            name="addressId"
+                                            required>
+                                        <option value="">
+                                            Selecciona una dirección
+                                        </option>
+
+                                        <option th:each="address : ${addresses}"
+                                                th:value="${address.id}"
+                                                th:text="|${address.street} ${address.number}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}|">
+                                            Dirección
+                                        </option>
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Selecciona una dirección de envío.
+                                    </div>
+
+                                    <div th:if="${addresses == null or addresses.isEmpty()}"
+                                         class="text-danger small mt-2">
+                                        No tienes direcciones guardadas.
+                                        <a th:href="@{/addresses/new}">
+                                            Agregar dirección
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- TIPO DE ENVÍO -->
+                                <div class="mb-3">
+                                    <label for="shippingMode"
+                                           class="form-label small fw-bold text-muted text-uppercase">
+                                        Tipo de envío
+                                    </label>
+
+                                    <select class="form-select form-select-lg fs-6"
+                                            id="shippingMode"
+                                            name="shippingMode"
+                                            required>
+                                        <option value="">
+                                            Selecciona un tipo de envío
+                                        </option>
+
+                                        <option th:each="mode : ${shippingModes}"
+                                                th:value="${mode}"
+                                                th:text="${mode.label}">
+                                            STANDARD
+                                        </option>
+                                    </select>
+
+                                    <div class="invalid-feedback">
+                                        Selecciona un tipo de envío.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DATOS DE TARJETA -->
+                            <h6 class="fw-bold mb-3 border-bottom pb-2">
+                                Datos de la tarjeta
+                            </h6>
+
                             <!-- NOMBRE DEL TITULAR -->
                             <div class="mb-3">
                                 <label for="cardHolderName"
@@ -306,7 +380,7 @@
                             <!-- BOTÓN DE PAGO -->
                             <button type="submit"
                                     class="btn btn-pay btn-lg w-100 shadow-sm"
-                                    th:disabled="${lines == null or lines.isEmpty()}">
+                                    th:disabled="${lines == null or lines.isEmpty() or addresses == null or addresses.isEmpty()}">
                                 <i class="fa-solid fa-credit-card me-2"></i>
                                 Confirmar y pagar
                             </button>

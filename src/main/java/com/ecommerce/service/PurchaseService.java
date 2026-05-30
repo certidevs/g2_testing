@@ -235,7 +235,7 @@ public class PurchaseService {
 
     //Para completar el pago a partir del formulario de tarjeta, se usaría completeCurrentCart(user).
     @Transactional
-    public Purchase completeCurrentCart(User user) {
+    public Purchase completeCurrentCart(User user, UUID addressId, ShippingMode shippingMode) {
         UUID currentUserId = getCurrentUserId(user);
 
         Purchase purchase = purchaseRepository
@@ -254,7 +254,23 @@ public class PurchaseService {
             );
         }
 
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Address not found"
+                ));
+
+        if (address.getUser() == null || !address.getUser().getId().equals(currentUserId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "This address does not belong to the authenticated user"
+            );
+        }
+
         double totalPrice = calculateTotalPrice(lines);
+
+        purchase.setAddress(address);
+        purchase.setShippingMode(shippingMode);
         purchase.setTotalPrice(totalPrice);
 
         purchase.setPaymentStatus(PaymentStatus.PAID);
