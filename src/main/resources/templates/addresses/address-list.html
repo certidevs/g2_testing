@@ -14,45 +14,41 @@
         <div>
 
             <!-- BOTÓN VOLVER -->
-            <a th:href="@{/purchases/new}"
-               class="btn btn-sm btn-outline-secondary mb-3">
-
-                <i class="fa-solid fa-arrow-left me-1"></i>
-                Volver
+            <a th:href="@{/purchases/new}" class="btn btn-sm btn-outline-secondary mb-3">
+                <i class="fa-solid fa-arrow-left me-1"></i> Volver
             </a>
 
+            <!-- TITULO DE LA PÁGINA -->
             <div class="text-uppercase text-muted small fw-semibold">
                 Gestión de direcciones
             </div>
-
-            <h1 class="mb-1">
-                Direcciones de envío
-            </h1>
-
-            <p class="text-muted mb-0">
-                Administra tus direcciones para futuras compras.
-            </p>
+            <h1 class="mb-1">Direcciones de envío</h1>
+            <p class="text-muted mb-0">Administra tus direcciones para futuras compras.</p>
         </div>
 
-        <!-- BOTÓN NUEVA DIRECCIÓN -->
+        <!-- BOTÓN CREAR NUEVA DIRECCIÓN -->
         <div>
-            <a th:href="@{/addresses/new}"
-               class="btn btn-outline-primary">
-                <i class="fa-solid fa-plus me-1"></i>
-                Agregar dirección
+            <a th:href="@{/addresses/new}" class="btn btn-outline-primary">
+                <i class="fa-solid fa-plus me-1"></i> Agregar dirección
             </a>
         </div>
-
     </div>
 
-    <!-- LISTADO DE DIRECCIONES -->
+    <!-- MENSAJE CUANDO SE ACTUALICE CORRECTAMENTE LA DIRECCIÓN -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i>
+        <span th:text="${message}">Mensaje de éxito</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- CONDICIÓN VISUAL SI HAY DIRECCIONES REGISTRADAS -->
     <div th:if="${addresses != null and !addresses.isEmpty()}">
         <div class="card border-0 shadow-sm">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
 
-                        <!-- CABECERA DE LA TABLA -->
+                        <!-- CABECERA DE TABLA -->
                         <thead class="table-light">
                         <tr>
                             <th>Tipo</th>
@@ -66,61 +62,115 @@
                         </tr>
                         </thead>
 
-                        <!-- DATOS DE LA TABLA -->
+                        <!-- CONTENIDO DE LA TABLA -->
                         <tbody>
                         <tr th:each="address : ${addresses}">
 
-                            <!-- TIPO -->
+                            <!-- TIPO DE ENVÍO-->
                             <td>
-                                <span class="badge rounded-pill text-bg-secondary"
-                                      th:text="${address.addressType}">
-                                    PRIMARY
-                                </span>
+                                    <span class="badge rounded-pill text-bg-secondary" th:text="${address.addressType}">
+                                        PRIMARY
+                                    </span>
                             </td>
 
                             <!-- DATOS -->
-                            <td th:text="${address.street}">
-                                Calle Principal
-                            </td>
+                            <td th:text="${address.street}">Calle Principal</td>
+                            <td th:text="${address.number}">123</td>
+                            <td th:text="${address.city}">Madrid</td>
+                            <td th:text="${address.state}">Madrid</td>
+                            <td th:text="${address.country}">España</td>
+                            <td th:text="${address.zipCode}">28001</td>
 
-                            <td th:text="${address.number}">
-                                123
-                            </td>
-
-                            <td th:text="${address.city}">
-                                Madrid
-                            </td>
-
-                            <td th:text="${address.state}">
-                                Madrid
-                            </td>
-
-                            <td th:text="${address.country}">
-                                España
-                            </td>
-
-                            <td th:text="${address.zipCode}">
-                                28001
-                            </td>
-
-                            <!-- ACCIONES -->
                             <td>
                                 <div class="d-flex justify-content-end gap-2">
 
-                                    <!-- EDITAR DIRECCIÓN -->
-                                    <a th:href="@{/addresses/{id}/edit(id=${address.id})}"
-                                       class="btn btn-sm btn-outline-secondary">
-                                        <i class="fa-solid fa-pen-to-square me-1"></i>
-                                        Editar
-                                    </a>
+                                    <!-- BOTÓN EDITAR -->
+                                    <button type="button"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            data-bs-toggle="modal"
+                                            th:data-bs-target="'#editAddressModal-' + ${address.id}">
+                                        <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                    </button>
 
-                                    <!-- BORRAR DIRECCIÓN -->
+                                    <!-- BOTÓN ELIMINAR -->
                                     <a th:href="@{/addresses/delete/{id}(id=${address.id})}"
-                                       class="btn btn-sm btn-outline-danger">
-                                        <i class="fa-solid fa-trash me-1"></i>
-                                        Borrar
+                                       class="btn btn-sm btn-outline-danger"
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar esta dirección?')">
+                                        <i class="fa-solid fa-trash me-1"></i> Borrar
                                     </a>
+                                </div>
 
+                                <!-- SECCIÓN PARA EDITAR LA DIRECCIÓN DE ENVÍO -->
+                                <div class="modal fade" th:id="'editAddressModal-' + ${address.id}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">
+                                                    <i class="fa-solid fa-location-dot text-warning me-2"></i>Editar Dirección de Envío
+                                                </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+
+                                            <form th:action="@{/addresses/{id}(id=${address.id})}" method="post">
+                                                <div class="modal-body text-start">
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">Tipo de dirección:</label>
+                                                            <select class="form-select" name="addressType" required>
+                                                                <option value="SHIPPING" th:selected="${address.addressType?.name() == 'SHIPPING'}">
+                                                                    Dirección de Envío (SHIPPING)
+                                                                </option>
+                                                                <option value="BILLING" th:selected="${address.addressType?.name() == 'BILLING'}">
+                                                                    Dirección de Facturación (BILLING)
+                                                                </option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label fw-bold">Código Postal:</label>
+                                                            <input type="text" class="form-control" name="zipCode" th:value="${address.zipCode}" required maxlength="10">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-8">
+                                                            <label class="form-label fw-bold">Calle / Avenida:</label>
+                                                            <input type="text" class="form-control" name="street" th:value="${address.street}" required maxlength="150">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label fw-bold">Número / Altura:</label>
+                                                            <input type="text" class="form-control" name="number" th:value="${address.number}" required maxlength="20">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label fw-bold">Complemento <span class="text-muted fw-normal">(Opcional)</span>:</label>
+                                                        <input type="text" class="form-control" name="complement" th:value="${address.complement}" placeholder="Ej: Piso 2, Depto B" maxlength="150">
+                                                    </div>
+
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label fw-bold">Ciudad:</label>
+                                                            <input type="text" class="form-control" name="city" th:value="${address.city}" required maxlength="100">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label fw-bold">Estado / Provincia:</label>
+                                                            <input type="text" class="form-control" name="state" th:value="${address.state}" required maxlength="100">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <label class="form-label fw-bold">País:</label>
+                                                            <input type="text" class="form-control" name="country" th:value="${address.country}" required maxlength="100">
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Guardar Cambios</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -131,26 +181,14 @@
         </div>
     </div>
 
-    <!-- CONDICIÓN VISUAL SI NO HAY DIRECCIONES REGISTRADAS -->
     <div th:if="${addresses == null or addresses.isEmpty()}">
-
         <div class="card border-0 shadow-sm">
             <div class="card-body text-center py-5">
-
                 <i class="fa-solid fa-location-dot fa-3x text-muted mb-3"></i>
-
-                <h3 class="h5">
-                    No hay direcciones disponibles
-                </h3>
-
-                <p class="text-muted mb-4">
-                    Añade una dirección para poder utilizarla en tus compras.
-                </p>
-
-                <a th:href="@{/addresses/new}"
-                   class="btn btn-outline-primary">
-                    <i class="fa-solid fa-plus me-1"></i>
-                    Crear dirección
+                <h3 class="h5">No hay direcciones disponibles</h3>
+                <p class="text-muted mb-4">Añade una dirección para poder utilizarla en tus compras.</p>
+                <a th:href="@{/addresses/new}" class="btn btn-outline-primary">
+                    <i class="fa-solid fa-plus me-1"></i> Crear dirección
                 </a>
             </div>
         </div>

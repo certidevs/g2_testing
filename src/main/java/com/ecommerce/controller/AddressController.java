@@ -13,13 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -29,16 +28,20 @@ public class AddressController {
     private final AddressRepository addressRepository;
     private final AddressService addressService;
 
+    // Accede a una lista de direcciones de envío
     @GetMapping("/addresses")
     public String listAddresses(Model model, @AuthenticationPrincipal User user) {
-        if (user.getRole().equals(Role.ROLE_ADMIN)) {
-            model.addAttribute("addresses", addressRepository.findAll());
-        } else {
-            model.addAttribute("addresses", addressRepository.findByUser(user));
+        if (user == null) {
+            return "redirect:/login";
         }
+
+        List<AddressResponseDto> userAddresses = addressService.findByUser(user);
+        model.addAttribute("addresses", userAddresses);
+
         return "addresses/address-list";
     }
 
+    // Acceder a detalles de una dirección
     @GetMapping("/addresses/{id}")
     public String addressDetail(@PathVariable UUID id, Model model) {
         Address address = addressRepository.findById(id)
@@ -47,43 +50,56 @@ public class AddressController {
         return "addresses/address-detail";
     }
 
-    // Muestra el formulario para agregar una nueva dirección de envío
-    @GetMapping("addresses/new")
+    // Crea una nueva dirección
+    @GetMapping("/addresses/new")
     public String showCreateAddressForm(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("address", new Address());
-        model.addAttribute("addresses", addressRepository.findByUser(user));
+        model.addAttribute("address", new AddressRequestDto());
         return "addresses/address-form";
     }
 
-    // Procesa el formulario para agregar una nueva dirección
+    // Procesa la creación de una nueva dirección
     @PostMapping("/addresses")
-    public String addAddress(@Valid @ModelAttribute AddressRequestDto form, @AuthenticationPrincipal User user) {
-        addressService.addAddress(form, user);
+    public String saveAddress(@Valid @ModelAttribute("address") AddressRequestDto addressDto, BindingResult result, @AuthenticationPrincipal User user, Model model) {
+
+        if (result.hasErrors()) {
+            return "addresses/address-form";
+        }
+        try {
+            addressService.addAddress(addressDto, user);
+        } catch (Exception e) {
+
+            model.addAttribute("errorMessage", "No se pudo registrar la dirección. Inténtelo de nuevo.");
+            return "addresses/address-form";
+        }
+
         return "redirect:/addresses";
     }
 
-    // Edita una dirección de envío existente
-    @GetMapping("/{id}/edit")
+    // Edita una dirección
+    @GetMapping("addresses/{id}/edit")
     public String editForm(@PathVariable UUID id, Model model) {
-
         AddressResponseDto address = addressService.findById(id);
         model.addAttribute("address", address);
-
         return "addresses/edit";
     }
 
-    // Procesa el formulario para editar una dirección
-    @PostMapping("/{id}")
-    public String update(@PathVariable UUID addressId, @ModelAttribute AddressRequestDto address) {
-        addressService.updateAddress(addressId, address);
-
-        return "redirect:/addresses" + addressId;
+    // Procesa la actualización de la dirección
+    @PostMapping("/addresses/{id}")
+    public String update(@PathVariable UUID id, @ModelAttribute AddressRequestDto addressDto, RedirectAttributes redirectAttributes) {
+        try {
+            addressService.updateAddress(id, addressDto);
+            redirectAttributes.addFlashAttribute("message", "Dirección actualizada correctamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar la dirección: " + e.getMessage());
+        }
+        return "redirect:/addresses";
     }
 
+    // Elimina una dirección
     @GetMapping("addresses/delete/{id}")
-    public String deleteAddress(@PathVariable UUID addressId, RedirectAttributes redirectAttributes){
-        addressService.delete(addressId);
+    public String deleteAddress(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
+        addressService.delete(id);
         redirectAttributes.addFlashAttribute("message", "La dirección se ha eliminado correctamente");
-        return "redirect:/addresses/" + addressId;
+        return "redirect:/addresses";
     }
 }

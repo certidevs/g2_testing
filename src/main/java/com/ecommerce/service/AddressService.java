@@ -8,19 +8,30 @@ import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AddressService {
 
     private final AddressRepository addressRepository;
     private final UserRepository usersRepository;
 
-    public void addAddress(AddressRequestDto form, User user){
+    // Encontrar direcciones por usuario
+    public List<AddressResponseDto> findByUser(User user) {
+        return addressRepository.findByUser(user)
+                .stream()
+                .map(this::toResponseDto)
+                .toList();
+    }
 
+    // Agregar una nueva dirección
+    @Transactional
+    public void addAddress(AddressRequestDto form, User user) {
         Address address = new Address();
         address.setCountry(form.getCountry());
         address.setCity(form.getCity());
@@ -29,12 +40,12 @@ public class AddressService {
         address.setStreet(form.getStreet());
         address.setNumber(form.getNumber());
         address.setAddressType(form.getAddressType());
-
         address.setComplement(form.getComplement());
         address.setUser(user);
         addressRepository.save(address);
     }
 
+    // Obtener todas las direcciones
     public List<AddressResponseDto> findAll() {
         return addressRepository.findAll()
                 .stream()
@@ -42,11 +53,14 @@ public class AddressService {
                 .toList();
     }
 
+    // Encontrar dirección por ID
     public AddressResponseDto findById(UUID id) {
         Address address = findAddressEntityById(id);
         return toResponseDto(address);
     }
 
+    // Actualizar una dirección
+    @Transactional
     public AddressResponseDto updateAddress(UUID id, AddressRequestDto dto) {
         Address address = findAddressEntityById(id);
 
@@ -62,6 +76,8 @@ public class AddressService {
         return toResponseDto(addressRepository.save(address));
     }
 
+    // Eliminar una dirección
+    @Transactional
     public void delete(UUID id) {
         Address address = findAddressEntityById(id);
         addressRepository.delete(address);
@@ -69,12 +85,12 @@ public class AddressService {
 
     private Address findAddressEntityById(UUID id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Address not found"));
+                .orElseThrow(() -> new RuntimeException("Dirección no encontrada con ID: " + id));
     }
 
     private User findUserEntityById(UUID userId) {
         return usersRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + userId));
     }
 
     private AddressResponseDto toResponseDto(Address address) {
