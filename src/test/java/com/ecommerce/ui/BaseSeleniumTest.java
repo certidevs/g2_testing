@@ -53,7 +53,7 @@ public class BaseSeleniumTest {
 
     @BeforeEach
     void setUp() {
-        // crear datos demo
+
         reviewRepository.deleteAll();
         productRepository.deleteAll();
         purchaseRepository.deleteAll();
@@ -74,14 +74,16 @@ public class BaseSeleniumTest {
         productMal = reviewRepository.save(Review.builder().title("Fatal").rating(1).product(pantalon).message("Fatal").creationDate(LocalDateTime.now().minusDays(1)).build());
         productOK = reviewRepository.save(Review.builder().title("excelente pizza").rating(5).product(camiseta).message("ok").creationDate(LocalDateTime.now().minusDays(1)).build());
 
-        // inicializar y configuración de driver
+        // Inicializar y configuración de driver
         baseUrl = "http://localhost:" + port + "/";
         driver = new ChromeDriver();
         driver.manage().window().maximize();
 
-        // subimos el timeout para operaciones como login y procesamiento de formularios
+        // Subimos el timeout para operaciones como login y procesamiento de formularios
         wait = new WebDriverWait(driver, Duration.ofSeconds(30L));
     }
+
+    // Después de cada test, quitamos el driver para liberar recursos
     @AfterEach
     void tearDown() {
         if (driver != null) {
@@ -89,17 +91,22 @@ public class BaseSeleniumTest {
         }
     }
 
+    // Función para hacer login como admin
     void loginAdmin() {
         login("admin", "admin");
     }
+
+    // Función para hacer login como usuario
     void loginUser() {
         login("user", "user");
     }
+
+    // Función para hacer login en los tests
     void login(String username, String password) {
         driver.get(baseUrl + "login");
         driver.findElement(By.id("username")).sendKeys(username);
         driver.findElement(By.id("password")).sendKeys(password);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
-        wait.until(driver -> driver.getCurrentUrl().equals(baseUrl + "restaurants"));
+        wait.until(driver -> driver.getCurrentUrl().equals(baseUrl + "products"));
     }
 }
