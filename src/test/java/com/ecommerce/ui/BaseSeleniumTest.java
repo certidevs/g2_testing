@@ -101,7 +101,7 @@ public class BaseSeleniumTest {
         login("user", "user");
     }
 
-    // Función para hacer login en los tests
+    // Función para hacer login con un usuario dado
     void login(String username, String password) {
         driver.get(baseUrl + "login");
         driver.findElement(By.id("username")).sendKeys(username);
