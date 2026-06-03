@@ -94,7 +94,7 @@
                     <!-- ID DE LA COMPRA -->
                     <td>
                         <div class="fw-semibold">Pedido</div>
-                        <div id="purchaseId" class="text-muted small font-monospace" th:text="${purchase.id}"></div>
+                        <div th:id="'purchaseId' + ${purchase.id}" class="text-muted small font-monospace" th:text="${purchase.id}"></div>
                     </td>
 
                     <!-- FECHA DE CREACIÓN -->

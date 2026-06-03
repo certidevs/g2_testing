@@ -2,6 +2,7 @@ package com.ecommerce.ui;
 
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
@@ -10,18 +11,19 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PurchaseSeleniumTest extends BaseSeleniumTest{
+public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
     @Test
     void purchaseList () {
 
-        // Login como usuario
-        driver.get(baseUrl + "login");
-
-        String nombreUsuario = "user";
-        login(nombreUsuario, "user");
-
-        wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
+        loginUser();
+//        // Login como usuario
+//        driver.get(baseUrl + "login");
+//
+//        String nombreUsuario = "user";
+//        login(nombreUsuario, "user");
+//
+//        wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
 
         // Ir a compras
         driver.get(baseUrl + "purchases");
@@ -32,7 +34,7 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest{
 
         // Mensaje de bienvenida + nombre de usuario
         String welcomeMessage = driver.findElement(By.id("welcomeMessage")).getText();
-        assertTrue(welcomeMessage.contains("¡Hola de nuevo, " + nombreUsuario));
+        assertTrue(welcomeMessage.contains("¡Hola de nuevo, " + user.getUsername() + "!"));
 
         // Botón de crear compra
         WebElement botonCrearCompra = driver.findElement(By.id("createPurchaseBtn"));
@@ -94,6 +96,9 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest{
 
          */
 
+        WebElement finishedDate = firstPurchase.findElement(By.id("finishedDate" + compraConProductos.getId()));
+        assertEquals(finishedDate.getText(), compraConProductos.getFinishedDate().toString());
+
         // Acciones de la tabla del listado de las compras
 
         // Detalle de la compra
@@ -107,8 +112,8 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest{
         // Borrar la compra (comprobar que no está porque somos usuarios y no podemos)
 
 
-        /* WebElement botonBorrarCompra = firstPurchase.findElement(By.id("deletePurchaseBtn"));
-        assertFalse(botonBorrarCompra.isDisplayed()); */
+         assertThrows(NoSuchElementException.class,
+                 () -> firstPurchase.findElement(By.id("deletePurchaseBtn")));
 
         // Entrar como admin y comprobar el boton delete :v
     }

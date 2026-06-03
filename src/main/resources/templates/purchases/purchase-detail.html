@@ -21,6 +21,8 @@
             <div class="text-uppercase text-muted small fw-semibold">Detalle de pedido</div>
             <h1 class="mb-1">Compra</h1>
             <div class="text-muted small font-monospace" th:text="${purchase.id}"></div>
+
+            <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
         </div>
 
         <div class="d-flex flex-wrap gap-2">
