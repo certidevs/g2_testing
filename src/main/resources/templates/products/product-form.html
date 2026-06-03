@@ -4,73 +4,674 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
-<div class="container mt-5">
-    <h1 th:text="${product.id == null ? 'Crear Nuevo Producto' : 'Editar Producto'}"></h1>
+<style>
+    .product-editor-body {
+        background:
+                radial-gradient(circle at top left, rgba(190, 166, 127, 0.16), transparent 34%),
+                linear-gradient(180deg, #fbfaf8 0%, #f3f0eb 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-    <form th:action="@{/products}" th:object="${product}" method="post">
-        <div class="mb-3">
-            <label for="title" class="form-label">Título:</label>
-            <input type="text" class="form-control" id="title" th:field="*{title}" required>
-        </div>
+    .product-editor-page {
+        flex: 1;
+        padding: 4.5rem 0;
+    }
 
-        <div class="mb-3">
-            <label for="price" class="form-label">Precio:</label>
-            <input type="number" class="form-control" id="price" th:field="*{price}" step="0.01" min="0" required>
-        </div>
+    .editor-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 
-        <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" id="available" th:field="*{available}">
-            <label class="form-check-label" for="available">Disponible</label>
-        </div>
+    .editor-hero {
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
 
-<!--        <div class="mb-3">-->
-<!--            <label for="isbn" class="form-label">ISBN:</label>-->
-<!--            <input type="text" class="form-control" id="isbn" th:field="*{isbn}">-->
-<!--        </div>-->
+    .editor-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        color: #8a6f4d;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
 
-        <div class="mb-3">
-            <label for="shortDescription" class="form-label">Descripción Corta:</label>
-            <textarea class="form-control" id="shortDescription" th:field="*{shortDescription}" rows="3" maxlength="500"></textarea>
-        </div>
+    .editor-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
 
-        <div class="mb-3">
-            <label for="longDescription" class="form-label">Descripción Larga:</label>
-            <textarea class="form-control" id="longDescription" th:field="*{longDescription}" rows="6" maxlength="2000"></textarea>
-        </div>
+    .editor-title {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        color: #1f1a17;
+    }
 
-        <div class="mb-3">
-            <label for="stock" class="form-label">Cantidad en Stock:</label>
-            <input type="number" class="form-control" id="stock" th:field="*{stock}" min="0" placeholder="Ej: 50">
-        </div>
+    .editor-subtitle {
+        max-width: 680px;
+        margin-top: 0.85rem;
+        color: #6d6259;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
 
-        <div class="mb-3">
-            <label for="imageUrl" class="form-label">URL de la Imagen:</label>
-            <input type="url" class="form-control" id="imageUrl" th:field="*{imageUrl}">
-        </div>
+    .editor-card {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 28px;
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+    }
 
-        <div class="mb-3">
-            <label for="brand" class="form-label">Marca:</label>
-            <select class="form-select" id="brand" th:field="*{brand.id}">
-                <option value="">-- seleccione una Marca --</option>
-                <option th:each="brandItem : ${brands}" th:value="${brandItem.id}" th:text="${brandItem.name}"></option>
-            </select>
-        </div>
+    .editor-card-header {
+        padding: 1.5rem 1.6rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.82));
+    }
 
-        <div class="mb-3">
-            <label for="subcategory" class="form-label">Subcategoría:</label>
-            <select class="form-select" id="subcategory" th:field="*{subcategory.id}">
-                <option value="">-- Seleccione una Subcategoría --</option>
-                <option th:each="category : ${subcategories}" th:value="${category.id}" th:text="${category.name}"></option>
-            </select>
-        </div>
+    .editor-card-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.35rem;
+        font-weight: 500;
+    }
 
-        <button type="submit" class="btn btn-primary">Guardar Producto</button>
-        <a href="/products" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+    .editor-card-text {
+        margin: 0.35rem 0 0;
+        color: #74685f;
+        font-size: 0.92rem;
+    }
 
+    .editor-card-body {
+        padding: 1.6rem;
+    }
+
+    .form-section {
+        margin-bottom: 1.7rem;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1.15rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(31, 26, 23, 0.10);
+    }
+
+    .form-label {
+        margin-bottom: 0.45rem;
+        color: #2d2621;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid rgba(31, 26, 23, 0.16);
+        border-radius: 16px;
+        padding: 0.82rem 0.95rem;
+        background-color: rgba(255, 255, 255, 0.92);
+        color: #1f1a17;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(138, 111, 77, 0.65);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13);
+        background-color: #fff;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        line-height: 1.6;
+    }
+
+    .input-hint {
+        margin-top: 0.45rem;
+        color: #8a8179;
+        font-size: 0.8rem;
+    }
+
+    .price-wrapper {
+        position: relative;
+    }
+
+    .price-symbol {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: #8a6f4d;
+        font-weight: 700;
+        pointer-events: none;
+    }
+
+    .price-input {
+        padding-left: 2.2rem;
+    }
+
+    .availability-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 18px;
+        background: #faf7f1;
+    }
+
+    .availability-title {
+        margin: 0;
+        color: #2d2621;
+        font-weight: 700;
+    }
+
+    .availability-text {
+        margin: 0.2rem 0 0;
+        color: #7b7067;
+        font-size: 0.85rem;
+    }
+
+    .form-switch .form-check-input {
+        width: 3rem;
+        height: 1.55rem;
+        cursor: pointer;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #1f1a17;
+        border-color: #1f1a17;
+    }
+
+    .image-panel {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .image-preview {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 390px;
+        margin-bottom: 1.1rem;
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 26px;
+        background:
+                linear-gradient(135deg, rgba(247, 243, 236, 0.92), rgba(255, 255, 255, 0.95));
+    }
+
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        min-height: 390px;
+        object-fit: cover;
+    }
+
+    .preview-empty {
+        padding: 2rem;
+        text-align: center;
+        color: #74685f;
+    }
+
+    .preview-icon {
+        width: 58px;
+        height: 58px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 12px 32px rgba(31, 26, 23, 0.08);
+        font-size: 1.45rem;
+    }
+
+    .preview-title {
+        margin: 0;
+        color: #2d2621;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.2rem;
+    }
+
+    .preview-text {
+        margin: 0.45rem 0 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .editor-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        min-width: 170px;
+        border-radius: 999px;
+        padding: 0.82rem 1.35rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 20px 42px rgba(31, 26, 23, 0.22);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.16);
+        background: rgba(255, 255, 255, 0.8);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.28);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .invalid-feedback {
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .product-editor-page {
+            padding: 3rem 0;
+        }
+
+        .image-panel {
+            position: static;
+        }
+
+        .editor-actions {
+            justify-content: stretch;
+        }
+
+        .btn-premium-primary,
+        .btn-premium-secondary {
+            width: 100%;
+        }
+    }
+</style>
+
+<main class="product-editor-page">
+    <div class="container editor-shell">
+
+        <section class="editor-hero">
+            <span class="editor-eyebrow">Catálogo ecommerce</span>
+
+            <h1 class="editor-title"
+                th:text="${product.id == null ? 'Crear nuevo producto' : 'Editar producto'}">
+                Crear nuevo producto
+            </h1>
+
+            <p class="editor-subtitle">
+                Define la información comercial, visual y operativa del artículo para presentarlo de forma
+                consistente dentro de una experiencia de compra cuidada y premium.
+            </p>
+        </section>
+
+        <form th:action="@{/products}" th:object="${product}" method="post" novalidate>
+
+            <input type="hidden" th:if="*{id != null}" th:field="*{id}">
+
+            <div class="row g-4">
+
+                <div class="col-lg-8">
+                    <div class="editor-card">
+                        <div class="editor-card-header">
+                            <h2 class="editor-card-title">Información del producto</h2>
+                            <p class="editor-card-text">
+                                Datos principales para identificar, clasificar y vender el artículo.
+                            </p>
+                        </div>
+
+                        <div class="editor-card-body">
+
+                            <div class="form-section">
+                                <div class="section-label">Datos comerciales</div>
+
+                                <div class="mb-4">
+                                    <label for="title" class="form-label">Título del producto</label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="title"
+                                           th:field="*{title}"
+                                           th:classappend="${#fields.hasErrors('title')} ? ' is-invalid'"
+                                           placeholder="Ej: Bolso shopper de piel italiana"
+                                           required>
+
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('title')}"
+                                         th:errors="*{title}">
+                                        El título es obligatorio.
+                                    </div>
+
+                                    <div class="input-hint">
+                                        Usa un nombre claro, aspiracional y fácil de encontrar.
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="brand" class="form-label">Marca</label>
+                                        <select class="form-select"
+                                                id="brand"
+                                                th:field="*{brand.id}"
+                                                th:classappend="${#fields.hasErrors('brand.id')} ? ' is-invalid'">
+                                            <option value="">Selecciona una marca</option>
+                                            <option th:each="brandItem : ${brands}"
+                                                    th:value="${brandItem.id}"
+                                                    th:text="${brandItem.name}">
+                                                Marca
+                                            </option>
+                                        </select>
+
+                                        <div class="invalid-feedback"
+                                             th:if="${#fields.hasErrors('brand.id')}"
+                                             th:errors="*{brand.id}">
+                                            Selecciona una marca válida.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="subcategory" class="form-label">Subcategoría</label>
+                                        <select class="form-select"
+                                                id="subcategory"
+                                                th:field="*{subcategory.id}"
+                                                th:classappend="${#fields.hasErrors('subcategory.id')} ? ' is-invalid'">
+                                            <option value="">Selecciona una subcategoría</option>
+                                            <option th:each="category : ${subcategories}"
+                                                    th:value="${category.id}"
+                                                    th:text="${category.name}">
+                                                Subcategoría
+                                            </option>
+                                        </select>
+
+                                        <div class="invalid-feedback"
+                                             th:if="${#fields.hasErrors('subcategory.id')}"
+                                             th:errors="*{subcategory.id}">
+                                            Selecciona una subcategoría válida.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="section-label">Precio y disponibilidad</div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="price" class="form-label">Precio</label>
+                                        <div class="price-wrapper">
+                                            <span class="price-symbol">€</span>
+                                            <input type="number"
+                                                   class="form-control price-input"
+                                                   id="price"
+                                                   th:field="*{price}"
+                                                   th:classappend="${#fields.hasErrors('price')} ? ' is-invalid'"
+                                                   step="0.01"
+                                                   min="0"
+                                                   placeholder="0.00"
+                                                   required>
+                                        </div>
+
+                                        <div class="invalid-feedback d-block"
+                                             th:if="${#fields.hasErrors('price')}"
+                                             th:errors="*{price}">
+                                            Introduce un precio válido.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label for="stock" class="form-label">Cantidad en stock</label>
+                                        <input type="number"
+                                               class="form-control"
+                                               id="stock"
+                                               th:field="*{stock}"
+                                               th:classappend="${#fields.hasErrors('stock')} ? ' is-invalid'"
+                                               min="0"
+                                               placeholder="Ej: 50">
+
+                                        <div class="invalid-feedback"
+                                             th:if="${#fields.hasErrors('stock')}"
+                                             th:errors="*{stock}">
+                                            Introduce una cantidad válida.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="availability-panel mt-4">
+                                    <div>
+                                        <p class="availability-title">Producto disponible</p>
+                                        <p class="availability-text">
+                                            Activa esta opción para que el producto pueda mostrarse como comprable.
+                                        </p>
+                                    </div>
+
+                                    <div class="form-check form-switch m-0">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               id="available"
+                                               th:field="*{available}">
+                                        <label class="visually-hidden" for="available">Disponible</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="section-label">Contenido editorial</div>
+
+                                <div class="mb-4">
+                                    <label for="shortDescription" class="form-label">Descripción corta</label>
+                                    <textarea class="form-control"
+                                              id="shortDescription"
+                                              th:field="*{shortDescription}"
+                                              th:classappend="${#fields.hasErrors('shortDescription')} ? ' is-invalid'"
+                                              rows="3"
+                                              maxlength="500"
+                                              placeholder="Resumen breve del producto para listados, cards o destacados."></textarea>
+
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('shortDescription')}"
+                                         th:errors="*{shortDescription}">
+                                        Revisa la descripción corta.
+                                    </div>
+
+                                    <div class="input-hint">
+                                        Máximo 500 caracteres. Ideal para destacar material, estilo o uso principal.
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="longDescription" class="form-label">Descripción larga</label>
+                                    <textarea class="form-control"
+                                              id="longDescription"
+                                              th:field="*{longDescription}"
+                                              th:classappend="${#fields.hasErrors('longDescription')} ? ' is-invalid'"
+                                              rows="7"
+                                              maxlength="2000"
+                                              placeholder="Describe detalles, materiales, beneficios, medidas, acabados o recomendaciones de uso."></textarea>
+
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('longDescription')}"
+                                         th:errors="*{longDescription}">
+                                        Revisa la descripción larga.
+                                    </div>
+
+                                    <div class="input-hint">
+                                        Máximo 2000 caracteres. Mantén un tono claro, elegante y orientado a venta.
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <aside class="editor-card image-panel">
+                        <div class="editor-card-header">
+                            <h2 class="editor-card-title">Imagen</h2>
+                            <p class="editor-card-text">
+                                Vista previa visual del producto.
+                            </p>
+                        </div>
+
+                        <div class="editor-card-body">
+                            <div class="image-preview">
+                                <img id="imagePreview"
+                                     th:src="*{imageUrl}"
+                                     th:classappend="${product.imageUrl == null || product.imageUrl == ''} ? ' d-none'"
+                                     alt="Vista previa del producto">
+
+                                <div id="imagePreviewEmpty"
+                                     class="preview-empty"
+                                     th:classappend="${product.imageUrl != null && product.imageUrl != ''} ? ' d-none'">
+                                    <div class="preview-icon">⌁</div>
+                                    <p class="preview-title">Sin imagen seleccionada</p>
+                                    <p class="preview-text">
+                                        Añade una URL para previsualizar cómo se verá el producto en el escaparate.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label for="imageUrl" class="form-label">URL de la imagen</label>
+                                <input type="url"
+                                       class="form-control"
+                                       id="imageUrl"
+                                       th:field="*{imageUrl}"
+                                       th:classappend="${#fields.hasErrors('imageUrl')} ? ' is-invalid'"
+                                       placeholder="https://...">
+
+                                <div class="invalid-feedback"
+                                     th:if="${#fields.hasErrors('imageUrl')}"
+                                     th:errors="*{imageUrl}">
+                                    Introduce una URL válida.
+                                </div>
+
+                                <div class="input-hint">
+                                    Recomendado: imagen vertical, fondo limpio y buena resolución.
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+
+            </div>
+
+            <div class="editor-actions">
+                <a th:href="@{/products}" class="btn btn-premium-secondary">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-premium-primary">
+                    Guardar producto
+                </button>
+            </div>
+
+        </form>
+    </div>
+</main>
 
 <footer th:replace="~{layout/footer :: footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const input = document.getElementById('imageUrl');
+        const preview = document.getElementById('imagePreview');
+        const emptyState = document.getElementById('imagePreviewEmpty');
+
+        if (!input || !preview || !emptyState) {
+            return;
+        }
+
+        function showEmptyState(message) {
+            preview.classList.add('d-none');
+            emptyState.classList.remove('d-none');
+
+            const title = emptyState.querySelector('.preview-title');
+            if (title && message) {
+                title.textContent = message;
+            }
+        }
+
+        function updatePreview() {
+            const value = input.value.trim();
+
+            if (!value) {
+                preview.removeAttribute('src');
+                showEmptyState('Sin imagen seleccionada');
+                return;
+            }
+
+            preview.src = value;
+            preview.classList.remove('d-none');
+            emptyState.classList.add('d-none');
+        }
+
+        input.addEventListener('input', updatePreview);
+
+        preview.addEventListener('error', function () {
+            showEmptyState('No se pudo cargar la imagen');
+        });
+
+        updatePreview();
+    });
+</script>
+
 <script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>
