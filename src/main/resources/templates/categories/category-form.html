@@ -7,145 +7,777 @@
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
-<main class="flex-grow-1">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-9 col-lg-7">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h1 class="h4 mb-3 text-black" th:text="${categoryId != null} ? 'Editar categoría' : 'Crear categoría'">Formulario categoría</h1>
-                        <p class="text-muted mb-4">Rellena los datos de la categoría. Los campos marcados con * son obligatorios.</p>
+<style>
+    .category-form-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 35%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-                        <form th:object="${category}"
-                              th:action="@{${formAction}}"
-                              method="post"
-                              novalidate>
+    .category-form-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-                            <input type="hidden" name="_method" value="put" th:if="${categoryId != null}"/>
+    .category-form-shell {
+        max-width: 1160px;
+        margin: 0 auto;
+    }
 
-                            <!-- Global errors (inside form so #fields puede acceder) -->
-                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+    .category-form-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
+
+    .category-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .category-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .category-form-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.1rem, 4vw, 3.8rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .category-form-subtitle {
+        max-width: 700px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.82rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .form-card,
+    .preview-card {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        padding: 1.35rem 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.84));
+    }
+
+    .form-card-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .form-card-text {
+        margin: 0.3rem 0 0;
+        color: #74685f;
+        font-size: 0.9rem;
+    }
+
+    .form-card-body {
+        padding: 1.5rem;
+    }
+
+    .form-section {
+        margin-bottom: 1.7rem;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1.1rem;
+        color: #8a6f4d;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(31, 26, 23, 0.10);
+    }
+
+    .form-label {
+        margin-bottom: 0.45rem;
+        color: #2d2621;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid rgba(31, 26, 23, 0.16);
+        border-radius: 16px;
+        padding: 0.82rem 0.95rem;
+        background-color: rgba(255, 255, 255, 0.94);
+        color: #1f1a17;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(138, 111, 77, 0.65);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13);
+        background-color: #fff;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        line-height: 1.65;
+    }
+
+    .input-hint,
+    .form-text {
+        margin-top: 0.45rem;
+        color: #8a8179;
+        font-size: 0.8rem;
+    }
+
+    .slug-group {
+        position: relative;
+    }
+
+    .slug-prefix {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: #8a6f4d;
+        font-weight: 800;
+        pointer-events: none;
+    }
+
+    .slug-input {
+        padding-left: 2.15rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .active-panel {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.1rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 20px;
+        background: #faf7f1;
+    }
+
+    .active-title {
+        margin: 0;
+        color: #2d2621;
+        font-weight: 800;
+    }
+
+    .active-text {
+        margin: 0.25rem 0 0;
+        color: #74685f;
+        font-size: 0.86rem;
+        line-height: 1.55;
+    }
+
+    .form-switch .form-check-input {
+        width: 3.1rem;
+        height: 1.55rem;
+        cursor: pointer;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: #1f1a17;
+        border-color: #1f1a17;
+    }
+
+    .preview-card {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .image-preview {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 360px;
+        overflow: hidden;
+        border-radius: 24px;
+        background:
+                linear-gradient(135deg, rgba(247, 243, 236, 0.96), rgba(255, 255, 255, 0.96));
+        border: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    .image-preview img {
+        width: 100%;
+        height: 360px;
+        object-fit: cover;
+    }
+
+    .preview-empty {
+        padding: 2rem;
+        text-align: center;
+        color: #74685f;
+    }
+
+    .preview-icon {
+        width: 62px;
+        height: 62px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        font-size: 1.45rem;
+    }
+
+    .preview-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.3rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .preview-text {
+        margin: 0.45rem 0 0;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .category-summary {
+        margin-top: 1rem;
+        padding: 1rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 20px;
+        background: #fff;
+    }
+
+    .summary-label {
+        margin: 0 0 0.35rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .summary-name {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.35rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .summary-slug {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-top: 0.6rem;
+        padding: 0.42rem 0.65rem;
+        border-radius: 999px;
+        background: #faf7f1;
+        color: #5f554d;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .alert-premium {
+        border: 1px solid rgba(127, 29, 29, 0.16);
+        border-radius: 20px;
+        background: rgba(127, 29, 29, 0.07);
+        color: #7f1d1d;
+    }
+
+    .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 0.8rem;
+        margin-top: 2rem;
+        padding-top: 1.4rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    @media (max-width: 991.98px) {
+        .category-form-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .category-form-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .preview-card {
+            position: static;
+        }
+
+        .form-actions {
+            justify-content: stretch;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<main class="category-form-page">
+    <div class="container category-form-shell">
+
+        <section class="category-form-hero">
+            <div>
+                <span class="category-eyebrow">Catálogo ecommerce</span>
+
+                <h1 class="category-form-title"
+                    th:text="${categoryId != null ? 'Editar categoría' : 'Crear categoría'}">
+                    Crear categoría
+                </h1>
+
+                <p class="category-form-subtitle">
+                    Define la estructura comercial del catálogo: nombre visible, slug SEO, descripción,
+                    jerarquía e imagen editorial para la tienda.
+                </p>
+            </div>
+
+            <div>
+                <a th:href="@{/categories}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i>
+                    Volver
+                </a>
+            </div>
+        </section>
+
+        <form th:object="${category}"
+              th:action="@{${formAction}}"
+              method="post"
+              novalidate>
+
+            <input type="hidden"
+                   name="_method"
+                   value="put"
+                   th:if="${categoryId != null}">
+
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <div class="row g-4">
+
+                <div class="col-lg-8">
+                    <section class="form-card">
+
+                        <div class="form-card-header">
+                            <h2 class="form-card-title">Información de categoría</h2>
+                            <p class="form-card-text">
+                                Completa los datos necesarios para mostrar y ordenar esta categoría dentro del ecommerce.
+                            </p>
+                        </div>
+
+                        <div class="form-card-body">
+
+                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-premium">
                                 <ul class="mb-0">
-                                    <li th:each="error : ${#fields.globalErrors()}" th:text="${error}">Error global</li>
+                                    <li th:each="error : ${#fields.globalErrors()}"
+                                        th:text="${error}">
+                                        Error global
+                                    </li>
                                 </ul>
                             </div>
 
-                            <!-- Nombre (form-floating) -->
-                            <div class="form-floating mb-3">
-                                <input id="name"
-                                       type="text"
-                                       th:field="*{name}"
-                                       placeholder="Nombre de la categoría"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
-                                       aria-describedby="nameHelp"/>
-                                <label for="name">Nombre *</label>
-                                <div id="nameHelp" class="form-text text-muted">Ej: Tecnología</div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
-                            </div>
+                            <div class="form-section">
+                                <div class="section-label">Identidad</div>
 
-                            <!-- Slug (form-floating) -->
-                            <div class="form-floating mb-3">
-                                <input id="slug"
-                                       type="text"
-                                       th:field="*{slug}"
-                                       placeholder="Ej: tecnologia"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid' : ''"
-                                       aria-describedby="slugHelp"/>
-                                <label for="slug">Slug *</label>
-                                <div id="slugHelp" class="form-text text-muted">URL amigable, sin espacios ni caracteres especiales.</div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('slug')}" th:errors="*{slug}"></div>
-                            </div>
+                                <div class="mb-4">
+                                    <label for="name" class="form-label">Nombre *</label>
 
-                            <!-- Descripción (form-floating con textarea) -->
-                            <div class="form-floating mb-3">
-                            <textarea id="description"
-                            th:field="*{description}"
-                            placeholder="Descripción de la categoría"
-                            class="form-control rounded-3 shadow-sm"
-                            style="height: 120px;"
-                            th:classappend="${#fields.hasErrors('description')} ? ' is-invalid' : ''"></textarea>
-                                <label for="description">Descripción</label>
-                                <div class="form-text text-muted">Breve descripción que aparecerá en la tienda (opcional).</div>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
-                            </div>
+                                    <input id="name"
+                                           type="text"
+                                           th:field="*{name}"
+                                           placeholder="Ej: Tecnología"
+                                           class="form-control"
+                                           th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"
+                                           aria-describedby="nameHelp"
+                                           required>
 
-                            <!-- Imagen URL-->
-                            <div class="mb-3">
-                                <label for="imageUrl" class="form-label">URL de imagen</label>
-                                <input type="url"
-                                       class="form-control"
-                                       id="imageUrl"
-                                       th:field="*{imageUrl}"
-                                       placeholder="https://ejemplo.com/imagen.jpg">
+                                    <div id="nameHelp" class="input-hint">
+                                        Usa un nombre claro, comercial y fácil de reconocer.
+                                    </div>
 
-                                <div class="text-danger"
-                                     th:if="${#fields.hasErrors('imageUrl')}"
-                                     th:errors="*{imageUrl}">
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('name')}"
+                                         th:errors="*{name}">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Vista Previa de la Imagen URL-->
-                            <div class="mb-3" th:if="${category.imageUrl != null and !#strings.isEmpty(category.imageUrl)}">
-                                <label class="form-label">Vista previa</label>
+                                <div class="mb-4">
+                                    <label for="slug" class="form-label">Slug *</label>
+
+                                    <div class="slug-group">
+                                        <span class="slug-prefix">/</span>
+
+                                        <input id="slug"
+                                               type="text"
+                                               th:field="*{slug}"
+                                               placeholder="tecnologia"
+                                               class="form-control slug-input"
+                                               th:classappend="${#fields.hasErrors('slug')} ? ' is-invalid' : ''"
+                                               aria-describedby="slugHelp"
+                                               required>
+                                    </div>
+
+                                    <div id="slugHelp" class="input-hint">
+                                        URL amigable, sin espacios ni caracteres especiales. Ej: <strong>moda-mujer</strong>.
+                                    </div>
+
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('slug')}"
+                                         th:errors="*{slug}">
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <img th:src="*{imageUrl}"
-                                         alt="Vista previa"
-                                         class="img-thumbnail"
-                                         style="max-height: 180px; object-fit: cover;">
+                                    <label for="description" class="form-label">Descripción</label>
+
+                                    <textarea id="description"
+                                              th:field="*{description}"
+                                              placeholder="Describe brevemente esta categoría para el catálogo."
+                                              class="form-control"
+                                              rows="5"
+                                              th:classappend="${#fields.hasErrors('description')} ? ' is-invalid' : ''"></textarea>
+
+                                    <div class="input-hint">
+                                        Texto opcional para mejorar presentación, navegación y SEO.
+                                    </div>
+
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('description')}"
+                                         th:errors="*{description}">
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Parent select -->
-                            <div class="mb-3">
-                                <label for="parentId" class="form-label">Categoría padre</label>
-                                <select id="parentId"
-                                        th:field="*{parentId}"
-                                        class="form-select rounded-3 shadow-sm"
-                                        th:classappend="${#fields.hasErrors('parentId')} ? ' is-invalid' : ''"
-                                        aria-label="Seleccionar categoría padre">
-                                    <option value="">Sin padre - Categoría raíz</option>
-                                    <option th:each="parent : ${parentCategories}"
-                                            th:value="${parent.id}"
-                                            th:text="${parent.name}"
-                                            th:disabled="${categoryId != null} ? ${parent.id == categoryId} : false">
-                                        Categoría
-                                    </option>
-                                </select>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('parentId')}" th:errors="*{parentId}"></div>
+                            <div class="form-section">
+                                <div class="section-label">Jerarquía</div>
+
+                                <div class="mb-4">
+                                    <label for="parentId" class="form-label">Categoría padre</label>
+
+                                    <select id="parentId"
+                                            th:field="*{parentId}"
+                                            class="form-select"
+                                            th:classappend="${#fields.hasErrors('parentId')} ? ' is-invalid' : ''"
+                                            aria-label="Seleccionar categoría padre">
+
+                                        <option value="">Sin padre — Categoría raíz</option>
+
+                                        <option th:each="parent : ${parentCategories}"
+                                                th:value="${parent.id}"
+                                                th:text="${parent.name}"
+                                                th:disabled="${categoryId != null ? parent.id == categoryId : false}">
+                                            Categoría
+                                        </option>
+                                    </select>
+
+                                    <div class="input-hint">
+                                        Déjalo vacío si esta categoría debe mostrarse como sección principal.
+                                    </div>
+
+                                    <div class="invalid-feedback"
+                                         th:if="${#fields.hasErrors('parentId')}"
+                                         th:errors="*{parentId}">
+                                    </div>
+                                </div>
+
+                                <div class="active-panel">
+                                    <div>
+                                        <p class="active-title">Categoría activa</p>
+                                        <p class="active-text">
+                                            Si está activa, podrá mostrarse dentro de la navegación y el catálogo.
+                                        </p>
+                                    </div>
+
+                                    <div class="form-check form-switch m-0">
+                                        <input id="active"
+                                               type="checkbox"
+                                               th:field="*{active}"
+                                               class="form-check-input"
+                                               role="switch">
+
+                                        <label for="active" class="visually-hidden">
+                                            Categoría activa
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Activa -->
-                            <div class="form-check form-switch mb-4">
-                                <input id="active"
-                                       type="checkbox"
-                                       th:field="*{active}"
-                                       class="form-check-input"
-                                       role="switch"/>
-                                <label for="active" class="form-check-label">Categoría activa</label>
+                            <div class="form-section">
+                                <div class="section-label">Imagen editorial</div>
+
+                                <div>
+                                    <label for="imageUrl" class="form-label">URL de imagen</label>
+
+                                    <input type="url"
+                                           class="form-control"
+                                           id="imageUrl"
+                                           th:field="*{imageUrl}"
+                                           th:classappend="${#fields.hasErrors('imageUrl')} ? ' is-invalid' : ''"
+                                           placeholder="https://ejemplo.com/imagen.jpg">
+
+                                    <div class="input-hint">
+                                        Recomendado: imagen horizontal o editorial, buena resolución y fondo limpio.
+                                    </div>
+
+                                    <div class="invalid-feedback d-block"
+                                         th:if="${#fields.hasErrors('imageUrl')}"
+                                         th:errors="*{imageUrl}">
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Actions -->
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg"
-                                        th:text="${categoryId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
-                                <a th:href="@{/categories}" class="btn btn-outline-secondary btn-lg">Volver</a>
+                            <div class="form-actions">
+                                <a th:href="@{/categories}" class="btn btn-premium-secondary">
+                                    Cancelar
+                                </a>
+
+                                <button type="submit"
+                                        class="btn btn-premium-primary"
+                                        th:text="${categoryId != null ? 'Actualizar categoría' : 'Crear categoría'}">
+                                    Guardar
+                                </button>
                             </div>
-                        </form>
-                    </div>
+
+                        </div>
+                    </section>
                 </div>
 
-                <!-- Small help / hint area -->
-                <div class="mt-3 text-muted small">
-                    <p class="mb-1">Consejo: usa nombres claros y slugs únicos para mejorar el SEO.</p>
+                <div class="col-lg-4">
+                    <aside class="preview-card">
+                        <div class="form-card-header">
+                            <h2 class="form-card-title">Vista previa</h2>
+                            <p class="form-card-text">
+                                Previsualización aproximada de la categoría en el catálogo.
+                            </p>
+                        </div>
+
+                        <div class="form-card-body">
+                            <div class="image-preview">
+                                <img id="categoryImagePreview"
+                                     th:src="*{imageUrl}"
+                                     th:classappend="${category.imageUrl == null or #strings.isEmpty(category.imageUrl)} ? ' d-none'"
+                                     alt="Vista previa de la categoría">
+
+                                <div id="categoryImageEmpty"
+                                     class="preview-empty"
+                                     th:classappend="${category.imageUrl != null and !#strings.isEmpty(category.imageUrl)} ? ' d-none'">
+                                    <div class="preview-icon">
+                                        <i class="fa-regular fa-image"></i>
+                                    </div>
+
+                                    <p class="preview-title">Sin imagen seleccionada</p>
+
+                                    <p class="preview-text">
+                                        Añade una URL para ver cómo podría presentarse la categoría.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="category-summary">
+                                <p class="summary-label">Nombre visible</p>
+
+                                <p id="summaryName"
+                                   class="summary-name"
+                                   th:text="*{name} ?: 'Nueva categoría'">
+                                    Nueva categoría
+                                </p>
+
+                                <span class="summary-slug">
+                                    <i class="fa-solid fa-link"></i>
+                                    <span id="summarySlug" th:text="*{slug} ?: 'slug-categoria'">
+                                        slug-categoria
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </aside>
                 </div>
+
             </div>
-        </div>
+
+        </form>
+
     </div>
 </main>
 
 <footer th:replace="~{layout/footer :: footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const nameInput = document.getElementById('name');
+        const slugInput = document.getElementById('slug');
+        const imageInput = document.getElementById('imageUrl');
+
+        const summaryName = document.getElementById('summaryName');
+        const summarySlug = document.getElementById('summarySlug');
+
+        const previewImage = document.getElementById('categoryImagePreview');
+        const previewEmpty = document.getElementById('categoryImageEmpty');
+
+        function normalizeSlug(value) {
+            return value
+                .toString()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+                .trim()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        function updateSummary() {
+            if (summaryName && nameInput) {
+                summaryName.textContent = nameInput.value.trim() || 'Nueva categoría';
+            }
+
+            if (summarySlug && slugInput) {
+                summarySlug.textContent = slugInput.value.trim() || 'slug-categoria';
+            }
+        }
+
+        function updateImagePreview() {
+            if (!imageInput || !previewImage || !previewEmpty) {
+                return;
+            }
+
+            const value = imageInput.value.trim();
+
+            if (!value) {
+                previewImage.removeAttribute('src');
+                previewImage.classList.add('d-none');
+                previewEmpty.classList.remove('d-none');
+                return;
+            }
+
+            previewImage.src = value;
+            previewImage.classList.remove('d-none');
+            previewEmpty.classList.add('d-none');
+        }
+
+        if (nameInput && slugInput) {
+            nameInput.addEventListener('input', function () {
+                if (!slugInput.dataset.touched) {
+                    slugInput.value = normalizeSlug(nameInput.value);
+                }
+
+                updateSummary();
+            });
+
+            slugInput.addEventListener('input', function () {
+                slugInput.dataset.touched = 'true';
+                slugInput.value = normalizeSlug(slugInput.value);
+                updateSummary();
+            });
+        }
+
+        if (imageInput) {
+            imageInput.addEventListener('input', updateImagePreview);
+        }
+
+        if (previewImage) {
+            previewImage.addEventListener('error', function () {
+                previewImage.classList.add('d-none');
+                previewEmpty.classList.remove('d-none');
+            });
+        }
+
+        updateSummary();
+        updateImagePreview();
+    });
+</script>
+
 <script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>
