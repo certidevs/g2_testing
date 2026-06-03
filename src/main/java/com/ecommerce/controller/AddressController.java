@@ -153,7 +153,7 @@ public class AddressController {
     }
 
     // Elimina una dirección
-    @GetMapping("addresses/delete/{id}")
+    @PostMapping("/addresses/{id}/delete")
     public String deleteAddress(
             @PathVariable UUID id,
             RedirectAttributes redirectAttributes,
@@ -163,9 +163,13 @@ public class AddressController {
             return "redirect:/login";
         }
 
-        addressService.delete(id, user);
+        try {
+            addressService.delete(id, user);
+            redirectAttributes.addFlashAttribute("message", "La dirección se ha eliminado correctamente");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar la dirección: " + e.getMessage());
+        }
 
-        redirectAttributes.addFlashAttribute("message", "La dirección se ha eliminado correctamente");
         return "redirect:/addresses";
     }
 }
