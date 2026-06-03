@@ -4,7 +4,7 @@ import com.ecommerce.dto.AddressRequestDto;
 import com.ecommerce.dto.AddressResponseDto;
 import com.ecommerce.model.Address;
 import com.ecommerce.model.User;
-import com.ecommerce.model.enums.Role;
+import com.ecommerce.model.enums.AddressType;
 import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.service.AddressService;
 import jakarta.validation.Valid;
@@ -37,6 +37,7 @@ public class AddressController {
 
         List<AddressResponseDto> userAddresses = addressService.findByUser(user);
         model.addAttribute("addresses", userAddresses);
+        model.addAttribute("addressTypes", AddressType.values());
 
         return "addresses/address-list";
     }
@@ -52,23 +53,41 @@ public class AddressController {
 
     // Crea una nueva dirección
     @GetMapping("/addresses/new")
-    public String showCreateAddressForm(Model model, @AuthenticationPrincipal User user) {
-        model.addAttribute("address", new AddressRequestDto());
+    public String showCreateAddressForm(Model model, @AuthenticationPrincipal User user)
+    {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        AddressRequestDto addressDto = new AddressRequestDto();
+        addressDto.setUsersId(user.getId());
+
+        model.addAttribute("address", addressDto);
+        model.addAttribute("addressTypes", AddressType.values());
+
         return "addresses/address-form";
     }
 
     // Procesa la creación de una nueva dirección
     @PostMapping("/addresses")
-    public String saveAddress(@Valid @ModelAttribute("address") AddressRequestDto addressDto, BindingResult result, @AuthenticationPrincipal User user, Model model) {
+    public String saveAddress(@Valid @ModelAttribute("address") AddressRequestDto addressDto, BindingResult result, @AuthenticationPrincipal User user, Model model)
+    {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        addressDto.setUsersId(user.getId());
 
         if (result.hasErrors()) {
+            model.addAttribute("addressTypes", AddressType.values());
             return "addresses/address-form";
         }
+
         try {
             addressService.addAddress(addressDto, user);
         } catch (Exception e) {
-
             model.addAttribute("errorMessage", "No se pudo registrar la dirección. Inténtelo de nuevo.");
+            model.addAttribute("addressTypes", AddressType.values());
             return "addresses/address-form";
         }
 
@@ -77,28 +96,75 @@ public class AddressController {
 
     // Edita una dirección
     @GetMapping("addresses/{id}/edit")
-    public String editForm(@PathVariable UUID id, Model model) {
+    public String editForm(@PathVariable UUID id, Model model, @AuthenticationPrincipal User user)
+    {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         AddressResponseDto address = addressService.findById(id);
-        model.addAttribute("address", address);
+
+        AddressRequestDto addressDto = AddressRequestDto.builder()
+                .street(address.getStreet())
+                .number(address.getNumber())
+                .complement(address.getComplement())
+                .city(address.getCity())
+                .state(address.getState())
+                .country(address.getCountry())
+                .zipCode(address.getZipCode())
+                .addressType(address.getAddressType())
+                .usersId(user.getId())
+                .build();
+
+        model.addAttribute("addressId", id);
+        model.addAttribute("address", addressDto);
+        model.addAttribute("addressTypes", AddressType.values());
+
         return "addresses/edit";
     }
 
     // Procesa la actualización de la dirección
     @PostMapping("/addresses/{id}")
-    public String update(@PathVariable UUID id, @ModelAttribute AddressRequestDto addressDto, RedirectAttributes redirectAttributes) {
+    public String update(
+            @PathVariable UUID id,
+            @Valid @ModelAttribute("address") AddressRequestDto addressDto,
+            BindingResult result, Model model, RedirectAttributes redirectAttributes, @AuthenticationPrincipal User user)
+    {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        addressDto.setUsersId(user.getId());
+
+        if (result.hasErrors()) {
+            model.addAttribute("addressTypes", AddressType.values());
+            model.addAttribute("addressId", id);
+            return "addresses/edit";
+        }
+
         try {
-            addressService.updateAddress(id, addressDto);
+            addressService.updateAddress(id, addressDto, user);
             redirectAttributes.addFlashAttribute("message", "Dirección actualizada correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar la dirección: " + e.getMessage());
         }
+
         return "redirect:/addresses";
     }
 
     // Elimina una dirección
     @GetMapping("addresses/delete/{id}")
-    public String deleteAddress(@PathVariable UUID id, RedirectAttributes redirectAttributes) {
-        addressService.delete(id);
+    public String deleteAddress(
+            @PathVariable UUID id,
+            RedirectAttributes redirectAttributes,
+            @AuthenticationPrincipal User user
+    ) {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        addressService.delete(id, user);
+
         redirectAttributes.addFlashAttribute("message", "La dirección se ha eliminado correctamente");
         return "redirect:/addresses";
     }

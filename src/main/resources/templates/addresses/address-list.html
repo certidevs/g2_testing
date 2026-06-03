@@ -89,86 +89,222 @@
                                             class="btn btn-sm btn-outline-secondary"
                                             data-bs-toggle="modal"
                                             th:data-bs-target="'#editAddressModal-' + ${address.id}">
-                                        <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                        <i class="fa-solid fa-pen-to-square me-1"></i>
+                                        Editar
                                     </button>
 
                                     <!-- BOTÓN ELIMINAR -->
-                                    <a th:href="@{/addresses/delete/{id}(id=${address.id})}"
-                                       class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('¿Estás seguro de que deseas eliminar esta dirección?')">
-                                        <i class="fa-solid fa-trash me-1"></i> Borrar
-                                    </a>
+                                    <form th:action="@{/addresses/{id}/delete(id=${address.id})}"
+                                          method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dirección?')">
+
+                                        <!-- TOKEN CSRF -->
+                                        <input th:if="${_csrf != null}"
+                                               type="hidden"
+                                               th:name="${_csrf.parameterName}"
+                                               th:value="${_csrf.token}">
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger">
+                                            <i class="fa-solid fa-trash me-1"></i>
+                                            Borrar
+                                        </button>
+                                    </form>
+
                                 </div>
 
-                                <!-- SECCIÓN PARA EDITAR LA DIRECCIÓN DE ENVÍO -->
-                                <div class="modal fade" th:id="'editAddressModal-' + ${address.id}" tabindex="-1" aria-hidden="true">
+                                <!-- MODAL PARA EDITAR LA DIRECCIÓN -->
+                                <div class="modal fade"
+                                     th:id="'editAddressModal-' + ${address.id}"
+                                     tabindex="-1"
+                                     aria-hidden="true">
+
                                     <div class="modal-dialog modal-dialog-centered modal-lg">
                                         <div class="modal-content">
+
+                                            <!-- HEADER DEL MODAL -->
                                             <div class="modal-header">
                                                 <h5 class="modal-title">
-                                                    <i class="fa-solid fa-location-dot text-warning me-2"></i>Editar Dirección de Envío
+                                                    <i class="fa-solid fa-location-dot text-warning me-2"></i>
+                                                    Editar dirección
                                                 </h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
+                                                <button type="button"
+                                                        class="btn-close"
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Cerrar">
+                                                </button>
                                             </div>
 
-                                            <form th:action="@{/addresses/{id}(id=${address.id})}" method="post">
+                                            <!-- FORMULARIO DE EDICIÓN -->
+                                            <form th:action="@{/addresses/{id}(id=${address.id})}"
+                                                  method="post">
+
+                                                <!-- TOKEN CSRF -->
+                                                <input th:if="${_csrf != null}"
+                                                       type="hidden"
+                                                       th:name="${_csrf.parameterName}"
+                                                       th:value="${_csrf.token}">
+
+                                                <!-- USER ID OCULTO -->
+                                                <input type="hidden"
+                                                       name="usersId"
+                                                       th:value="${address.usersId}">
+
                                                 <div class="modal-body text-start">
 
+                                                    <!-- TIPO Y CÓDIGO POSTAL -->
                                                     <div class="row mb-3">
+
                                                         <div class="col-md-6">
-                                                            <label class="form-label fw-bold">Tipo de dirección:</label>
-                                                            <select class="form-select" name="addressType" required>
-                                                                <option value="SHIPPING" th:selected="${address.addressType?.name() == 'SHIPPING'}">
-                                                                    Dirección de Envío (SHIPPING)
+                                                            <label class="form-label fw-bold">
+                                                                Tipo de dirección:
+                                                            </label>
+
+                                                            <select class="form-select"
+                                                                    name="addressType"
+                                                                    required>
+
+                                                                <option value="">
+                                                                    Selecciona un tipo
                                                                 </option>
-                                                                <option value="BILLING" th:selected="${address.addressType?.name() == 'BILLING'}">
-                                                                    Dirección de Facturación (BILLING)
+
+                                                                <option th:each="type : ${addressTypes}"
+                                                                        th:value="${type}"
+                                                                        th:text="${type}"
+                                                                        th:selected="${address.addressType == type}">
                                                                 </option>
+
                                                             </select>
                                                         </div>
+
                                                         <div class="col-md-6">
-                                                            <label class="form-label fw-bold">Código Postal:</label>
-                                                            <input type="text" class="form-control" name="zipCode" th:value="${address.zipCode}" required maxlength="10">
+                                                            <label class="form-label fw-bold">
+                                                                Código postal:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="zipCode"
+                                                                   th:value="${address.zipCode}"
+                                                                   required
+                                                                   maxlength="10"
+                                                                   pattern="[0-9]+"
+                                                                   title="Introduce solo números">
                                                         </div>
+
                                                     </div>
 
+                                                    <!-- CALLE Y NÚMERO -->
                                                     <div class="row mb-3">
+
                                                         <div class="col-md-8">
-                                                            <label class="form-label fw-bold">Calle / Avenida:</label>
-                                                            <input type="text" class="form-control" name="street" th:value="${address.street}" required maxlength="150">
+                                                            <label class="form-label fw-bold">
+                                                                Calle / Avenida:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="street"
+                                                                   th:value="${address.street}"
+                                                                   required
+                                                                   maxlength="150">
                                                         </div>
+
                                                         <div class="col-md-4">
-                                                            <label class="form-label fw-bold">Número / Altura:</label>
-                                                            <input type="text" class="form-control" name="number" th:value="${address.number}" required maxlength="20">
+                                                            <label class="form-label fw-bold">
+                                                                Número / Altura:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="number"
+                                                                   th:value="${address.number}"
+                                                                   required
+                                                                   maxlength="20">
                                                         </div>
+
                                                     </div>
 
+                                                    <!-- COMPLEMENTO -->
                                                     <div class="mb-3">
-                                                        <label class="form-label fw-bold">Complemento <span class="text-muted fw-normal">(Opcional)</span>:</label>
-                                                        <input type="text" class="form-control" name="complement" th:value="${address.complement}" placeholder="Ej: Piso 2, Depto B" maxlength="150">
+                                                        <label class="form-label fw-bold">
+                                                            Complemento
+                                                            <span class="text-muted fw-normal">(Opcional)</span>:
+                                                        </label>
+
+                                                        <input type="text"
+                                                               class="form-control"
+                                                               name="complement"
+                                                               th:value="${address.complement}"
+                                                               placeholder="Ej: Piso 2, Depto B"
+                                                               maxlength="150">
                                                     </div>
 
+                                                    <!-- CIUDAD / ESTADO / PAÍS -->
                                                     <div class="row mb-3">
+
                                                         <div class="col-md-4">
-                                                            <label class="form-label fw-bold">Ciudad:</label>
-                                                            <input type="text" class="form-control" name="city" th:value="${address.city}" required maxlength="100">
+                                                            <label class="form-label fw-bold">
+                                                                Ciudad:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="city"
+                                                                   th:value="${address.city}"
+                                                                   required
+                                                                   maxlength="100">
                                                         </div>
+
                                                         <div class="col-md-4">
-                                                            <label class="form-label fw-bold">Estado / Provincia:</label>
-                                                            <input type="text" class="form-control" name="state" th:value="${address.state}" required maxlength="100">
+                                                            <label class="form-label fw-bold">
+                                                                Estado / Provincia:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="state"
+                                                                   th:value="${address.state}"
+                                                                   required
+                                                                   maxlength="100">
                                                         </div>
+
                                                         <div class="col-md-4">
-                                                            <label class="form-label fw-bold">País:</label>
-                                                            <input type="text" class="form-control" name="country" th:value="${address.country}" required maxlength="100">
+                                                            <label class="form-label fw-bold">
+                                                                País:
+                                                            </label>
+
+                                                            <input type="text"
+                                                                   class="form-control"
+                                                                   name="country"
+                                                                   th:value="${address.country}"
+                                                                   required
+                                                                   maxlength="100">
                                                         </div>
+
                                                     </div>
 
                                                 </div>
+
+                                                <!-- FOOTER DEL MODAL -->
                                                 <div class="modal-footer">
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                    <button type="submit" class="btn btn-sm btn-outline-primary">Guardar Cambios</button>
+                                                    <button type="button"
+                                                            class="btn btn-sm btn-outline-secondary"
+                                                            data-bs-dismiss="modal">
+                                                        Cancelar
+                                                    </button>
+
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-outline-primary">
+                                                        <i class="fa-solid fa-floppy-disk me-1"></i>
+                                                        Guardar cambios
+                                                    </button>
                                                 </div>
+
                                             </form>
+
                                         </div>
                                     </div>
                                 </div>

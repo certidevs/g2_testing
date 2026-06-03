@@ -46,7 +46,7 @@
 
             <div class="col-lg-8">
 
-                <form th:action="@{/addresses/{id}(id=${address.id})}"
+                <form th:action="@{/addresses/{id}(id=${addressId})}"
                       method="post"
                       th:object="${address}"
                       class="card border-0 shadow-sm">
@@ -57,8 +57,8 @@
                            th:name="${_csrf.parameterName}"
                            th:value="${_csrf.token}">
 
-                    <!-- METODO PUT -->
-                    <input type="hidden" name="_method" value="put">
+                    <!-- METODO PosT -->
+                    <input type="hidden" th:field="*{user}">
 
                     <!-- HEADER -->
                     <div class="card-header bg-white">
@@ -94,20 +94,11 @@
                                         th:field="*{addressType}"
                                         required>
 
-                                    <option value="">
-                                        Selecciona un tipo
-                                    </option>
+                                    <option value="">Selecciona un tipo</option>
 
-                                    <option value="PRIMARY">
-                                        Principal
-                                    </option>
-
-                                    <option value="SECONDARY">
-                                        Secundaria
-                                    </option>
-
-                                    <option value="WORK">
-                                        Trabajo
+                                    <option th:each="type : ${addressTypes}"
+                                            th:value="${type}"
+                                            th:text="${type}">
                                     </option>
 
                                 </select>

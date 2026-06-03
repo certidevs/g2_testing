@@ -6,6 +6,7 @@ import com.ecommerce.model.User;
 import com.ecommerce.service.AddressService;
 import com.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -98,7 +99,7 @@ public class ProfileController {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             addressDto.setUsersId(user.getId());
-            addressService.updateAddress(id, addressDto);
+            addressService.updateAddress(id, addressDto, user);
             redirectAttributes.addFlashAttribute("success", "Dirección actualizada correctamente");
 
         } catch (Exception e) {
@@ -108,18 +109,24 @@ public class ProfileController {
         return "redirect:/user/profile?email=" + email;
     }
 
-    @PostMapping("/addresses/{id}/delete")
-    public String deleteAddress(@PathVariable UUID id,
-                               @RequestParam String email,
-                               RedirectAttributes redirectAttributes) {
+    @PostMapping("/user/profile/addresses/{id}/delete")
+    public String deleteAddressFromProfile(
+            @PathVariable UUID id,
+            @AuthenticationPrincipal User user,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         try {
-            addressService.delete(id);
+            addressService.delete(id, user);
             redirectAttributes.addFlashAttribute("success", "Dirección eliminada correctamente");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar dirección: " + e.getMessage());
         }
 
-        return "redirect:/user/profile?email=" + email;
+        return "redirect:/user/profile?email=" + user.getEmail();
     }
 
     private User resolveUser(String email) {

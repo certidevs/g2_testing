@@ -32,6 +32,8 @@ public class AddressService {
     // Agregar una nueva dirección
     @Transactional
     public void addAddress(AddressRequestDto form, User user) {
+        validateLoggedUser(form, user);
+
         Address address = new Address();
         address.setCountry(form.getCountry());
         address.setCity(form.getCity());
@@ -42,6 +44,7 @@ public class AddressService {
         address.setAddressType(form.getAddressType());
         address.setComplement(form.getComplement());
         address.setUser(user);
+
         addressRepository.save(address);
     }
 
@@ -61,8 +64,11 @@ public class AddressService {
 
     // Actualizar una dirección
     @Transactional
-    public AddressResponseDto updateAddress(UUID id, AddressRequestDto dto) {
+    public AddressResponseDto updateAddress(UUID id, AddressRequestDto dto, User user) {
+        validateLoggedUser(dto, user);
+
         Address address = findAddressEntityById(id);
+        validateAddressOwner(address, user);
 
         address.setStreet(dto.getStreet());
         address.setNumber(dto.getNumber());
@@ -78,8 +84,10 @@ public class AddressService {
 
     // Eliminar una dirección
     @Transactional
-    public void delete(UUID id) {
+    public void delete(UUID id, User user) {
         Address address = findAddressEntityById(id);
+        validateAddressOwner(address, user);
+
         addressRepository.delete(address);
     }
 
@@ -108,5 +116,25 @@ public class AddressService {
                 .usersName(address.getUser() != null ? address.getUser().getName() : null)
                 .usersEmail(address.getUser() != null ? address.getUser().getEmail() : null)
                 .build();
+    }
+
+    private void validateLoggedUser(AddressRequestDto dto, User user) {
+        if (user == null) {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+
+        if (dto.getUsersId() == null) {
+            throw new RuntimeException("El ID del usuario es obligatorio");
+        }
+
+        if (!dto.getUsersId().equals(user.getId())) {
+            throw new RuntimeException("El usuario del formulario no coincide con el usuario autenticado");
+        }
+    }
+
+    private void validateAddressOwner(Address address, User user) {
+        if (address.getUser() == null || !address.getUser().getId().equals(user.getId())) {
+            throw new RuntimeException("No tienes permiso para modificar esta dirección");
+        }
     }
 }

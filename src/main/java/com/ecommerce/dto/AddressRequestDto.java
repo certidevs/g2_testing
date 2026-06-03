@@ -1,5 +1,6 @@
 package com.ecommerce.dto;
 
+import com.ecommerce.model.enums.AddressType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -34,7 +35,7 @@ public class AddressRequestDto {
     private String zipCode;
 
     @NotNull(message = "El tipo de dirección es obligatorio")
-    private com.ecommerce.model.enums.AddressType addressType;
+    private AddressType addressType;
 
     @NotNull(message = "El ID del usuario es obligatorio")
     private UUID usersId;

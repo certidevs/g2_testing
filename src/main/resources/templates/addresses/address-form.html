@@ -33,6 +33,7 @@
 
                 <!-- TOKEN CSRF -->
                 <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" th:field="*{usersId}">
 
                 <!-- TÍTULO DE FORMULARIO -->
                 <div class="card-header bg-white py-3">
@@ -48,8 +49,11 @@
                         <div class="col-md-6">
                             <label for="addressType" class="form-label fw-semibold">Tipo de dirección</label>
                             <select class="form-select" id="addressType" th:field="*{addressType}" required>
-                                <option value="SHIPPING">Dirección de Envío (SHIPPING)</option>
-                                <option value="BILLING">Dirección de Facturación (BILLING)</option>
+                                <option value="">Selecciona un tipo</option>
+                                <option th:each="type : ${addressTypes}"
+                                        th:value="${type}"
+                                        th:text="${type}">
+                                </option>
                             </select>
                         </div>
 
