@@ -331,15 +331,27 @@ h1, h2, h3, .navbar-brand {
 /* Botón de registro */
 
 /* Estado normal */
-.button-gray-register {
+.button-brown {
     border: 1px solid #000000;
-    background-color: #b3b3b3;
+    background-color: #b89b63;
     color: #212529;
     transition: background-color 0.2s ease;
 }
 
 /* Estado hover */
-.button-gray-register:hover {
-    background-color: #787878;
+.button-brown:hover {
+    background-color: #78663e;
     color: #000000;
+}
+
+/* Color de opciones para navbar */
+
+/* Estado normal */
+.brown-options {
+    color: #b89b63;
+}
+
+/* Estado hover */
+.brown-options:hover {
+    color: #78663e;
 }
