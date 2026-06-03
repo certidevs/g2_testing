@@ -7,292 +7,787 @@
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar::navbar}"></nav>
 
-<main class="flex-grow-1">
-    <div class="container py-5">
+<style>
+    .category-detail-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.15), transparent 35%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <div>
-                <h1 class="fw-bold mb-1">Detalle de categoría</h1>
-                <p class="text-muted mb-0">
-                    Información general, subcategorías y productos asociados.
-                </p>
-            </div>
+    .category-detail-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-            <div class="d-flex gap-2">
-                <a th:href="@{/categories}" class="btn btn-outline-secondary">
-                    Volver
-                </a>
+    .category-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+    }
 
-                <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn btn-primary">
-                    Editar
-                </a>
-            </div>
-        </div>
+    .category-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
 
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white border-bottom">
-                <h2 class="h5 mb-0">Información de la categoría</h2>
-            </div>
+    .category-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
 
-            <div class="card-body">
-                <div class="row g-3">
+    .category-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
 
-                    <div class="col-12 col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small mb-1">Nombre</div>
-                            <div class="fw-semibold" th:text="${category.name}">
-                                Nombre
-                            </div>
-                        </div>
-                    </div>
+    .category-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.1rem, 4vw, 4rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
 
-                    <div class="col-12 col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small mb-1">Slug</div>
-                            <span class="badge text-bg-secondary" th:text="${category.slug}">
-                                slug
-                            </span>
-                        </div>
-                    </div>
+    .category-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
 
-                    <div class="col-12">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small mb-1">Descripción</div>
-                            <div th:text="${category.description != null ? category.description : '-'}">
-                                Descripción
-                            </div>
-                        </div>
-                    </div>
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
 
-                    <div class="col-12 col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small mb-1">Categoría padre</div>
-                            <div th:text="${category.parentName != null ? category.parentName : 'Categoría raíz'}">
-                                Padre
-                            </div>
-                        </div>
-                    </div>
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.82rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
 
-                    <div class="col-12 col-md-6">
-                        <div class="border rounded p-3 h-100">
-                            <div class="text-muted small mb-1">Estado</div>
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
 
-                            <span th:if="${category.active}" class="badge text-bg-success">
-                                Activa
-                            </span>
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
 
-                            <span th:if="${!category.active}" class="badge text-bg-warning">
-                                Inactiva
-                            </span>
-                        </div>
-                    </div>
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
 
-                </div>
-            </div>
-        </div>
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
 
-        <!-- SUBCATEGORÍAS CON IMAGEN -->
-        <div class="card shadow-sm border-0 mb-4">
-            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+    .info-card,
+    .section-card,
+    .not-found-card {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+    }
+
+    .card-premium-header {
+        padding: 1.35rem 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.84));
+    }
+
+    .card-premium-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .card-premium-text {
+        margin: 0.3rem 0 0;
+        color: #74685f;
+        font-size: 0.9rem;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .info-item {
+        min-height: 118px;
+        padding: 1.15rem;
+        border: 1px solid rgba(31, 26, 23, 0.09);
+        border-radius: 22px;
+        background: #fff;
+    }
+
+    .info-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .info-label {
+        margin-bottom: 0.45rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        margin: 0;
+        color: #1f1a17;
+        font-size: 1rem;
+        font-weight: 700;
+        line-height: 1.55;
+    }
+
+    .info-description {
+        margin: 0;
+        color: #5f554d;
+        line-height: 1.75;
+    }
+
+    .slug-pill,
+    .status-pill,
+    .count-pill,
+    .brand-pill,
+    .discount-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 999px;
+        padding: 0.48rem 0.72rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .slug-pill {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        background: #faf7f1;
+        color: #5f554d;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .status-pill.active {
+        background: rgba(47, 107, 69, 0.10);
+        color: #2f6b45;
+    }
+
+    .status-pill.inactive {
+        background: rgba(183, 121, 31, 0.12);
+        color: #8a570f;
+    }
+
+    .count-pill {
+        background: #1f1a17;
+        color: #fff;
+    }
+
+    .section-card {
+        margin-top: 1.5rem;
+    }
+
+    .section-header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .subcategory-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .subcategory-card {
+        position: relative;
+        min-height: 260px;
+        overflow: hidden;
+        border-radius: 26px;
+        background: #1f1a17;
+        text-decoration: none;
+        color: #fff;
+        box-shadow: 0 18px 42px rgba(31, 26, 23, 0.10);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .subcategory-card:hover {
+        color: #fff;
+        transform: translateY(-4px);
+        box-shadow: 0 26px 56px rgba(31, 26, 23, 0.18);
+    }
+
+    .subcategory-card img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.72;
+        transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+
+    .subcategory-card:hover img {
+        transform: scale(1.05);
+        opacity: 0.82;
+    }
+
+    .subcategory-fallback {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background:
+                radial-gradient(circle at top, rgba(181, 154, 110, 0.30), transparent 42%),
+                linear-gradient(135deg, #2d2621, #1f1a17);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 2rem;
+    }
+
+    .subcategory-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 20%, rgba(0, 0, 0, 0.78) 100%);
+    }
+
+    .subcategory-content {
+        position: absolute;
+        left: 1.2rem;
+        right: 1.2rem;
+        bottom: 1.15rem;
+        z-index: 2;
+    }
+
+    .subcategory-name {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .subcategory-description {
+        margin: 0.45rem 0 0;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 0.9rem;
+        line-height: 1.55;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .product-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 26px;
+        background: #fff;
+        color: #1f1a17;
+        text-decoration: none;
+        box-shadow: 0 18px 42px rgba(31, 26, 23, 0.06);
+        transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+    }
+
+    .product-card:hover {
+        color: #1f1a17;
+        transform: translateY(-4px);
+        border-color: rgba(31, 26, 23, 0.18);
+        box-shadow: 0 26px 56px rgba(31, 26, 23, 0.12);
+    }
+
+    .product-image {
+        position: relative;
+        height: 230px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background: #faf7f1;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        padding: 1.2rem;
+        transition: transform 0.28s ease;
+    }
+
+    .product-card:hover .product-image img {
+        transform: scale(1.04);
+    }
+
+    .product-image-empty {
+        color: #9a8d82;
+        font-size: 2rem;
+    }
+
+    .discount-pill {
+        position: absolute;
+        top: 0.85rem;
+        left: 0.85rem;
+        background: #7f1d1d;
+        color: #fff;
+        box-shadow: 0 12px 26px rgba(127, 29, 29, 0.20);
+    }
+
+    .product-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .product-title {
+        margin: 0;
+        color: #1f1a17;
+        font-weight: 800;
+        line-height: 1.35;
+    }
+
+    .brand-pill {
+        align-self: flex-start;
+        margin-top: 0.65rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        background: #faf7f1;
+        color: #5f554d;
+    }
+
+    .product-price {
+        margin-top: auto;
+        padding-top: 1rem;
+    }
+
+    .price-original {
+        display: block;
+        color: #8c8178;
+        font-size: 0.84rem;
+        text-decoration: line-through;
+    }
+
+    .price-current {
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+    }
+
+    .empty-state {
+        padding: 3rem 1.5rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        font-size: 1.5rem;
+    }
+
+    .empty-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+    }
+
+    .empty-text {
+        max-width: 520px;
+        margin: 0.65rem auto 0;
+        color: #74685f;
+        line-height: 1.7;
+    }
+
+    .not-found-card {
+        max-width: 680px;
+        margin: 3rem auto;
+        padding: 2.25rem;
+        text-align: center;
+    }
+
+    @media (max-width: 1199.98px) {
+        .product-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .category-detail-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .category-hero,
+        .section-header-flex {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .subcategory-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .info-grid,
+        .subcategory-grid,
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hero-actions {
+            width: 100%;
+        }
+
+        .hero-actions .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<main class="category-detail-page">
+    <div class="container category-shell">
+
+        <div th:if="${category != null}">
+
+            <section class="category-hero">
                 <div>
-                    <h2 class="h5 mb-0">Subcategorías</h2>
-                    <small class="text-muted">Explora las secciones disponibles dentro de esta categoría.</small>
+                    <span class="category-eyebrow">Categoría ecommerce</span>
+
+                    <h1 class="category-title" th:text="${category.name}">
+                        Detalle de categoría
+                    </h1>
+
+                    <p class="category-subtitle">
+                        Información general, subcategorías y productos asociados a esta sección del catálogo.
+                    </p>
                 </div>
 
-                <span th:if="${category.children != null and !#lists.isEmpty(category.children)}"
-                      class="badge text-bg-primary"
-                      th:text="${#lists.size(category.children)} + ' subcategorías'">
-                    0 subcategorías
-                </span>
-            </div>
+                <div class="hero-actions">
+                    <a th:href="@{/categories}" class="btn btn-premium-secondary">
+                        <i class="fa-solid fa-arrow-left-long me-2"></i>
+                        Volver
+                    </a>
 
-            <div class="card-body">
+                    <a th:href="@{/categories/{id}/edit(id=${category.id})}"
+                       class="btn btn-premium-primary"
+                       sec:authorize="hasRole('ADMIN')">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>
+                        Editar
+                    </a>
+                </div>
+            </section>
+
+            <section class="info-card">
+                <div class="card-premium-header">
+                    <h2 class="card-premium-title">Información de la categoría</h2>
+                    <p class="card-premium-text">
+                        Datos principales para clasificar y presentar esta sección dentro del ecommerce.
+                    </p>
+                </div>
+
+                <div class="info-grid">
+
+                    <article class="info-item">
+                        <div class="info-label">Nombre</div>
+                        <p class="info-value" th:text="${category.name}">
+                            Nombre
+                        </p>
+                    </article>
+
+                    <article class="info-item">
+                        <div class="info-label">Slug</div>
+                        <span class="slug-pill">
+                            <i class="fa-solid fa-link"></i>
+                            <span th:text="${category.slug}">slug</span>
+                        </span>
+                    </article>
+
+                    <article class="info-item full">
+                        <div class="info-label">Descripción</div>
+                        <p class="info-description"
+                           th:text="${category.description != null and !#strings.isEmpty(category.description)
+                                    ? category.description
+                                    : 'Sin descripción disponible.'}">
+                            Descripción
+                        </p>
+                    </article>
+
+                    <article class="info-item">
+                        <div class="info-label">Categoría padre</div>
+                        <p class="info-value"
+                           th:text="${category.parentName != null and !#strings.isEmpty(category.parentName)
+                                    ? category.parentName
+                                    : 'Categoría raíz'}">
+                            Categoría raíz
+                        </p>
+                    </article>
+
+                    <article class="info-item">
+                        <div class="info-label">Estado</div>
+
+                        <span th:if="${category.active}" class="status-pill active">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Activa
+                        </span>
+
+                        <span th:if="${!category.active}" class="status-pill inactive">
+                            <i class="fa-solid fa-circle-pause"></i>
+                            Inactiva
+                        </span>
+                    </article>
+
+                </div>
+            </section>
+
+            <section class="section-card">
+                <div class="card-premium-header section-header-flex">
+                    <div>
+                        <h2 class="card-premium-title">Subcategorías</h2>
+                        <p class="card-premium-text">
+                            Secciones internas disponibles dentro de esta categoría.
+                        </p>
+                    </div>
+
+                    <span th:if="${category.children != null and !#lists.isEmpty(category.children)}"
+                          class="count-pill">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span th:text="|${#lists.size(category.children)} subcategorías|">
+                            0 subcategorías
+                        </span>
+                    </span>
+                </div>
+
                 <div th:if="${category.children == null or #lists.isEmpty(category.children)}"
-                     class="alert alert-info mb-0"
-                     role="alert">
-                    No tiene subcategorías.
+                     class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+
+                    <h3 class="empty-title">Sin subcategorías</h3>
+
+                    <p class="empty-text">
+                        Esta categoría todavía no tiene subcategorías asociadas.
+                    </p>
                 </div>
 
                 <div th:if="${category.children != null and !#lists.isEmpty(category.children)}"
-                     class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                     class="subcategory-grid">
 
-                    <div class="col" th:each="child : ${category.children}">
-                        <a th:href="@{/categories/{id}(id=${child.id})}"
-                           class="text-decoration-none text-dark">
+                    <a class="subcategory-card"
+                       th:each="child : ${category.children}"
+                       th:href="@{/categories/{id}(id=${child.id})}">
 
-                            <div class="card h-100 border-0 shadow-sm subcategory-card">
+                        <img th:if="${child.imageUrl != null and !#strings.isEmpty(child.imageUrl)}"
+                             th:src="${child.imageUrl}"
+                             th:alt="${child.name}">
 
-                                <div class="subcategory-image-wrapper">
-                                    <img th:src="${child.imageUrl != null and !#strings.isEmpty(child.imageUrl)
-                                                ? child.imageUrl
-                                                : '/images/default-category.jpg'}"
-                                         th:alt="${child.name}"
-                                         class="subcategory-image">
-                                </div>
+                        <div th:if="${child.imageUrl == null or #strings.isEmpty(child.imageUrl)}"
+                             class="subcategory-fallback">
+                            <i class="fa-regular fa-image"></i>
+                        </div>
 
-                                <div class="card-body d-flex flex-column">
+                        <div class="subcategory-overlay"></div>
 
-                                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
-                                        <h5 class="card-title fw-bold mb-0" th:text="${child.name}">
-                                            Subcategoría
-                                        </h5>
+                        <div class="subcategory-content">
+                            <h3 class="subcategory-name" th:text="${child.name}">
+                                Subcategoría
+                            </h3>
 
-                                        <span th:if="${child.active}" class="badge text-bg-success">
-                                            Activa
-                                        </span>
-
-                                        <span th:if="${!child.active}" class="badge text-bg-warning">
-                                            Inactiva
-                                        </span>
-                                    </div>
-
-                                    <p class="card-text text-muted small mb-3"
-                                       th:text="${child.description != null and !#strings.isEmpty(child.description)
-                                                ? child.description
-                                                : 'Ver productos y detalles de esta subcategoría.'}">
-                                        Descripción de la subcategoría.
-                                    </p>
-
-                                    <div class="mt-auto">
-                                        <span class="btn btn-outline-primary btn-sm w-100">
-                                            Ver subcategoría
-                                            <i class="fa-solid fa-arrow-right ms-1"></i>
-                                        </span>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </a>
-                    </div>
+                            <p class="subcategory-description"
+                               th:if="${child.description != null and !#strings.isEmpty(child.description)}"
+                               th:text="${child.description}">
+                                Descripción de la subcategoría
+                            </p>
+                        </div>
+                    </a>
 
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h2 class="h4 fw-bold mb-0">Productos</h2>
-        </div>
-
-        <div th:if="${products == null or #lists.isEmpty(products)}"
-             class="alert alert-info"
-             role="alert">
-            No hay productos asociados a esta categoría.
-        </div>
-
-        <div th:if="${products != null and !#lists.isEmpty(products)}"
-             class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-
-            <div class="col" th:each="product : ${products}">
-                <div class="card h-100 shadow-sm border-0 product-card">
-
-                    <div class="ratio ratio-4x3 bg-light">
-                        <img th:src="${product.imageUrl}"
-                             th:alt="${product.title}"
-                             class="card-img-top object-fit-cover">
+            <section class="section-card">
+                <div class="card-premium-header section-header-flex">
+                    <div>
+                        <h2 class="card-premium-title">Productos asociados</h2>
+                        <p class="card-premium-text">
+                            Artículos incluidos dentro de esta categoría.
+                        </p>
                     </div>
 
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title fw-semibold">
-                            <i class="fa-solid fa-store text-primary me-2"></i>
-                            <span th:text="${product.title}">Nombre</span>
-                        </h5>
+                    <span th:if="${products != null and !#lists.isEmpty(products)}"
+                          class="count-pill">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span th:text="|${#lists.size(products)} productos|">
+                            0 productos
+                        </span>
+                    </span>
+                </div>
 
-                        <div class="d-flex flex-wrap gap-2 mb-3">
-                            <span class="badge text-bg-success">
-                                <i class="fa-solid fa-euro-sign me-1"></i>
-                                <span th:text="${product.price}">0</span>
+                <div th:if="${products == null or #lists.isEmpty(products)}"
+                     class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+
+                    <h3 class="empty-title">Sin productos asociados</h3>
+
+                    <p class="empty-text">
+                        Todavía no hay productos vinculados a esta categoría.
+                    </p>
+                </div>
+
+                <div th:if="${products != null and !#lists.isEmpty(products)}"
+                     class="product-grid">
+
+                    <a class="product-card"
+                       th:each="product : ${products}"
+                       th:href="@{/products/{id}(id=${product.id})}">
+
+                        <div class="product-image">
+                            <span th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                                  class="discount-pill">
+                                <i class="fa-solid fa-tag"></i>
+                                <span th:text="|-${product.discountPercentage}%|">-20%</span>
                             </span>
 
-                            <span class="badge text-bg-secondary">
+                            <img th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}"
+                                 th:src="${product.imageUrl}"
+                                 th:alt="${product.title}">
+
+                            <span th:if="${product.imageUrl == null or #strings.isEmpty(product.imageUrl)}"
+                                  class="product-image-empty">
+                                <i class="fa-regular fa-image"></i>
+                            </span>
+                        </div>
+
+                        <div class="product-body">
+                            <h3 class="product-title" th:text="${product.title}">
+                                Producto
+                            </h3>
+
+                            <span class="brand-pill">
+                                <i class="fa-solid fa-crown"></i>
                                 <span th:text="${product.brand != null ? product.brand.name : 'Sin marca'}">
-                                    Sin marca
+                                    Marca
                                 </span>
                             </span>
 
-                            <span class="badge text-bg-info">
-                                <i class="fa-solid fa-shopping-bag me-1"></i>
-                                <span th:text="${product.purchase != null ? product.purchase.id : 'No comprado'}">
-                                    Sin compra
-                                </span>
-                            </span>
+                            <div class="product-price">
+                                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                    <span class="price-original"
+                                          th:text="${product.price != null ? #numbers.formatCurrency(product.price) : '0,00 €'}">
+                                        0,00 €
+                                    </span>
+
+                                    <span class="price-current"
+                                          th:text="${product.finalPrice != null ? #numbers.formatCurrency(product.finalPrice) : #numbers.formatCurrency(product.price)}">
+                                        0,00 €
+                                    </span>
+                                </div>
+
+                                <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                    <span class="price-current"
+                                          th:text="${product.price != null ? #numbers.formatCurrency(product.price) : 'Precio no disponible'}">
+                                        0,00 €
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="mt-auto d-grid gap-2">
-                            <a th:href="@{/purchases/add/{id}(id=${product.id})}"
-                               class="btn btn-success btn-sm">
-                                <i class="fa-solid fa-shopping-cart me-1"></i>
-                                Comprar
-                            </a>
-
-                            <a th:href="@{/products/{id}(id=${product.id})}"
-                               class="btn btn-outline-primary btn-sm">
-                                <i class="fa-regular fa-eye me-1"></i>
-                                Ver producto
-                            </a>
-                        </div>
-                    </div>
+                    </a>
 
                 </div>
-            </div>
+            </section>
+
         </div>
 
-        <div class="d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
-            <a th:href="@{/categories}" class="btn btn-outline-secondary">
-                Volver
-            </a>
+        <div th:if="${category == null}" class="not-found-card">
+            <div class="empty-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
 
-            <a th:href="@{/categories/{id}/edit(id=${category.id})}" class="btn btn-primary">
-                Editar
+            <h1 class="empty-title">Categoría no encontrada</h1>
+
+            <p class="empty-text mb-4">
+                No hemos podido encontrar la categoría solicitada. Puede que haya sido eliminada
+                o que el enlace no sea correcto.
+            </p>
+
+            <a th:href="@{/categories}" class="btn btn-premium-primary">
+                Volver a categorías
             </a>
         </div>
 
     </div>
 </main>
 
-<footer th:replace="~{layout/footer::footer}"></footer>
-<script th:replace="~{layout/footer::scripts}"></script>
+<footer th:replace="~{layout/footer :: footer}"></footer>
 
-<style>
-    .subcategory-card {
-        border-radius: 1.25rem;
-        overflow: hidden;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        background: #fff;
-    }
+<script th:replace="~{layout/footer :: scripts}"></script>
 
-    .subcategory-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.12) !important;
-    }
-
-    .subcategory-image-wrapper {
-        height: 190px;
-        overflow: hidden;
-        background: #f8f9fa;
-    }
-
-    .subcategory-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.25s ease;
-    }
-
-    .subcategory-card:hover .subcategory-image {
-        transform: scale(1.06);
-    }
-
-    .subcategory-card .card-title {
-        line-height: 1.25;
-    }
-
-    .product-card {
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-</style>
 </body>
 </html>
