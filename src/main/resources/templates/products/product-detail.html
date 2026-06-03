@@ -3,206 +3,931 @@
 <head th:replace="~{layout/head :: head('Detalle de Producto')}"></head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
-<main class="container flex-grow-1">
-    <div th:if="${product != null}" class="row">
-        <div class="col-md-8">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h1 class="mb-2" th:text="${'Producto: ' + product.title}">Producto</h1>
-                    <p class="mb-2 fs-5" th:text="${product.longDescription != null ? product.longDescription : 'Sin descripción'}">Descripción</p>
+<style>
+    .product-detail-body {
+        background:
+                radial-gradient(circle at top left, rgba(183, 154, 103, 0.16), transparent 36%),
+                linear-gradient(180deg, #fbfaf7 0%, #f1eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-                    <div class="mb-3">
-                        <a class="btn btn-danger btn-sm" sec:authorize="hasRole('ADMIN')" th:href="@{/products/deactivate/{id}(id=${product.id})}">
-                            <i class="fa-solid fa-ban"></i> Desactivar
-                        </a>
-                        <a class="btn btn-success btn-sm" sec:authorize="hasRole('ADMIN')" th:href="@{/products/activate/{id}(id=${product.id})}">
-                            <i class="fa-solid fa-check"></i> Activar
-                        </a>
-                    </div>
+    .product-detail-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-                    <!-- SECCIÓN DE PRECIOS CON DESCUENTO ADAPTADA -->
-                    <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+    .detail-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+    }
 
-                        <!-- CASO CON DESCUENTO ACTIVO -->
-                        <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}" class="d-content">
-                            <!-- Precio original tachado -->
-                            <span class="text-muted text-decoration-line-through fs-4 me-2"
-                                  th:text="${product.price != null ? #numbers.formatCurrency(product.price) : '0.00 €'}">0.00 €</span>
+    .detail-breadcrumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 1.5rem;
+        color: #7b7067;
+        font-size: 0.86rem;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
 
-                            <!-- Precio final rebajado -->
-                            <span class="badge bg-danger text-white me-2" style="font-size: 1.5rem; padding: 10px 15px;">
-                                <i class="fa-solid fa-euro-sign me-1"></i>
-                                <span th:text="${#numbers.formatDecimal(product.finalPrice, 1, 2)}">0.00</span>
-                            </span>
+    .detail-breadcrumb:hover {
+        color: #1f1a17;
+    }
 
-                            <!-- Cartelito con el % de ahorro -->
-                            <span class="badge bg-danger animate__animated animate__pulse animate__infinite">
-                                <i class="fa-solid fa-fire me-1"></i>Ahorras <span th:text="${product.discountPercentage}">0</span>%
-                            </span>
+    .product-media-card,
+    .purchase-card,
+    .reviews-card,
+    .not-found-card {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+    }
+
+    .product-media-card {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .product-image-frame {
+        position: relative;
+        display: grid;
+        place-items: center;
+        min-height: 620px;
+        padding: 2.25rem;
+        background:
+                linear-gradient(135deg, rgba(250, 247, 242, 0.96), rgba(255, 255, 255, 0.94));
+    }
+
+    .product-image-frame img {
+        width: 100%;
+        height: 100%;
+        max-height: 560px;
+        object-fit: contain;
+        filter: drop-shadow(0 22px 32px rgba(31, 26, 23, 0.12));
+    }
+
+    .image-empty-state {
+        max-width: 320px;
+        text-align: center;
+        color: #74685f;
+    }
+
+    .image-empty-icon {
+        width: 64px;
+        height: 64px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        font-size: 1.45rem;
+    }
+
+    .discount-ribbon {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.58rem 0.9rem;
+        border-radius: 999px;
+        background: #7f1d1d;
+        color: #fff;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        box-shadow: 0 14px 28px rgba(127, 29, 29, 0.22);
+    }
+
+    .detail-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.95rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .detail-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .product-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.25rem, 4vw, 4.3rem);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+    }
+
+    .product-long-description {
+        margin: 1.25rem 0 0;
+        max-width: 720px;
+        color: #655b52;
+        font-size: 1.03rem;
+        line-height: 1.8;
+    }
+
+    .meta-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.7rem;
+        margin-top: 1.5rem;
+    }
+
+    .meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.58rem 0.85rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.68);
+        color: #2d2621;
+        font-size: 0.84rem;
+        font-weight: 700;
+    }
+
+    .admin-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+        margin-top: 1.4rem;
+    }
+
+    .btn-admin-soft {
+        border-radius: 999px;
+        padding: 0.52rem 0.9rem;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .purchase-card {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .purchase-card-inner {
+        padding: 1.55rem;
+    }
+
+    .price-panel {
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    .price-label {
+        margin-bottom: 0.5rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .price-row {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+    }
+
+    .price-current {
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2.45rem;
+        font-weight: 500;
+        letter-spacing: -0.045em;
+        line-height: 1;
+    }
+
+    .price-original {
+        color: #8c8178;
+        font-size: 1rem;
+        text-decoration: line-through;
+    }
+
+    .saving-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.85rem;
+        padding: 0.48rem 0.7rem;
+        border-radius: 999px;
+        background: rgba(127, 29, 29, 0.09);
+        color: #7f1d1d;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .stock-panel {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        margin: 1.25rem 0;
+        padding: 1rem;
+        border-radius: 20px;
+        background: #faf7f1;
+        border: 1px solid rgba(31, 26, 23, 0.08);
+    }
+
+    .stock-dot {
+        width: 0.72rem;
+        height: 0.72rem;
+        margin-top: 0.28rem;
+        border-radius: 50%;
+        flex: 0 0 auto;
+    }
+
+    .stock-dot.available {
+        background: #2f6b45;
+    }
+
+    .stock-dot.warning {
+        background: #b7791f;
+    }
+
+    .stock-dot.empty {
+        background: #9f1d1d;
+    }
+
+    .stock-title {
+        margin: 0;
+        color: #2d2621;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .stock-text {
+        margin: 0.28rem 0 0;
+        color: #74685f;
+        font-size: 0.88rem;
+        line-height: 1.55;
+    }
+
+    .purchase-actions {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary,
+    .btn-premium-danger {
+        width: 100%;
+        border-radius: 999px;
+        padding: 0.9rem 1.2rem;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 18px 38px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 46px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: #fff;
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.3);
+        background: #faf7f1;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .btn-premium-danger {
+        border: 1px solid rgba(127, 29, 29, 0.18);
+        background: rgba(127, 29, 29, 0.06);
+        color: #7f1d1d;
+    }
+
+    .btn-premium-danger:hover {
+        border-color: rgba(127, 29, 29, 0.32);
+        background: rgba(127, 29, 29, 0.10);
+        color: #7f1d1d;
+        transform: translateY(-1px);
+    }
+
+    .service-list {
+        display: grid;
+        gap: 0.7rem;
+        margin-top: 1.35rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    .service-item {
+        display: flex;
+        gap: 0.7rem;
+        color: #6d6259;
+        font-size: 0.86rem;
+        line-height: 1.5;
+    }
+
+    .service-item i {
+        margin-top: 0.2rem;
+        color: #8a6f4d;
+    }
+
+    .description-card {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.66);
+    }
+
+    .section-title {
+        margin: 0 0 0.95rem;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .description-card p {
+        margin: 0;
+        color: #655b52;
+        line-height: 1.75;
+    }
+
+    .reviews-card {
+        margin-top: 2rem;
+        padding: 1.5rem;
+    }
+
+    .reviews-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .review-list {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .review-item {
+        padding: 1rem;
+        border: 1px solid rgba(31, 26, 23, 0.08);
+        border-radius: 20px;
+        background: #fff;
+    }
+
+    .review-author {
+        margin: 0 0 0.35rem;
+        color: #756a61;
+        font-size: 0.8rem;
+    }
+
+    .review-title {
+        margin: 0 0 0.35rem;
+        color: #1f1a17;
+        font-weight: 800;
+    }
+
+    .review-message {
+        margin: 0.4rem 0 0;
+        color: #4f463f;
+        line-height: 1.6;
+    }
+
+    .rating-stars {
+        color: #b7791f;
+        letter-spacing: 0.05em;
+    }
+
+    .empty-reviews {
+        padding: 1.25rem;
+        border: 1px dashed rgba(31, 26, 23, 0.18);
+        border-radius: 20px;
+        background: #faf7f1;
+        color: #74685f;
+        font-size: 0.92rem;
+        line-height: 1.65;
+    }
+
+    .premium-modal .modal-content {
+        border: 0;
+        border-radius: 26px;
+        background: #fbfaf7;
+        box-shadow: 0 26px 80px rgba(31, 26, 23, 0.22);
+        overflow: hidden;
+    }
+
+    .premium-modal .modal-header,
+    .premium-modal .modal-footer {
+        border-color: rgba(31, 26, 23, 0.10);
+    }
+
+    .premium-modal .modal-title {
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+    }
+
+    .premium-modal .form-label {
+        color: #2d2621;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .premium-modal .form-control,
+    .premium-modal .form-select {
+        border: 1px solid rgba(31, 26, 23, 0.16);
+        border-radius: 16px;
+        padding: 0.82rem 0.95rem;
+        background-color: #fff;
+        color: #1f1a17;
+    }
+
+    .premium-modal .form-control:focus,
+    .premium-modal .form-select:focus {
+        border-color: rgba(138, 111, 77, 0.65);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13);
+    }
+
+    .not-found-card {
+        max-width: 680px;
+        margin: 3rem auto;
+        padding: 2.25rem;
+        text-align: center;
+    }
+
+    @media (max-width: 991.98px) {
+        .product-detail-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .product-media-card,
+        .purchase-card {
+            position: static;
+        }
+
+        .product-image-frame {
+            min-height: 420px;
+            padding: 1.5rem;
+        }
+
+        .product-image-frame img {
+            max-height: 380px;
+        }
+
+        .reviews-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<main class="product-detail-page">
+    <div class="container detail-shell">
+
+        <a th:href="@{/products}" class="detail-breadcrumb">
+            <i class="fa-solid fa-arrow-left-long"></i>
+            Volver al catálogo
+        </a>
+
+        <div th:if="${product != null}">
+
+            <div class="row g-4 align-items-start">
+
+                <div class="col-lg-7">
+                    <section class="product-media-card">
+
+                        <div class="product-image-frame">
+
+                            <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
+                                 class="discount-ribbon">
+                                <i class="fa-solid fa-tag"></i>
+                                <span th:text="|-${product.discountPercentage}%|">-20%</span>
+                            </div>
+
+                            <img th:if="${product.imageUrl != null and !#strings.isEmpty(product.imageUrl)}"
+                                 th:src="${product.imageUrl}"
+                                 th:alt="${product.title}">
+
+                            <div th:if="${product.imageUrl == null or #strings.isEmpty(product.imageUrl)}"
+                                 class="image-empty-state">
+                                <div class="image-empty-icon">
+                                    <i class="fa-regular fa-image"></i>
+                                </div>
+                                <h2 class="section-title">Imagen no disponible</h2>
+                                <p>
+                                    Este producto todavía no tiene una imagen asociada en el catálogo.
+                                </p>
+                            </div>
+
                         </div>
 
-                        <!-- CASO SIN DESCUENTO -->
-                        <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
-                            <span class="badge bg-success me-1" style="font-size: 1.5rem; padding: 10px 15px;">
-                                <i class="fa-solid fa-euro-sign me-1"></i>
-                                <span th:text="${product.price != null ? product.price : 'GRATIS'}"></span>
-                            </span>
-                        </div>
-
-                        <!-- Stock global -->
-                        <span class="badge bg-light text-dark border p-2 fs-6 ms-auto">
-                            Stock: <span th:text="${product.stock}">0</span> uds
-                        </span>
-                    </div>
-
-                    <p th:if="${product.brand != null}" class="mt-2 mb-1">
-                        <strong>Marca:</strong> <span th:text="${product.brand.name}">Sin marca</span>
-                    </p>
-                    <p th:if="${product.subcategory != null}" class="mt-1">
-                        <strong>Categoría:</strong> <span th:text="${product.subcategory.name}">Sin categoría</span>
-                    </p>
-                </div>
-            </div>
-
-            <div th:if="${product.imageUrl != null}" class="mb-3 position-relative">
-                <!-- BADGE FLOTANTE SOBRE LA IMAGEN PRINCIPAL (Solo si tiene descuento) -->
-                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}"
-                     class="position-absolute top-0 start-0 m-3 badge bg-danger fs-5 shadow-sm z-3">
-                    <i class="fa-solid fa-tag me-1"></i>
-                    <span th:text="|-${product.discountPercentage}%|">-20%</span>
-                </div>
-                <img th:src="${product.imageUrl}" alt="Imagen del producto" class="img-fluid rounded shadow-sm w-100">
-            </div>
-
-            <p th:if="${product.shortDescription != null}" th:text="${product.shortDescription}"></p>
-        </div>
-
-        <div class="col-md-4">
-            <div class="mt-3 mb-4">
-                <div class="d-flex gap-2 flex-wrap mb-3">
-
-                    <a th:href="@{/purchases/add/{id}(id=${product.id})}" class="btn btn-outline-primary">
-                        <i class="fa-solid fa-cart-plus me-1"></i> Añadir al carrito
-                    </a>
-
-                    <!-- Control de Favoritos usando sec:authorize de forma más limpia -->
-                    <form sec:authorize="isAuthenticated()"
-                          th:action="@{/favorites/add/{productId}(productId=${product.id})}" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('¿Añadir a favoritos?')">
-                            <i class="fa-solid fa-heart me-1"></i> Favorito
-                        </button>
-                    </form>
-
-                    <a sec:authorize="isAnonymous()"
-                       th:href="@{/login}" class="btn btn-outline-secondary" title="Inicia sesión para añadir a favoritos">
-                        <i class="fa-regular fa-heart me-1"></i> Favorito
-                    </a>
+                    </section>
                 </div>
 
-                <div class="mb-3">
-                    <span th:if="${product.stock > 10}" class="badge bg-success">
-                        Disponible (<span th:text="${product.stock}"></span> uds)
-                    </span>
-                    <span th:if="${product.stock > 0 and product.stock <= 10}" class="badge bg-warning text-dark">
-                        ¡Últimas <span th:text="${product.stock}"></span> unidades!
-                    </span>
-                    <span th:if="${product.stock == 0}" class="badge bg-danger">Agotado</span>
-                </div>
-            </div>
+                <div class="col-lg-5">
 
-            <!-- SECCIÓN DE RESEÑAS CON CONTROL DE AUTENTICACIÓN -->
-            <div class="mt-4 border-top pt-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>Reseñas</h3>
+                    <section class="purchase-card">
+                        <div class="purchase-card-inner">
 
-                    <!-- Si está Autenticado: Muestra el botón para desplegar el modal -->
-                    <button sec:authorize="isAuthenticated()"
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#reviewModal">
-                        <i class="fa-solid fa-plus me-1"></i> Añadir reseña
-                    </button>
+                            <span class="detail-eyebrow">Detalle de producto</span>
 
-                    <!-- Si es Anónimo: Muestra el botón de bloqueo redirigiendo al login -->
-                    <a sec:authorize="isAnonymous()"
-                       th:href="@{/login}"
-                       class="btn btn-secondary btn-sm"
-                       title="Inicia sesión para escribir una reseña">
-                        <i class="fa-solid fa-lock me-1"></i> Iniciar sesión para opinar
-                    </a>
-                </div>
+                            <h1 class="product-title" th:text="${product.title}">
+                                Producto
+                            </h1>
 
-                <div th:if="${product.reviews != null and !product.reviews.isEmpty()}" th:each="review : ${product.reviews}">
-                    <div class="card mb-2 shadow-sm">
-                        <div class="card-body py-2">
-                            <p class="mb-1 small text-muted">
-                                <i class="fa-solid fa-user me-1"></i>
-                                <strong>Por:</strong>
-                                <span th:text="${review.user != null ? review.user.username : 'Usuario Anónimo'}">Usuario</span>
+                            <p class="product-long-description"
+                               th:text="${product.longDescription != null and !#strings.isEmpty(product.longDescription)
+                                        ? product.longDescription
+                                        : 'Sin descripción detallada disponible.'}">
+                                Descripción del producto.
                             </p>
 
-                            <p class="mb-1 text-dark" th:text="${review.message}">Comentario de prueba</p>
+                            <div class="meta-pills">
+                                <span class="meta-pill" th:if="${product.brand != null}">
+                                    <i class="fa-solid fa-crown"></i>
+                                    <span th:text="${product.brand.name}">Marca</span>
+                                </span>
 
-                            <div class="rating-stars small text-warning">
-                                <span th:each="i : ${#numbers.sequence(1, 5)}"
-                                      th:text="${i <= review.rating} ? '★' : '☆'">★</span>
-                                <span class="text-muted ms-1" th:text="${review.rating + '/5'}">5/5</span>
+                                <span class="meta-pill" th:if="${product.subcategory != null}">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <span th:text="${product.subcategory.name}">Categoría</span>
+                                </span>
                             </div>
-                        </div>
-                    </div>
-                </div>
 
-                <p th:if="${product.reviews == null or product.reviews.isEmpty()}" class="text-muted small">
-                    No hay reseñas disponibles para este producto. ¡Sé el primero en dejar una!
-                </p>
+                            <div class="admin-actions" sec:authorize="hasRole('ADMIN')">
+                                <a th:if="${product.available}"
+                                   class="btn btn-outline-danger btn-sm btn-admin-soft"
+                                   th:href="@{/products/deactivate/{id}(id=${product.id})}">
+                                    <i class="fa-solid fa-ban me-1"></i>
+                                    Desactivar
+                                </a>
+
+                                <a th:unless="${product.available}"
+                                   class="btn btn-outline-success btn-sm btn-admin-soft"
+                                   th:href="@{/products/activate/{id}(id=${product.id})}">
+                                    <i class="fa-solid fa-check me-1"></i>
+                                    Activar
+                                </a>
+                            </div>
+
+                            <div class="price-panel mt-4">
+                                <div class="price-label">Precio</div>
+
+                                <div th:if="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                    <div class="price-row">
+                                        <span class="price-current"
+                                              th:text="${product.finalPrice != null
+                                                       ? #numbers.formatCurrency(product.finalPrice)
+                                                       : #numbers.formatCurrency(product.price)}">
+                                            0,00 €
+                                        </span>
+
+                                        <span class="price-original"
+                                              th:text="${product.price != null ? #numbers.formatCurrency(product.price) : '0,00 €'}">
+                                            0,00 €
+                                        </span>
+                                    </div>
+
+                                    <div class="saving-pill">
+                                        <i class="fa-solid fa-fire-flame-curved"></i>
+                                        <span>
+                                            Ahorras <strong th:text="${product.discountPercentage}">0</strong>%
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div th:unless="${product.discountPercentage != null and product.discountPercentage > 0}">
+                                    <div class="price-row">
+                                        <span class="price-current"
+                                              th:text="${product.price != null ? #numbers.formatCurrency(product.price) : 'Precio no disponible'}">
+                                            0,00 €
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stock-panel"
+                                 th:if="${product.stock != null and product.stock > 10}">
+                                <span class="stock-dot available"></span>
+                                <div>
+                                    <p class="stock-title">Disponible</p>
+                                    <p class="stock-text">
+                                        En stock:
+                                        <strong th:text="${product.stock}">0</strong>
+                                        unidades.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="stock-panel"
+                                 th:if="${product.stock != null and product.stock > 0 and product.stock <= 10}">
+                                <span class="stock-dot warning"></span>
+                                <div>
+                                    <p class="stock-title">Últimas unidades</p>
+                                    <p class="stock-text">
+                                        Solo quedan
+                                        <strong th:text="${product.stock}">0</strong>
+                                        unidades disponibles.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="stock-panel"
+                                 th:if="${product.stock == null or product.stock == 0 or product.available == false}">
+                                <span class="stock-dot empty"></span>
+                                <div>
+                                    <p class="stock-title">No disponible actualmente</p>
+                                    <p class="stock-text">
+                                        Este producto no puede añadirse al carrito en este momento.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="purchase-actions">
+
+                                <a th:if="${product.available == true and product.stock != null and product.stock > 0}"
+                                   th:href="@{/purchases/add/{id}(id=${product.id})}"
+                                   class="btn btn-premium-primary">
+                                    <i class="fa-solid fa-cart-plus me-1"></i>
+                                    Añadir al carrito
+                                </a>
+
+                                <button th:unless="${product.available == true and product.stock != null and product.stock > 0}"
+                                        type="button"
+                                        class="btn btn-premium-primary"
+                                        disabled>
+                                    <i class="fa-solid fa-circle-xmark me-1"></i>
+                                    Producto no disponible
+                                </button>
+
+                                <form sec:authorize="isAuthenticated()"
+                                      th:action="@{/favorites/add/{productId}(productId=${product.id})}"
+                                      method="post">
+
+                                    <input type="hidden"
+                                           th:if="${_csrf != null}"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}">
+
+                                    <button type="submit"
+                                            class="btn btn-premium-danger"
+                                            onclick="return confirm('¿Añadir este producto a favoritos?')">
+                                        <i class="fa-solid fa-heart me-1"></i>
+                                        Añadir a favoritos
+                                    </button>
+                                </form>
+
+                                <a sec:authorize="isAnonymous()"
+                                   th:href="@{/login}"
+                                   class="btn btn-premium-secondary"
+                                   title="Inicia sesión para añadir este producto a favoritos">
+                                    <i class="fa-regular fa-heart me-1"></i>
+                                    Iniciar sesión para guardar
+                                </a>
+
+                            </div>
+
+                            <div class="service-list">
+                                <div class="service-item">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                    <span>Envío gestionado desde nuestro ecommerce con seguimiento del pedido.</span>
+                                </div>
+
+                                <div class="service-item">
+                                    <i class="fa-solid fa-shield-heart"></i>
+                                    <span>Compra segura y experiencia cuidada de principio a fin.</span>
+                                </div>
+
+                                <div class="service-item">
+                                    <i class="fa-solid fa-rotate-left"></i>
+                                    <span>Consulta las condiciones de devolución aplicables al producto.</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </section>
+
+                </div>
             </div>
 
-            <!-- El Modal solo es accesible por acción del botón de usuarios autenticados -->
-            <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+            <section class="description-card"
+                     th:if="${product.shortDescription != null and !#strings.isEmpty(product.shortDescription)}">
+                <h2 class="section-title">Descripción breve</h2>
+                <p th:text="${product.shortDescription}">
+                    Descripción corta del producto.
+                </p>
+            </section>
+
+            <section class="reviews-card">
+
+                <div class="reviews-header">
+                    <div>
+                        <h2 class="section-title mb-1">Reseñas</h2>
+                        <p class="mb-0 text-muted small"
+                           th:if="${product.reviews != null and !product.reviews.isEmpty()}"
+                           th:text="|${#lists.size(product.reviews)} opiniones de clientes|">
+                            Opiniones de clientes
+                        </p>
+                        <p class="mb-0 text-muted small"
+                           th:if="${product.reviews == null or product.reviews.isEmpty()}">
+                            Todavía no hay opiniones publicadas.
+                        </p>
+                    </div>
+
+                    <button sec:authorize="isAuthenticated()"
+                            type="button"
+                            class="btn btn-premium-primary"
+                            style="width: auto;"
+                            data-bs-toggle="modal"
+                            data-bs-target="#reviewModal">
+                        <i class="fa-solid fa-plus me-1"></i>
+                        Añadir reseña
+                    </button>
+
+                    <a sec:authorize="isAnonymous()"
+                       th:href="@{/login}"
+                       class="btn btn-premium-secondary"
+                       style="width: auto;"
+                       title="Inicia sesión para escribir una reseña">
+                        <i class="fa-solid fa-lock me-1"></i>
+                        Iniciar sesión para opinar
+                    </a>
+                </div>
+
+                <div class="review-list"
+                     th:if="${product.reviews != null and !product.reviews.isEmpty()}">
+
+                    <article class="review-item"
+                             th:each="review : ${product.reviews}">
+
+                        <p class="review-author">
+                            <i class="fa-solid fa-user me-1"></i>
+                            <strong>Por:</strong>
+                            <span th:text="${review.user != null ? review.user.username : 'Usuario anónimo'}">
+                                Usuario
+                            </span>
+                        </p>
+
+                        <p class="review-title"
+                           th:if="${review.title != null and !#strings.isEmpty(review.title)}"
+                           th:text="${review.title}">
+                            Título de la reseña
+                        </p>
+
+                        <div class="rating-stars small">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:text="${i <= review.rating} ? '★' : '☆'">
+                                ★
+                            </span>
+                            <span class="text-muted ms-1"
+                                  th:text="${review.rating + '/5'}">
+                                5/5
+                            </span>
+                        </div>
+
+                        <p class="review-message"
+                           th:text="${review.message}">
+                            Comentario de prueba.
+                        </p>
+
+                    </article>
+                </div>
+
+                <div th:if="${product.reviews == null or product.reviews.isEmpty()}"
+                     class="empty-reviews">
+                    No hay reseñas disponibles para este producto. Sé el primero en compartir tu experiencia.
+                </div>
+
+            </section>
+
+            <div class="modal fade premium-modal"
+                 id="reviewModal"
+                 tabindex="-1"
+                 aria-labelledby="reviewModalLabel"
+                 aria-hidden="true">
+
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
 
                         <div class="modal-header">
                             <h5 class="modal-title" id="reviewModalLabel">
-                                <i class="fa-solid fa-comments text-primary me-2"></i>Nueva Reseña
+                                Nueva reseña
                             </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Cerrar">
+                            </button>
                         </div>
 
                         <form th:action="@{/products/{id}/reviews/add(id=${product.id})}" method="post">
+
+                            <input type="hidden"
+                                   th:if="${_csrf != null}"
+                                   th:name="${_csrf.parameterName}"
+                                   th:value="${_csrf.token}">
+
                             <div class="modal-body">
+
                                 <div class="mb-3">
-                                    <label for="title" class="form-label fw-bold">Título de la reseña:</label>
-                                    <input type="text" class="form-control" id="title" name="title"
-                                           placeholder="Resumen de tu opinión (ej: ¡Excelente producto!, Muy mala calidad)" required maxlength="100">
+                                    <label for="reviewTitle" class="form-label">
+                                        Título de la reseña
+                                    </label>
+
+                                    <input type="text"
+                                           class="form-control"
+                                           id="reviewTitle"
+                                           name="title"
+                                           placeholder="Ej: Excelente acabado y muy buena calidad"
+                                           required
+                                           maxlength="100">
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="rating" class="form-label fw-bold">Puntuación:</label>
+                                    <label for="rating" class="form-label">
+                                        Puntuación
+                                    </label>
+
                                     <select class="form-select" id="rating" name="rating" required>
-                                        <option value="5">★★★★★ (5 - Excelente)</option>
-                                        <option value="4">★★★★☆ (4 - Bueno)</option>
-                                        <option value="3">★★★☆☆ (3 - Regular)</option>
-                                        <option value="2">★★☆☆~ (2 - Malo)</option>
-                                        <option value="1">★☆☆☆☆ (1 - Pésimo)</option>
+                                        <option value="5">★★★★★ — 5, excelente</option>
+                                        <option value="4">★★★★☆ — 4, muy bueno</option>
+                                        <option value="3">★★★☆☆ — 3, correcto</option>
+                                        <option value="2">★★☆☆☆ — 2, mejorable</option>
+                                        <option value="1">★☆☆☆☆ — 1, no recomendable</option>
                                     </select>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="message" class="form-label fw-bold">Tu comentario:</label>
-                                    <textarea class="form-control" id="message" name="message" rows="4"
-                                              placeholder="Escribe aquí tu opinión sobre el producto..." required></textarea>
+                                    <label for="message" class="form-label">
+                                        Tu comentario
+                                    </label>
+
+                                    <textarea class="form-control"
+                                              id="message"
+                                              name="message"
+                                              rows="4"
+                                              placeholder="Escribe aquí tu opinión sobre el producto..."
+                                              required></textarea>
                                 </div>
 
                             </div>
 
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-paper-plane me-1"></i> Publicar
+                                <button type="button"
+                                        class="btn btn-premium-secondary"
+                                        style="width: auto;"
+                                        data-bs-dismiss="modal">
+                                    Cancelar
+                                </button>
+
+                                <button type="submit"
+                                        class="btn btn-premium-primary"
+                                        style="width: auto;">
+                                    <i class="fa-solid fa-paper-plane me-1"></i>
+                                    Publicar reseña
                                 </button>
                             </div>
+
                         </form>
 
                     </div>
@@ -210,13 +935,25 @@
             </div>
 
         </div>
-    </div>
 
-    <div th:if="${product == null}" class="alert alert-danger">
-        Producto no encontrado.
+        <div th:if="${product == null}" class="not-found-card">
+            <h1 class="section-title">Producto no encontrado</h1>
+            <p class="text-muted mb-4">
+                No hemos podido encontrar el producto solicitado. Puede que ya no esté disponible
+                o que el enlace no sea correcto.
+            </p>
+
+            <a th:href="@{/products}" class="btn btn-premium-primary" style="width: auto;">
+                Volver al catálogo
+            </a>
+        </div>
+
     </div>
 </main>
+
 <footer th:replace="~{layout/footer :: footer}"></footer>
+
 <script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>
