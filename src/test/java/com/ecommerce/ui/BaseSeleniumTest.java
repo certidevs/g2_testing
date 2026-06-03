@@ -21,6 +21,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -68,7 +69,7 @@ public class BaseSeleniumTest {
                 .username("admin").email("admin@gmail.com").password(passwordEncoder.encode("admin")).role(Role.ROLE_ADMIN)
                 .build());
 
-        compraConProductos = purchaseRepository.save(Purchase.builder().creationDate(LocalDateTime.of(2026, Month.FEBRUARY, 10, 11, 50)).user(user).purchaseStatus(PurchaseStatus.INITIATED).shippingMode(ShippingMode.STANDARD).shippingStatus(ShippingStatus.PENDING).paymentStatus(PaymentStatus.PENDING).processStatus(ProcessStatus.PROCESSING).totalPrice(100.0).build());;
+        compraConProductos = purchaseRepository.save(Purchase.builder().user(user).purchaseStatus(PurchaseStatus.INITIATED).shippingMode(ShippingMode.STANDARD).shippingStatus(ShippingStatus.PENDING).paymentStatus(PaymentStatus.PENDING).processStatus(ProcessStatus.PROCESSING).totalPrice(100.0).build());;
         compraSinProductos = purchaseRepository.save(Purchase.builder().creationDate(LocalDateTime.of(2020, Month.MAY, 30, 18, 45)).user(user).purchaseStatus(PurchaseStatus.INITIATED).shippingMode(ShippingMode.STANDARD).shippingStatus(ShippingStatus.PENDING).paymentStatus(PaymentStatus.PENDING).processStatus(ProcessStatus.ON_HOLD).totalPrice(0.0).build());
         camiseta = productRepository.save(Product.builder().title("Camiseta").shortDescription("Camiseta de algodón").isbn("1234567890").price(20.0).stock(100).build());
         pantalon = productRepository.save(Product.builder().title("Pantalón").shortDescription("Pantalón vaquero").isbn("0987654321").price(40.0).stock(50).build());
