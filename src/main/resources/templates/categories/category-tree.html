@@ -7,260 +7,827 @@
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar::navbar}"></nav>
 
-<main class="flex-grow-1">
-    <div class="container py-5">
-
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <div>
-                <h1 class="fw-bold mb-1">Árbol de categorías</h1>
-                <p class="text-muted mb-0">
-                    Visualiza la estructura jerárquica de tus categorías.
-                </p>
-            </div>
-
-            <div class="d-flex gap-2">
-                <a th:href="@{/categories}" class="btn btn-outline-secondary">
-                    Volver al listado
-                </a>
-
-                <a th:href="@{/categories/new}" class="btn btn-primary">
-                    Crear categoría
-                </a>
-            </div>
-        </div>
-
-        <div th:if="${categories == null or #lists.isEmpty(categories)}"
-             class="alert alert-info d-flex align-items-center mb-0"
-             role="alert">
-            <span>No hay categorías registradas.</span>
-        </div>
-
-        <div th:if="${categories != null and !#lists.isEmpty(categories)}"
-             class="card shadow-sm border-0 category-tree-card">
-
-            <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
-                <div>
-                    <h2 class="h5 mb-0">Listado jerárquico</h2>
-                    <small class="text-muted">Categorías raíz y subcategorías organizadas por niveles.</small>
-                </div>
-
-                <span class="badge text-bg-primary"
-                      th:text="${#lists.size(categories)} + ' raíces'">
-                    0 raíces
-                </span>
-            </div>
-
-            <div class="card-body">
-                <ul class="list-unstyled mb-0">
-                    <li th:each="category : ${categories}" class="mb-3">
-
-                        <div class="category-tree-node category-tree-root">
-                            <div class="d-flex align-items-center gap-3 flex-grow-1">
-
-                                <a th:href="@{/categories/{id}(id=${category.id})}"
-                                   class="category-tree-thumb-link flex-shrink-0">
-                                    <img th:src="${category.imageUrl != null and !#strings.isEmpty(category.imageUrl)
-                                                ? category.imageUrl
-                                                : '/images/default-category.jpg'}"
-                                         th:alt="${category.name}"
-                                         class="category-tree-thumb">
-                                </a>
-
-                                <div class="min-width-0">
-                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                                        <span class="fw-bold" th:text="${category.name}">
-                                            Categoría
-                                        </span>
-
-                                        <span class="badge text-bg-secondary" th:text="${'/' + category.slug}">
-                                            /slug
-                                        </span>
-
-                                        <span th:if="${category.active}" class="badge text-bg-success">
-                                            Activa
-                                        </span>
-
-                                        <span th:if="${!category.active}" class="badge text-bg-warning">
-                                            Inactiva
-                                        </span>
-                                    </div>
-
-                                    <div class="text-muted small tree-description"
-                                         th:if="${category.description != null and !#strings.isEmpty(category.description)}"
-                                         th:text="${category.description}">
-                                        Descripción
-                                    </div>
-
-                                    <div class="text-muted small"
-                                         th:if="${category.children != null and !#lists.isEmpty(category.children)}">
-                                        <i class="fa-solid fa-layer-group me-1"></i>
-                                        <span th:text="${#lists.size(category.children)} + ' subcategorías'">
-                                            0 subcategorías
-                                        </span>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <a th:href="@{/categories/{id}(id=${category.id})}"
-                               class="btn btn-sm btn-outline-primary flex-shrink-0">
-                                Ver
-                            </a>
-                        </div>
-
-                        <div th:if="${category.children != null and !#lists.isEmpty(category.children)}"
-                             th:replace="~{this :: childrenList(${category.children})}">
-                        </div>
-
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-    </div>
-</main>
-
-<div th:fragment="childrenList(children)">
-    <ul class="list-unstyled category-tree-children ms-3 ms-md-4 ps-3 ps-md-4 mt-3">
-        <li th:each="child : ${children}" class="mb-3">
-
-            <div class="category-tree-node">
-                <div class="d-flex align-items-center gap-3 flex-grow-1">
-
-                    <a th:href="@{/categories/{id}(id=${child.id})}"
-                       class="category-tree-thumb-link flex-shrink-0">
-                        <img th:src="${child.imageUrl != null and !#strings.isEmpty(child.imageUrl)
-                                    ? child.imageUrl
-                                    : '/images/default-category.jpg'}"
-                             th:alt="${child.name}"
-                             class="category-tree-thumb">
-                    </a>
-
-                    <div class="min-width-0">
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                            <span class="fw-semibold" th:text="${child.name}">
-                                Subcategoría
-                            </span>
-
-                            <span class="badge text-bg-secondary" th:text="${'/' + child.slug}">
-                                /slug
-                            </span>
-
-                            <span th:if="${child.active}" class="badge text-bg-success">
-                                Activa
-                            </span>
-
-                            <span th:if="${!child.active}" class="badge text-bg-warning">
-                                Inactiva
-                            </span>
-                        </div>
-
-                        <div class="text-muted small tree-description"
-                             th:if="${child.description != null and !#strings.isEmpty(child.description)}"
-                             th:text="${child.description}">
-                            Descripción
-                        </div>
-
-                        <div class="text-muted small"
-                             th:if="${child.children != null and !#lists.isEmpty(child.children)}">
-                            <i class="fa-solid fa-layer-group me-1"></i>
-                            <span th:text="${#lists.size(child.children)} + ' subcategorías'">
-                                0 subcategorías
-                            </span>
-                        </div>
-                    </div>
-
-                </div>
-
-                <a th:href="@{/categories/{id}(id=${child.id})}"
-                   class="btn btn-sm btn-outline-primary flex-shrink-0">
-                    Ver
-                </a>
-            </div>
-
-            <div th:if="${child.children != null and !#lists.isEmpty(child.children)}"
-                 th:replace="~{this :: childrenList(${child.children})}">
-            </div>
-
-        </li>
-    </ul>
-</div>
-
-<footer th:replace="~{layout/footer::footer}"></footer>
-<script th:replace="~{layout/footer::scripts}"></script>
-
 <style>
-    .category-tree-card {
-        border-radius: 1rem;
+    .category-tree-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 35%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .category-tree-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
+
+    .category-tree-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+    }
+
+    .tree-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
+
+    .tree-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .tree-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .tree-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.1rem, 4vw, 3.8rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .tree-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.82rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .tree-card {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
         overflow: hidden;
     }
 
-    .category-tree-node {
+    .tree-toolbar {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.35rem 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.84));
+    }
+
+    .tree-card-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .tree-card-text {
+        margin: 0.3rem 0 0;
+        color: #74685f;
+        font-size: 0.9rem;
+    }
+
+    .tree-search {
+        width: min(100%, 380px);
+        position: relative;
+    }
+
+    .tree-search i {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: #8a6f4d;
+        pointer-events: none;
+    }
+
+    .tree-search input {
+        width: 100%;
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        border-radius: 999px;
+        padding: 0.78rem 1rem 0.78rem 2.7rem;
+        background: #fff;
+        color: #1f1a17;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tree-search input:focus {
+        border-color: rgba(138, 111, 77, 0.58);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.12);
+    }
+
+    .root-count-pill,
+    .slug-pill,
+    .status-pill,
+    .children-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.38rem;
+        border-radius: 999px;
+        padding: 0.46rem 0.68rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .root-count-pill {
+        background: #1f1a17;
+        color: #fff;
+    }
+
+    .slug-pill {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        background: #faf7f1;
+        color: #5f554d;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .status-pill.active {
+        background: rgba(47, 107, 69, 0.10);
+        color: #2f6b45;
+    }
+
+    .status-pill.inactive {
+        background: rgba(183, 121, 31, 0.12);
+        color: #8a570f;
+    }
+
+    .children-pill {
+        background: rgba(138, 111, 77, 0.10);
+        color: #8a6f4d;
+    }
+
+    .tree-content {
+        padding: 1.5rem;
+    }
+
+    .tree-list,
+    .tree-children-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .tree-item {
+        margin-bottom: 1rem;
+    }
+
+    .tree-children-list {
+        position: relative;
+        margin-top: 1rem;
+        margin-left: 1.35rem;
+        padding-left: 1.35rem;
+        border-left: 2px solid rgba(138, 111, 77, 0.20);
+    }
+
+    .tree-node {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: 1rem;
         padding: 1rem;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        border-radius: 1rem;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 24px;
         background: #fff;
+        box-shadow: 0 14px 36px rgba(31, 26, 23, 0.05);
         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     }
 
-    .category-tree-root {
-        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-        border-color: rgba(13, 110, 253, 0.18);
+    .tree-node.root {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.12), transparent 36%),
+                #fff;
+        border-color: rgba(138, 111, 77, 0.20);
     }
 
-    .category-tree-node:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.08);
-        border-color: rgba(13, 110, 253, 0.25);
+    .tree-node:hover {
+        transform: translateY(-2px);
+        border-color: rgba(138, 111, 77, 0.28);
+        box-shadow: 0 20px 48px rgba(31, 26, 23, 0.10);
     }
 
-    .category-tree-thumb-link {
+    .node-main {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+    }
+
+    .node-thumb-link {
         display: inline-block;
-        border-radius: 0.85rem;
+        flex: 0 0 auto;
+        border-radius: 18px;
         overflow: hidden;
+        text-decoration: none;
     }
 
-    .category-tree-thumb {
-        width: 72px;
-        height: 56px;
+    .node-thumb {
+        width: 82px;
+        height: 62px;
         object-fit: cover;
-        border-radius: 0.85rem;
-        background: #f8f9fa;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        display: block;
-        transition: transform 0.2s ease;
+        border-radius: 18px;
+        background: #f8f6f1;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        box-shadow: 0 10px 24px rgba(31, 26, 23, 0.06);
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
     }
 
-    .category-tree-node:hover .category-tree-thumb {
-        transform: scale(1.05);
+    .tree-node:hover .node-thumb {
+        transform: scale(1.045);
+        box-shadow: 0 16px 32px rgba(31, 26, 23, 0.12);
     }
 
-    .category-tree-children {
-        border-left: 3px solid rgba(13, 110, 253, 0.18);
+    .node-info {
+        min-width: 0;
     }
 
-    .tree-description {
+    .node-title-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .node-name {
+        margin: 0;
+        color: #1f1a17;
+        font-weight: 900;
+        line-height: 1.25;
+    }
+
+    .node-name.child {
+        font-weight: 800;
+    }
+
+    .node-description {
         max-width: 720px;
+        margin: 0.35rem 0 0;
+        color: #7a7068;
+        font-size: 0.86rem;
+        line-height: 1.55;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
 
-    .min-width-0 {
-        min-width: 0;
+    .node-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 0 0 auto;
     }
 
-    @media (min-width: 768px) {
-        .category-tree-node {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
+    .btn-tree-toggle,
+    .btn-tree-view {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.38rem;
+        border-radius: 999px;
+        padding: 0.55rem 0.82rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-tree-toggle {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: #faf7f1;
+        color: #1f1a17;
+    }
+
+    .btn-tree-toggle:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .btn-tree-view {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+    }
+
+    .btn-tree-view:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .empty-state {
+        padding: 3.5rem 1.5rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        font-size: 1.5rem;
+    }
+
+    .empty-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.55rem;
+        font-weight: 500;
+    }
+
+    .empty-text {
+        max-width: 520px;
+        margin: 0.65rem auto 1.4rem;
+        color: #74685f;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 991.98px) {
+        .category-tree-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .tree-hero,
+        .tree-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .tree-search {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 767.98px) {
+        .tree-node {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .node-main {
+            align-items: flex-start;
+        }
+
+        .node-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .node-actions .btn {
+            width: 100%;
+        }
+
+        .tree-children-list {
+            margin-left: 0.75rem;
+            padding-left: 0.9rem;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .hero-actions {
+            width: 100%;
+        }
+
+        .hero-actions .btn {
+            width: 100%;
+        }
+
+        .node-main {
+            flex-direction: column;
+        }
+
+        .node-thumb {
+            width: 100%;
+            height: 160px;
         }
     }
 </style>
+
+<main class="category-tree-page">
+    <div class="container category-tree-shell">
+
+        <section class="tree-hero">
+            <div>
+                <span class="tree-eyebrow">Arquitectura del catálogo</span>
+
+                <h1 class="tree-title">
+                    Árbol de categorías
+                </h1>
+
+                <p class="tree-subtitle">
+                    Visualiza la estructura jerárquica del ecommerce, desde las categorías raíz hasta sus
+                    subcategorías internas.
+                </p>
+            </div>
+
+            <div class="hero-actions">
+                <a th:href="@{/categories}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i>
+                    Volver al listado
+                </a>
+
+                <a th:href="@{/categories/new}" class="btn btn-premium-primary">
+                    <i class="fa-solid fa-folder-plus me-2"></i>
+                    Crear categoría
+                </a>
+            </div>
+        </section>
+
+        <section th:if="${categories == null or #lists.isEmpty(categories)}"
+                 class="tree-card empty-state">
+
+            <div class="empty-icon">
+                <i class="fa-regular fa-folder-open"></i>
+            </div>
+
+            <h2 class="empty-title">
+                No hay categorías registradas
+            </h2>
+
+            <p class="empty-text">
+                Todavía no existe ninguna estructura de categorías. Crea la primera categoría raíz
+                para empezar a organizar el catálogo.
+            </p>
+
+            <a th:href="@{/categories/new}" class="btn btn-premium-primary">
+                <i class="fa-solid fa-folder-plus me-2"></i>
+                Crear primera categoría
+            </a>
+        </section>
+
+        <section th:if="${categories != null and !#lists.isEmpty(categories)}"
+                 class="tree-card">
+
+            <div class="tree-toolbar">
+                <div>
+                    <h2 class="tree-card-title">
+                        Listado jerárquico
+                    </h2>
+
+                    <p class="tree-card-text">
+                        Categorías raíz y subcategorías organizadas por niveles.
+                    </p>
+                </div>
+
+                <div class="tree-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="search"
+                           id="treeSearch"
+                           placeholder="Buscar categoría, slug o descripción..."
+                           aria-label="Buscar en el árbol de categorías">
+                </div>
+
+                <span class="root-count-pill">
+                    <i class="fa-solid fa-sitemap"></i>
+                    <span th:text="|${#lists.size(categories)} raíces|">
+                        0 raíces
+                    </span>
+                </span>
+            </div>
+
+            <div class="tree-content">
+                <ul class="tree-list">
+
+                    <li th:each="category : ${categories}"
+                        class="tree-item"
+                        th:attr="data-search=${(category.name != null ? category.name : '') + ' ' + (category.slug != null ? category.slug : '') + ' ' + (category.description != null ? category.description : '')}">
+
+                        <article class="tree-node root">
+                            <div class="node-main">
+
+                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                   class="node-thumb-link">
+                                    <img th:src="${category.imageUrl != null and !#strings.isEmpty(category.imageUrl)
+                                                ? category.imageUrl
+                                                : '/images/default-category.jpg'}"
+                                         th:alt="${category.name}"
+                                         class="node-thumb">
+                                </a>
+
+                                <div class="node-info">
+                                    <div class="node-title-row">
+                                        <h3 class="node-name" th:text="${category.name}">
+                                            Categoría
+                                        </h3>
+
+                                        <span class="slug-pill">
+                                            <i class="fa-solid fa-link"></i>
+                                            <span th:text="${'/' + category.slug}">
+                                                /slug
+                                            </span>
+                                        </span>
+
+                                        <span th:if="${category.active}" class="status-pill active">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            Activa
+                                        </span>
+
+                                        <span th:if="${!category.active}" class="status-pill inactive">
+                                            <i class="fa-solid fa-circle-pause"></i>
+                                            Inactiva
+                                        </span>
+                                    </div>
+
+                                    <p class="node-description"
+                                       th:if="${category.description != null and !#strings.isEmpty(category.description)}"
+                                       th:text="${category.description}">
+                                        Descripción
+                                    </p>
+
+                                    <span th:if="${category.children != null and !#lists.isEmpty(category.children)}"
+                                          class="children-pill mt-2">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                        <span th:text="|${#lists.size(category.children)} subcategorías|">
+                                            0 subcategorías
+                                        </span>
+                                    </span>
+                                </div>
+
+                            </div>
+
+                            <div class="node-actions">
+                                <button th:if="${category.children != null and !#lists.isEmpty(category.children)}"
+                                        type="button"
+                                        class="btn btn-tree-toggle"
+                                        data-bs-toggle="collapse"
+                                        th:data-bs-target="|#children-${category.id}|"
+                                        aria-expanded="true">
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                    Desplegar
+                                </button>
+
+                                <a th:href="@{/categories/{id}(id=${category.id})}"
+                                   class="btn btn-tree-view">
+                                    <i class="fa-regular fa-eye"></i>
+                                    Ver
+                                </a>
+                            </div>
+                        </article>
+
+                        <div th:if="${category.children != null and !#lists.isEmpty(category.children)}"
+                             class="collapse show"
+                             th:id="|children-${category.id}|">
+                            <div th:replace="~{this :: childrenList(${category.children})}"></div>
+                        </div>
+
+                    </li>
+
+                </ul>
+
+                <div id="searchEmptyState" class="empty-state d-none">
+                    <div class="empty-icon">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+
+                    <h2 class="empty-title">
+                        No se encontraron resultados
+                    </h2>
+
+                    <p class="empty-text">
+                        No hay categorías que coincidan con la búsqueda introducida.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<div th:fragment="childrenList(children)">
+    <ul class="tree-children-list">
+
+        <li th:each="child : ${children}"
+            class="tree-item"
+            th:attr="data-search=${(child.name != null ? child.name : '') + ' ' + (child.slug != null ? child.slug : '') + ' ' + (child.description != null ? child.description : '')}">
+
+            <article class="tree-node">
+                <div class="node-main">
+
+                    <a th:href="@{/categories/{id}(id=${child.id})}"
+                       class="node-thumb-link">
+                        <img th:src="${child.imageUrl != null and !#strings.isEmpty(child.imageUrl)
+                                    ? child.imageUrl
+                                    : '/images/default-category.jpg'}"
+                             th:alt="${child.name}"
+                             class="node-thumb">
+                    </a>
+
+                    <div class="node-info">
+                        <div class="node-title-row">
+                            <h3 class="node-name child" th:text="${child.name}">
+                                Subcategoría
+                            </h3>
+
+                            <span class="slug-pill">
+                                <i class="fa-solid fa-link"></i>
+                                <span th:text="${'/' + child.slug}">
+                                    /slug
+                                </span>
+                            </span>
+
+                            <span th:if="${child.active}" class="status-pill active">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Activa
+                            </span>
+
+                            <span th:if="${!child.active}" class="status-pill inactive">
+                                <i class="fa-solid fa-circle-pause"></i>
+                                Inactiva
+                            </span>
+                        </div>
+
+                        <p class="node-description"
+                           th:if="${child.description != null and !#strings.isEmpty(child.description)}"
+                           th:text="${child.description}">
+                            Descripción
+                        </p>
+
+                        <span th:if="${child.children != null and !#lists.isEmpty(child.children)}"
+                              class="children-pill mt-2">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <span th:text="|${#lists.size(child.children)} subcategorías|">
+                                0 subcategorías
+                            </span>
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="node-actions">
+                    <button th:if="${child.children != null and !#lists.isEmpty(child.children)}"
+                            type="button"
+                            class="btn btn-tree-toggle"
+                            data-bs-toggle="collapse"
+                            th:data-bs-target="|#children-${child.id}|"
+                            aria-expanded="true">
+                        <i class="fa-solid fa-chevron-down"></i>
+                        Desplegar
+                    </button>
+
+                    <a th:href="@{/categories/{id}(id=${child.id})}"
+                       class="btn btn-tree-view">
+                        <i class="fa-regular fa-eye"></i>
+                        Ver
+                    </a>
+                </div>
+            </article>
+
+            <div th:if="${child.children != null and !#lists.isEmpty(child.children)}"
+                 class="collapse show"
+                 th:id="|children-${child.id}|">
+                <div th:replace="~{this :: childrenList(${child.children})}"></div>
+            </div>
+
+        </li>
+
+    </ul>
+</div>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('treeSearch');
+        const items = document.querySelectorAll('.tree-item');
+        const emptyState = document.getElementById('searchEmptyState');
+
+        if (!searchInput || items.length === 0) {
+            return;
+        }
+
+        function showAncestors(item) {
+            let parentList = item.parentElement.closest('.tree-item');
+
+            while (parentList) {
+                parentList.classList.remove('d-none');
+
+                const collapse = parentList.querySelector(':scope > .collapse');
+                if (collapse) {
+                    collapse.classList.add('show');
+                }
+
+                parentList = parentList.parentElement.closest('.tree-item');
+            }
+        }
+
+        searchInput.addEventListener('input', function () {
+            const query = searchInput.value.trim().toLowerCase();
+            let matches = 0;
+
+            if (!query) {
+                items.forEach(function (item) {
+                    item.classList.remove('d-none');
+                });
+
+                if (emptyState) {
+                    emptyState.classList.add('d-none');
+                }
+
+                return;
+            }
+
+            items.forEach(function (item) {
+                item.classList.add('d-none');
+            });
+
+            items.forEach(function (item) {
+                const text = (item.dataset.search || '').toLowerCase();
+
+                if (text.includes(query)) {
+                    item.classList.remove('d-none');
+                    showAncestors(item);
+                    matches++;
+                }
+            });
+
+            if (emptyState) {
+                emptyState.classList.toggle('d-none', matches > 0);
+            }
+        });
+    });
+</script>
+
+<script th:replace="~{layout/footer :: scripts}"></script>
+
 </body>
 </html>
