@@ -69,6 +69,8 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         assertEquals(1, cardPurchasesContaining.size());
         WebElement firstPurchase = cardPurchasesContaining.get(0);
 
+        //TODO poner en la vista dentro de los id la variable de manera dinamica para poder hacer correctamente los test con selenium
+
         // Id de la compra
         String purchaseId = firstPurchase.findElement(By.id("purchaseId")).getText();
         assertEquals(purchaseId, compraConProductos.getId().toString());
