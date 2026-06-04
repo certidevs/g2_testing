@@ -7,583 +7,1128 @@
 
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
-<main class="container flex-grow-1 py-4">
+<style>
+    .checkout-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 35%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
-        <div>
+    .checkout-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-            <!-- BOTÓN DE VOLVER -->
-            <a th:href="@{/purchases}" class="btn btn-sm btn-outline-secondary mb-3">
-                <i class="fa-solid fa-arrow-left me-1"></i>
-                Volver
-            </a>
+    .checkout-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+    }
 
-            <!-- TÍTULO DE LA PÁGINA -->
-            <div class="text-uppercase text-muted small fw-semibold">
-                Resumen de tu pedido
+    .checkout-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
+
+    .checkout-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .checkout-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .checkout-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.1rem, 4vw, 3.8rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .checkout-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.82rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-primary:disabled {
+        border-color: rgba(31, 26, 23, 0.28);
+        background: rgba(31, 26, 23, 0.35);
+        box-shadow: none;
+        transform: none;
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .secure-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.62rem 0.9rem;
+        border-radius: 999px;
+        background: rgba(47, 107, 69, 0.10);
+        color: #2f6b45;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .alert-premium-success,
+    .alert-premium-danger {
+        border-radius: 20px;
+        border-width: 1px;
+    }
+
+    .alert-premium-success {
+        border-color: rgba(47, 107, 69, 0.18);
+        background: rgba(47, 107, 69, 0.08);
+        color: #2f6b45;
+    }
+
+    .alert-premium-danger {
+        border-color: rgba(127, 29, 29, 0.18);
+        background: rgba(127, 29, 29, 0.08);
+        color: #7f1d1d;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-card,
+    .checkout-card,
+    .order-card,
+    .empty-cart-card {
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        backdrop-filter: blur(12px);
+        overflow: hidden;
+    }
+
+    .summary-card {
+        padding: 1.25rem;
+        border-radius: 24px;
+    }
+
+    .summary-label {
+        margin: 0 0 0.55rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .summary-value {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.75rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+    }
+
+    .summary-value.success {
+        color: #2f6b45;
+    }
+
+    .summary-text {
+        margin: 0.35rem 0 0;
+        color: #7a7068;
+        font-size: 0.86rem;
+    }
+
+    .checkout-card-header,
+    .order-card-header {
+        padding: 1.35rem 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.84));
+    }
+
+    .checkout-card-title,
+    .order-card-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.45rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .checkout-card-text,
+    .order-card-text {
+        margin: 0.3rem 0 0;
+        color: #74685f;
+        font-size: 0.9rem;
+    }
+
+    .checkout-card-body,
+    .order-card-body {
+        padding: 1.5rem;
+    }
+
+    .form-section {
+        margin-bottom: 1.8rem;
+    }
+
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .section-label {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 1.1rem;
+        color: #8a6f4d;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(31, 26, 23, 0.10);
+    }
+
+    .form-label {
+        margin-bottom: 0.45rem;
+        color: #2d2621;
+        font-size: 0.88rem;
+        font-weight: 800;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid rgba(31, 26, 23, 0.16);
+        border-radius: 16px;
+        padding: 0.82rem 0.95rem;
+        background-color: rgba(255, 255, 255, 0.94);
+        color: #1f1a17;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(138, 111, 77, 0.65);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13);
+        background-color: #fff;
+    }
+
+    .address-warning {
+        margin-top: 0.75rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid rgba(127, 29, 29, 0.14);
+        border-radius: 18px;
+        background: rgba(127, 29, 29, 0.06);
+        color: #7f1d1d;
+        font-size: 0.88rem;
+    }
+
+    .address-warning a {
+        color: #7f1d1d;
+        font-weight: 800;
+    }
+
+    .card-number-wrapper {
+        position: relative;
+    }
+
+    .card-number-wrapper .form-control {
+        padding-right: 3rem;
+    }
+
+    .card-number-icon {
+        position: absolute;
+        top: 50%;
+        right: 1rem;
+        transform: translateY(-50%);
+        color: #8a6f4d;
+        pointer-events: none;
+    }
+
+    .payment-note {
+        display: flex;
+        gap: 0.7rem;
+        margin-top: 1.3rem;
+        padding: 1rem;
+        border: 1px solid rgba(47, 107, 69, 0.12);
+        border-radius: 20px;
+        background: rgba(47, 107, 69, 0.07);
+        color: #486553;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    .payment-note i {
+        margin-top: 0.2rem;
+        color: #2f6b45;
+    }
+
+    .order-card {
+        position: sticky;
+        top: 1.5rem;
+    }
+
+    .order-line-list {
+        display: grid;
+        gap: 0.85rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .order-line {
+        display: flex;
+        gap: 0.85rem;
+        padding: 0.85rem;
+        border: 1px solid rgba(31, 26, 23, 0.08);
+        border-radius: 20px;
+        background: #fff;
+    }
+
+    .order-line-image {
+        width: 72px;
+        height: 72px;
+        flex: 0 0 auto;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 16px;
+        background: #faf7f1;
+        border: 1px solid rgba(31, 26, 23, 0.08);
+        color: #9a8d82;
+        font-size: 1.35rem;
+    }
+
+    .order-line-content {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .order-line-title {
+        margin: 0;
+        color: #1f1a17;
+        font-size: 0.95rem;
+        font-weight: 800;
+        line-height: 1.3;
+    }
+
+    .order-line-meta {
+        margin-top: 0.28rem;
+        color: #7a7068;
+        font-size: 0.82rem;
+    }
+
+    .order-line-price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 0.55rem;
+    }
+
+    .order-line-price {
+        color: #2f6b45;
+        font-weight: 900;
+    }
+
+    .order-line-original {
+        color: #8a8179;
+        font-size: 0.82rem;
+        text-decoration: line-through;
+    }
+
+    .discount-pill,
+    .no-discount-pill {
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        margin-top: 0.45rem;
+        padding: 0.26rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+
+    .discount-pill {
+        background: rgba(127, 29, 29, 0.10);
+        color: #7f1d1d;
+    }
+
+    .no-discount-pill {
+        border: 1px solid rgba(31, 26, 23, 0.12);
+        background: #fff;
+        color: #7a7068;
+    }
+
+    .order-total-box {
+        padding: 1.15rem;
+        border-radius: 22px;
+        background: #1f1a17;
+        color: #fff;
+    }
+
+    .order-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .order-total-label {
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .order-total-value {
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 2rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        white-space: nowrap;
+    }
+
+    .checkout-submit {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 1rem 1.35rem;
+    }
+
+    .service-list {
+        display: grid;
+        gap: 0.7rem;
+        margin-top: 1.25rem;
+        padding-top: 1.2rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.10);
+    }
+
+    .service-item {
+        display: flex;
+        gap: 0.7rem;
+        color: #6d6259;
+        font-size: 0.86rem;
+        line-height: 1.5;
+    }
+
+    .service-item i {
+        margin-top: 0.2rem;
+        color: #8a6f4d;
+    }
+
+    .empty-cart-card {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 74px;
+        height: 74px;
+        display: inline-grid;
+        place-items: center;
+        margin-bottom: 1.1rem;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        font-size: 1.7rem;
+    }
+
+    .empty-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.75rem;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+    }
+
+    .empty-text {
+        max-width: 520px;
+        margin: 0.75rem auto 1.5rem;
+        color: #74685f;
+        line-height: 1.7;
+    }
+
+    .empty-actions {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .checkout-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .checkout-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .order-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .hero-actions,
+        .empty-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .hero-actions .btn,
+        .empty-actions .btn {
+            width: 100%;
+        }
+
+        .order-total-row,
+        .order-line-price-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<main class="checkout-page">
+    <div class="container checkout-shell">
+
+        <section class="checkout-hero">
+            <div>
+                <span class="checkout-eyebrow">Resumen de tu pedido</span>
+
+                <h1 class="checkout-title">
+                    Finalizar compra
+                </h1>
+
+                <p class="checkout-subtitle">
+                    Revisa tu pedido, selecciona la dirección de envío y completa los datos de pago
+                    para confirmar la compra de forma segura.
+                </p>
             </div>
 
-            <h1 class="mb-1">
-                Finalizar compra
-            </h1>
+            <div class="hero-actions">
+                <a th:href="@{/purchases}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i>
+                    Volver
+                </a>
+
+                <span th:if="${cart != null}" class="secure-pill">
+                    <i class="fa-solid fa-lock"></i>
+                    Pago seguro simulado
+                </span>
+            </div>
+        </section>
+
+        <div th:if="${message}"
+             class="alert alert-premium-success alert-dismissible fade show"
+             role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            <span th:text="${message}">
+                Operación realizada correctamente.
+            </span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
         </div>
 
-        <!-- YA NO FINALIZAMOS POR GET /finish -->
-        <div th:if="${cart != null}" class="badge text-bg-primary p-2">
-            <i class="fa-solid fa-lock me-1"></i>
-            Pago seguro simulado
+        <div th:if="${errorMessage}"
+             class="alert alert-premium-danger alert-dismissible fade show"
+             role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <span th:text="${errorMessage}">
+                Ha ocurrido un error.
+            </span>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
         </div>
-    </div>
 
-    <!-- MENSAJE DE ÉXITO -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fa-solid fa-circle-check me-1"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
+        <section th:if="${cart == null}" class="empty-cart-card">
+            <div class="empty-icon">
+                <i class="fa-solid fa-bag-shopping"></i>
+            </div>
 
-    <!-- MENSAJE DE ERROR -->
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fa-solid fa-triangle-exclamation me-1"></i>
-        <span th:text="${errorMessage}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-
-    <!-- CONDICIÓN VISUAL SI EL CARRITO ESTÁ VACÍO -->
-    <div th:if="${cart == null}" class="card border-0 shadow-sm">
-        <div class="card-body text-center py-5">
-
-            <!-- MENSAJE PRINCIPAL -->
-            <h2 class="h5">
-                ¿No has empezado todavía tu compra?
+            <h2 class="empty-title">
+                Tu carrito está vacío
             </h2>
 
-            <br>
-
-            <!-- BOTÓN DE VOLVER A PRODUCTOS -->
-            <div class="row">
-                <div class="col">
-                    <a th:href="@{/products}" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                        Volver a productos
-                    </a>
-                </div>
-            </div>
-
-            <!-- BOTÓN DE VOLVER AL LISTADO DE COMPRAS -->
-            <div class="row my-3">
-                <div class="col">
-                    <a th:href="@{/purchases}" class="btn btn-outline-secondary">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        Volver a compras
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONDICIÓN VISUAL SI EL CARRITO NO ESTÁ VACÍO -->
-    <div th:if="${cart != null}">
-
-        <div class="row g-3 mb-4">
-            <div class="col-md-6">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-muted small">
-                            ID de la compra
-                        </div>
-
-                        <div class="font-monospace small text-break"
-                             th:text="${cart.id}">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-muted small">
-                            Productos
-                        </div>
-
-                        <div class="h4 mb-0"
-                             th:text="${lines != null ? lines.size() : 0}">
-                            0
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="text-muted small">
-                            Total con descuentos
-                        </div>
-
-                        <div class="h4 mb-0 text-success"
-                             th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 1, 2) + ' €' : '0,00 €'}">
-                            0,00 €
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container px-0">
-            <div class="row g-4">
-
-                <!-- FORMULARIO DE TARJETA -->
-                <div class="col-lg-7">
-                    <div class="card payment-card shadow-sm p-4 mb-4">
-                        <h5 class="fw-bold mb-4 border-bottom pb-2">
-                            Datos de la tarjeta
-                        </h5>
-
-                        <form id="paymentForm"
-                              th:action="@{/purchases/cart/pay}"
-                              th:object="${paymentCard}"
-                              method="post"
-                              class="needs-validation"
-                              novalidate>
-
-                            <input type="hidden"
-                                   th:if="${_csrf}"
-                                   th:name="${_csrf.parameterName}"
-                                   th:value="${_csrf.token}" />
-
-                            <!-- DATOS DE ENVÍO -->
-                            <div class="mb-4">
-                                <h6 class="fw-bold mb-3 border-bottom pb-2">
-                                    Datos de envío
-                                </h6>
-
-                                <!-- DIRECCIÓN DE ENVÍO -->
-                                <div class="mb-3">
-                                    <label for="addressId"
-                                           class="form-label small fw-bold text-muted text-uppercase">
-                                        Dirección de envío
-                                    </label>
-
-                                    <select class="form-select form-select-lg fs-6"
-                                            id="addressId"
-                                            name="addressId"
-                                            required>
-                                        <option value="">
-                                            Selecciona una dirección
-                                        </option>
-
-                                        <option th:each="address : ${addresses}"
-                                                th:value="${address.id}"
-                                                th:text="|${address.street} ${address.number}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}|">
-                                            Dirección
-                                        </option>
-                                    </select>
-
-                                    <div class="invalid-feedback">
-                                        Selecciona una dirección de envío.
-                                    </div>
-
-                                    <div th:if="${addresses == null or addresses.isEmpty()}"
-                                         class="text-danger small mt-2">
-                                        No tienes direcciones guardadas.
-                                        <a th:href="@{/addresses/new}">
-                                            Agregar dirección
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <!-- TIPO DE ENVÍO -->
-                                <div class="mb-3">
-                                    <label for="shippingMode"
-                                           class="form-label small fw-bold text-muted text-uppercase">
-                                        Tipo de envío
-                                    </label>
-
-                                    <select class="form-select form-select-lg fs-6"
-                                            id="shippingMode"
-                                            name="shippingMode"
-                                            required>
-                                        <option value="">
-                                            Selecciona un tipo de envío
-                                        </option>
-
-                                        <option th:each="mode : ${shippingModes}"
-                                                th:value="${mode}"
-                                                th:text="${mode.label}">
-                                            STANDARD
-                                        </option>
-                                    </select>
-
-                                    <div class="invalid-feedback">
-                                        Selecciona un tipo de envío.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- DATOS DE TARJETA -->
-                            <h6 class="fw-bold mb-3 border-bottom pb-2">
-                                Datos de la tarjeta
-                            </h6>
-
-                            <!-- NOMBRE DEL TITULAR -->
-                            <div class="mb-3">
-                                <label for="cardHolderName"
-                                       class="form-label small fw-bold text-muted text-uppercase">
-                                    Nombre del titular
-                                </label>
-
-                                <input type="text"
-                                       class="form-control form-control-lg fs-6"
-                                       id="cardHolderName"
-                                       th:field="*{cardHolderName}"
-                                       placeholder="Como aparece en la tarjeta"
-                                       required>
-
-                                <div class="text-danger small mt-1"
-                                     th:if="${#fields.hasErrors('cardHolderName')}"
-                                     th:errors="*{cardHolderName}">
-                                </div>
-
-                                <div class="invalid-feedback">
-                                    Por favor, introduce el nombre del titular.
-                                </div>
-                            </div>
-
-                            <!-- NÚMERO DE TARJETA -->
-                            <div class="mb-3 position-relative">
-                                <label for="cardNumber"
-                                       class="form-label small fw-bold text-muted text-uppercase">
-                                    Número de tarjeta
-                                </label>
-
-                                <input type="text"
-                                       class="form-control form-control-lg fs-6"
-                                       id="cardNumber"
-                                       th:field="*{cardNumber}"
-                                       maxlength="19"
-                                       placeholder="0000 0000 0000 0000"
-                                       required>
-
-                                <div class="card-icon-container" id="cardIcon">
-                                    <i class="fa-solid fa-credit-card"></i>
-                                </div>
-
-                                <div class="text-danger small mt-1"
-                                     th:if="${#fields.hasErrors('cardNumber')}"
-                                     th:errors="*{cardNumber}">
-                                </div>
-
-                                <div class="invalid-feedback">
-                                    Introduce un número de tarjeta válido.
-                                </div>
-                            </div>
-
-                            <div class="row">
-
-                                <!-- MES DE CADUCIDAD -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="expirationMonth"
-                                           class="form-label small fw-bold text-muted text-uppercase">
-                                        Mes de caducidad
-                                    </label>
-
-                                    <input type="number"
-                                           class="form-control form-control-lg fs-6"
-                                           id="expirationMonth"
-                                           th:field="*{expirationMonth}"
-                                           min="1"
-                                           max="12"
-                                           placeholder="MM"
-                                           required>
-
-                                    <div class="text-danger small mt-1"
-                                         th:if="${#fields.hasErrors('expirationMonth')}"
-                                         th:errors="*{expirationMonth}">
-                                    </div>
-
-                                    <div class="invalid-feedback">
-                                        Introduce un mes válido entre 1 y 12.
-                                    </div>
-                                </div>
-
-                                <!-- AÑO DE CADUCIDAD -->
-                                <div class="col-md-6 mb-3">
-                                    <label for="expirationYear"
-                                           class="form-label small fw-bold text-muted text-uppercase">
-                                        Año de caducidad
-                                    </label>
-
-                                    <input type="number"
-                                           class="form-control form-control-lg fs-6"
-                                           id="expirationYear"
-                                           th:field="*{expirationYear}"
-                                           min="2026"
-                                           placeholder="AAAA"
-                                           required>
-
-                                    <div class="text-danger small mt-1"
-                                         th:if="${#fields.hasErrors('expirationYear')}"
-                                         th:errors="*{expirationYear}">
-                                    </div>
-
-                                    <div class="invalid-feedback">
-                                        Introduce un año válido.
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- CVV -->
-                            <div class="mb-4">
-                                <label for="cvv"
-                                       class="form-label small fw-bold text-muted text-uppercase">
-                                    Código CVV
-                                </label>
-
-                                <div class="input-group">
-                                    <input type="password"
-                                           class="form-control form-control-lg fs-6"
-                                           id="cvv"
-                                           th:field="*{cvv}"
-                                           maxlength="4"
-                                           placeholder="123"
-                                           required>
-
-                                    <span class="input-group-text bg-white text-muted small"
-                                          data-bs-toggle="tooltip"
-                                          title="3 o 4 dígitos de seguridad de la tarjeta">
-                                        <i class="fa-solid fa-question-circle"></i>
-                                    </span>
-
-                                    <div class="invalid-feedback">
-                                        CVV inválido.
-                                    </div>
-                                </div>
-
-                                <div class="text-danger small mt-1"
-                                     th:if="${#fields.hasErrors('cvv')}"
-                                     th:errors="*{cvv}">
-                                </div>
-                            </div>
-
-                            <!-- MENSAJE DE SEGURIDAD -->
-                            <div class="security-banner d-flex align-items-center p-3 mb-4">
-                                <i class="fa-solid fa-shield-halved fs-4 me-3"></i>
-
-                                <div>
-                                    Este es un pago simulado para entorno académico.
-                                    No guardamos el número completo de la tarjeta ni el CVV.
-                                </div>
-                            </div>
-
-                            <!-- BOTÓN DE PAGO -->
-                            <button type="submit"
-                                    class="btn btn-pay btn-lg w-100 shadow-sm"
-                                    th:disabled="${lines == null or lines.isEmpty() or addresses == null or addresses.isEmpty()}">
-                                <i class="fa-solid fa-credit-card me-2"></i>
-                                Confirmar y pagar
-                            </button>
-
-                        </form>
-                    </div>
-                </div>
-
-                <!-- RESUMEN DEL PEDIDO -->
-                <div class="col-lg-5">
-                    <div class="card payment-card shadow-sm p-4 text-bg-light">
-                        <h5 class="fw-bold mb-3 border-bottom pb-2">
-                            Resumen del pedido
-                        </h5>
-
-                        <div class="mb-4">
-                            <div th:if="${lines == null or lines.isEmpty()}" class="text-muted">
-                                No hay productos en el carrito.
-                            </div>
-
-                            <div th:if="${lines != null and !lines.isEmpty()}">
-
-                                <div th:each="line : ${lines}" class="mb-3">
-
-                                    <div class="d-flex justify-content-between">
-                                        <span class="text-muted"
-                                        th:text="${line.product.title}">
-                                        Nombre del producto
-                                        </span>
-                                        <span class="fw-semibold text-success"
-                                              th:text="${#numbers.formatDecimal(
-                                                        (line.product.finalPrice != null ? line.product.finalPrice : line.product.price) * line.quantity, 1, 2) + ' €'}"> 0,00 €
-                                        </span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between small mt-1">
-                                        <span class="text-muted">
-                                        Precio original
-                                        </span>
-
-                                        <span class="text-muted text-decoration-line-through"
-                                              th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
-                                              th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2) + ' €'}">
-                                                0,00 €
-                                        </span>
-
-                                        <span class="text-muted"
-                                              th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
-                                              th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2) + ' €'}">
-                                            0,00 €
-                                        </span>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between small mt-1">
-                                        <span class="text-muted">
-                                            Descuento
-                                        </span>
-
-                                        <span th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
-                                              class="badge rounded-pill text-bg-danger"
-                                              th:text="${#numbers.formatDecimal(line.product.discountPercentage, 1, 0) + '%'}">
-                                                0%
-                                        </span>
-
-                                        <span th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
-                                              class="badge rounded-pill text-bg-light border">
-                                                Sin descuento
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <hr>
-
-                                <div class="d-flex justify-content-between mb-2">
-                                    <span class="text-muted">
-                                        Total con descuentos
-                                    </span>
-
-                                    <span class="fw-bold text-success"
-                                          th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 1, 2) + ' €' : '0,00 €'}">
-                                            0,00 €
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- TABLA DE PRODUCTOS -->
-        <div class="card border-0 shadow-sm">
-            <div th:if="${lines == null or lines.isEmpty()}"
-                 class="card-body text-center py-5">
-
-                <i class="fa-solid fa-basket-shopping fa-2x text-muted mb-3"></i>
-
-                <h2 class="h5">
-                    Todavía no hay productos
-                </h2>
-
-                <a th:href="@{/products}" class="btn btn-outline-secondary mt-3">
-                    <i class="fa-solid fa-bag-shopping me-1"></i>
-                    Ir a productos
+            <p class="empty-text">
+                Aún no has empezado tu compra. Explora el catálogo y añade productos para
+                continuar con el proceso de pedido.
+            </p>
+
+            <div class="empty-actions">
+                <a th:href="@{/products}" class="btn btn-premium-primary">
+                    <i class="fa-solid fa-store me-2"></i>
+                    Ver productos
+                </a>
+
+                <a th:href="@{/purchases}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-cart-shopping me-2"></i>
+                    Volver a compras
                 </a>
             </div>
+        </section>
 
-            <div th:if="${lines != null and !lines.isEmpty()}"
-                 class="table-responsive">
+        <div th:if="${cart != null}">
 
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                    <tr>
-                        <th>Producto</th>
-                        <th class="text-center">Cantidad</th>
-                        <th class="text-end">Precio original</th>
-                        <th class="text-center">Descuento</th>
-                        <th class="text-end">Precio final</th>
-                        <th class="text-end">Subtotal</th>
-                    </tr>
-                    </thead>
+            <section class="summary-grid">
+                <article class="summary-card">
+                    <p class="summary-label">ID de la compra</p>
 
-                    <tbody>
-                    <tr th:each="line : ${lines}">
-                        <td>
-                            <div class="fw-semibold"
-                                 th:text="${line.product.title}">
-                                Producto
+                    <p class="summary-value font-monospace text-break"
+                       style="font-size: 1rem;"
+                       th:text="${cart.id}">
+                        ID
+                    </p>
+
+                    <p class="summary-text">
+                        Referencia interna del pedido.
+                    </p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Productos</p>
+
+                    <p class="summary-value"
+                       th:text="${lines != null ? lines.size() : 0}">
+                        0
+                    </p>
+
+                    <p class="summary-text">
+                        Artículos incluidos.
+                    </p>
+                </article>
+
+                <article class="summary-card">
+                    <p class="summary-label">Total</p>
+
+                    <p class="summary-value success"
+                       th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 1, 2) + ' €' : '0,00 €'}">
+                        0,00 €
+                    </p>
+
+                    <p class="summary-text">
+                        Total con descuentos aplicados.
+                    </p>
+                </article>
+            </section>
+
+            <div class="row g-4 align-items-start">
+
+                <div class="col-lg-7">
+                    <section class="checkout-card">
+
+                        <div class="checkout-card-header">
+                            <h2 class="checkout-card-title">
+                                Datos de compra
+                            </h2>
+
+                            <p class="checkout-card-text">
+                                Completa la información necesaria para preparar el envío y validar el pago.
+                            </p>
+                        </div>
+
+                        <div class="checkout-card-body">
+
+                            <form id="paymentForm"
+                                  th:action="@{/purchases/cart/pay}"
+                                  th:object="${paymentCard}"
+                                  method="post"
+                                  class="needs-validation"
+                                  novalidate>
+
+                                <input type="hidden"
+                                       th:if="${_csrf != null}"
+                                       th:name="${_csrf.parameterName}"
+                                       th:value="${_csrf.token}">
+
+                                <div class="form-section">
+                                    <div class="section-label">
+                                        Datos de envío
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="addressId" class="form-label">
+                                            Dirección de envío
+                                        </label>
+
+                                        <select class="form-select"
+                                                id="addressId"
+                                                name="addressId"
+                                                required>
+                                            <option value="">
+                                                Selecciona una dirección
+                                            </option>
+
+                                            <option th:each="address : ${addresses}"
+                                                    th:value="${address.id}"
+                                                    th:text="|${address.street} ${address.number}, ${address.city}, ${address.state}, ${address.zipCode}, ${address.country}|">
+                                                Dirección
+                                            </option>
+                                        </select>
+
+                                        <div class="invalid-feedback">
+                                            Selecciona una dirección de envío.
+                                        </div>
+
+                                        <div th:if="${addresses == null or addresses.isEmpty()}"
+                                             class="address-warning">
+                                            <i class="fa-solid fa-location-dot me-1"></i>
+                                            No tienes direcciones guardadas.
+                                            <a th:href="@{/addresses/new}">
+                                                Agregar dirección
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label for="shippingMode" class="form-label">
+                                            Tipo de envío
+                                        </label>
+
+                                        <select class="form-select"
+                                                id="shippingMode"
+                                                name="shippingMode"
+                                                required>
+                                            <option value="">
+                                                Selecciona un tipo de envío
+                                            </option>
+
+                                            <option th:each="mode : ${shippingModes}"
+                                                    th:value="${mode}"
+                                                    th:text="${mode.label}">
+                                                Estándar
+                                            </option>
+                                        </select>
+
+                                        <div class="invalid-feedback">
+                                            Selecciona un tipo de envío.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <div class="section-label">
+                                        Datos de la tarjeta
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="cardHolderName" class="form-label">
+                                            Nombre del titular
+                                        </label>
+
+                                        <input type="text"
+                                               class="form-control"
+                                               id="cardHolderName"
+                                               th:field="*{cardHolderName}"
+                                               placeholder="Como aparece en la tarjeta"
+                                               autocomplete="cc-name"
+                                               required>
+
+                                        <div class="invalid-feedback">
+                                            Introduce el nombre del titular.
+                                        </div>
+
+                                        <div class="text-danger small mt-1"
+                                             th:if="${#fields.hasErrors('cardHolderName')}"
+                                             th:errors="*{cardHolderName}">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="cardNumber" class="form-label">
+                                            Número de tarjeta
+                                        </label>
+
+                                        <div class="card-number-wrapper">
+                                            <input type="text"
+                                                   class="form-control"
+                                                   id="cardNumber"
+                                                   th:field="*{cardNumber}"
+                                                   placeholder="0000 0000 0000 0000"
+                                                   inputmode="numeric"
+                                                   autocomplete="cc-number"
+                                                   maxlength="19"
+                                                   required>
+
+                                            <span class="card-number-icon">
+                                                <i class="fa-regular fa-credit-card"></i>
+                                            </span>
+                                        </div>
+
+                                        <div class="invalid-feedback">
+                                            Introduce un número de tarjeta válido.
+                                        </div>
+
+                                        <div class="text-danger small mt-1"
+                                             th:if="${#fields.hasErrors('cardNumber')}"
+                                             th:errors="*{cardNumber}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="expirationMonth" class="form-label">
+                                                Mes de caducidad
+                                            </label>
+
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="expirationMonth"
+                                                   th:field="*{expirationMonth}"
+                                                   min="1"
+                                                   max="12"
+                                                   placeholder="MM"
+                                                   inputmode="numeric"
+                                                   autocomplete="cc-exp-month"
+                                                   required>
+
+                                            <div class="invalid-feedback">
+                                                Introduce un mes válido entre 1 y 12.
+                                            </div>
+
+                                            <div class="text-danger small mt-1"
+                                                 th:if="${#fields.hasErrors('expirationMonth')}"
+                                                 th:errors="*{expirationMonth}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label for="expirationYear" class="form-label">
+                                                Año de caducidad
+                                            </label>
+
+                                            <input type="number"
+                                                   class="form-control"
+                                                   id="expirationYear"
+                                                   th:field="*{expirationYear}"
+                                                   min="2026"
+                                                   placeholder="AAAA"
+                                                   inputmode="numeric"
+                                                   autocomplete="cc-exp-year"
+                                                   required>
+
+                                            <div class="invalid-feedback">
+                                                Introduce un año válido.
+                                            </div>
+
+                                            <div class="text-danger small mt-1"
+                                                 th:if="${#fields.hasErrors('expirationYear')}"
+                                                 th:errors="*{expirationYear}">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <label for="cvv" class="form-label">
+                                            CVV
+                                        </label>
+
+                                        <input type="password"
+                                               class="form-control"
+                                               id="cvv"
+                                               th:field="*{cvv}"
+                                               placeholder="123"
+                                               inputmode="numeric"
+                                               autocomplete="cc-csc"
+                                               maxlength="4"
+                                               required>
+
+                                        <div class="invalid-feedback">
+                                            Introduce el código de seguridad.
+                                        </div>
+
+                                        <div class="text-danger small mt-1"
+                                             th:if="${#fields.hasErrors('cvv')}"
+                                             th:errors="*{cvv}">
+                                        </div>
+                                    </div>
+
+                                    <div class="payment-note">
+                                        <i class="fa-solid fa-shield-heart"></i>
+                                        <span>
+                                            Este pago es simulado. La información se valida para completar
+                                            el flujo de compra, pero no se realiza ningún cargo real.
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <button type="submit"
+                                        class="btn btn-premium-primary checkout-submit"
+                                        th:disabled="${lines == null or lines.isEmpty() or addresses == null or addresses.isEmpty()}">
+                                    <i class="fa-solid fa-lock me-2"></i>
+                                    Confirmar compra
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </section>
+                </div>
+
+                <div class="col-lg-5">
+                    <aside class="order-card">
+
+                        <div class="order-card-header">
+                            <h2 class="order-card-title">
+                                Resumen del pedido
+                            </h2>
+
+                            <p class="order-card-text">
+                                Revisa los productos antes de confirmar la compra.
+                            </p>
+                        </div>
+
+                        <div class="order-card-body">
+
+                            <div th:if="${lines != null and !lines.isEmpty()}"
+                                 class="order-line-list">
+
+                                <article class="order-line"
+                                         th:each="line : ${lines}">
+
+                                    <div class="order-line-image">
+                                        <i class="fa-solid fa-book-open"></i>
+                                    </div>
+
+                                    <div class="order-line-content">
+                                        <p class="order-line-title"
+                                           th:text="${line.product != null ? line.product.title : 'Producto'}">
+                                            Producto
+                                        </p>
+
+                                        <div class="order-line-meta">
+                                            Cantidad:
+                                            <strong th:text="${line.quantity}">
+                                                1
+                                            </strong>
+                                        </div>
+
+                                        <div class="order-line-meta"
+                                             th:if="${line.product != null}"
+                                             th:text="${line.product.isbn != null ? line.product.isbn : 'Sin referencia'}">
+                                            Sin referencia
+                                        </div>
+
+                                        <div class="order-line-price-row"
+                                             th:if="${line.product != null}"
+                                             th:with="unitPrice=${line.product.finalPrice != null ? line.product.finalPrice : line.product.price},
+                                                      subtotal=${unitPrice * line.quantity}">
+                                            <span class="order-line-price"
+                                                  th:text="${#numbers.formatDecimal(subtotal, 1, 2) + ' €'}">
+                                                0,00 €
+                                            </span>
+
+                                            <span class="order-line-original"
+                                                  th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
+                                                  th:text="${#numbers.formatDecimal(line.product.price * line.quantity, 1, 2) + ' €'}">
+                                                0,00 €
+                                            </span>
+                                        </div>
+
+                                        <span th:if="${line.product != null and line.product.discountPercentage != null and line.product.discountPercentage > 0}"
+                                              class="discount-pill"
+                                              th:text="${#numbers.formatDecimal(line.product.discountPercentage, 1, 0) + '% dto.'}">
+                                            0% dto.
+                                        </span>
+
+                                        <span th:if="${line.product == null or line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
+                                              class="no-discount-pill">
+                                            Sin descuento
+                                        </span>
+                                    </div>
+
+                                </article>
                             </div>
 
-                            <div class="text-muted small"
-                                 th:text="${line.product.isbn != null ? line.product.isbn : 'Sin referencia'}">
-                                Sin referencia
+                            <div th:if="${lines == null or lines.isEmpty()}"
+                                 class="text-muted small mb-3">
+                                No hay líneas de pedido disponibles.
                             </div>
-                        </td>
 
-                        <td class="text-center">
-                            <span class="badge rounded-pill text-bg-light border"
-                                th:text="${line.quantity}">
-                                1
-                            </span>
-                        </td>
+                            <div class="order-total-box">
+                                <div class="order-total-row">
+                                    <span class="order-total-label">
+                                        Total
+                                    </span>
 
-                        <td class="text-end">
-                            <span th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
-                                class="text-muted text-decoration-line-through"
-                                th:text="${#numbers.formatDecimal(line.product.price, 1, 2) + ' €'}">
-                                0,00 €
-                            </span>
+                                    <span class="order-total-value"
+                                          th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 1, 2) + ' €' : '0,00 €'}">
+                                        0,00 €
+                                    </span>
+                                </div>
+                            </div>
 
-                            <span th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
-                                  th:text="${#numbers.formatDecimal(line.product.price, 1, 2) + ' €'}">
-                                     0,00 €
-                            </span>
-                        </td>
+                            <div class="service-list">
+                                <div class="service-item">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                    <span>Envío preparado según la modalidad seleccionada.</span>
+                                </div>
 
-                        <td class="text-center">
-                            <span th:if="${line.product.discountPercentage != null and line.product.discountPercentage > 0}"
-                                class="badge rounded-pill text-bg-danger"
-                                  th:text="${#numbers.formatDecimal(line.product.discountPercentage, 1, 0) + '%'}">
-                                 0%
-                            </span>
+                                <div class="service-item">
+                                    <i class="fa-solid fa-receipt"></i>
+                                    <span>Recibirás la confirmación del pedido al finalizar la compra.</span>
+                                </div>
 
-                            <span th:if="${line.product.discountPercentage == null or line.product.discountPercentage <= 0}"
-                                  class="badge rounded-pill text-bg-light border">
-                                    Sin descuento
-                            </span>
-                        </td>
+                                <div class="service-item">
+                                    <i class="fa-solid fa-shield-heart"></i>
+                                    <span>Proceso de checkout protegido y validado.</span>
+                                </div>
+                            </div>
 
-                        <td class="text-end fw-semibold text-success"
-                            th:with="price=${line.product.finalPrice != null ? line.product.finalPrice : line.product.price}"
-                            th:text="${#numbers.formatDecimal(price, 1, 2) + ' €'}">
-                            0,00 €
-                        </td>
+                        </div>
+                    </aside>
+                </div>
 
-                        <td class="text-end fw-bold text-success"
-                            th:text="${#numbers.formatDecimal(
-                            (line.product.finalPrice != null ? line.product.finalPrice : line.product.price) * line.quantity, 1, 2) + ' €'}">
-                            0,00 €
-                        </td>
-                    </tr>
-                    </tbody>
-
-                    <tfoot class="table-light">
-                    <tr>
-                        <th colspan="5" class="text-end">
-                            Total con descuentos
-                        </th>
-
-                        <th class="text-end text-success"
-                            th:text="${cart.totalPrice != null ? #numbers.formatDecimal(cart.totalPrice, 1, 2) + ' €' : '0,00 €'}">
-                            0,00 €
-                        </th>
-                    </tr>
-                    </tfoot>
-                </table>
             </div>
         </div>
+
     </div>
 </main>
 
 <footer th:replace="~{layout/footer :: footer}"></footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('paymentForm');
+        const cardNumberInput = document.getElementById('cardNumber');
+        const expirationMonthInput = document.getElementById('expirationMonth');
+        const expirationYearInput = document.getElementById('expirationYear');
+        const cvvInput = document.getElementById('cvv');
+
+        if (cardNumberInput) {
+            cardNumberInput.addEventListener('input', function () {
+                let value = cardNumberInput.value.replace(/\D/g, '').slice(0, 16);
+                value = value.replace(/(.{4})/g, '$1 ').trim();
+                cardNumberInput.value = value;
+            });
+        }
+
+        if (expirationMonthInput) {
+            expirationMonthInput.addEventListener('input', function () {
+                expirationMonthInput.value = expirationMonthInput.value.replace(/\D/g, '').slice(0, 2);
+            });
+        }
+
+        if (expirationYearInput) {
+            expirationYearInput.addEventListener('input', function () {
+                expirationYearInput.value = expirationYearInput.value.replace(/\D/g, '').slice(0, 4);
+            });
+        }
+
+        if (cvvInput) {
+            cvvInput.addEventListener('input', function () {
+                cvvInput.value = cvvInput.value.replace(/\D/g, '').slice(0, 4);
+            });
+        }
+
+        if (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            });
+        }
+    });
+</script>
+
 <script th:replace="~{layout/footer :: scripts}"></script>
 
 </body>
