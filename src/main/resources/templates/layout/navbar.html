@@ -251,19 +251,19 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a sec:authorize="!isAuthenticated()" class="nav-link" th:href="@{/login}">
+                        <a id="loginBtn" sec:authorize="!isAuthenticated()" class="nav-link" th:href="@{/login}">
                             <i class="fa-solid fa-user brown-options fs-6 "></i>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a sec:authorize="isAuthenticated()" class="nav-link text-light" th:href="@{/profile}">
+                        <a id="profileBtn" sec:authorize="isAuthenticated()" class="nav-link text-light" th:href="@{/profile}">
                             <i class="fa-solid fa-user brown-options fs-6 "></i>
-                            <span sec:authentication="name"></span>
+                            <span id="usernameDisplay" sec:authentication="name"></span>
                         </a>
                     </li>
                     <li class="nav-item">
                         <form th:action="@{/logout}" sec:authorize="isAuthenticated()" method="post">
-                            <button class="btn btn-secondary">
+                            <button id="logoutBtn" class="btn btn-secondary">
                                 <i class="fa-solid fa-sign-out brown-options fs-6 "></i>salir
                             </button>
                         </form>
@@ -271,7 +271,7 @@
                 </ul>
                 <ul class="navbar-nav ms-auto gap-2">
                     <li>
-                        <a sec:authorize="!isAuthenticated()"  class=" border-button btn btn-sm button-brown" th:href="@{/register}">
+                        <a id="registerBtn" sec:authorize="!isAuthenticated()"  class=" border-button btn btn-sm button-brown" th:href="@{/register}">
                             <i class="fa-solid fa-user-plus me-1"></i> Registro
                         </a>
                     </li>
