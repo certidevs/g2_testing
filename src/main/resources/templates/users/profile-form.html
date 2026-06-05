@@ -8,14 +8,14 @@
         <h1 class="mb-0">
             <i class="fa-solid fa-user-edit text-primary me-2"></i>Editar Perfil
         </h1>
-        <a th:href="|/user/profile?email=${user.email}|" class="btn btn-secondary">
+        <a th:href="@{/profile}" class="btn btn-secondary">
             <i class="fa-solid fa-arrow-left"></i> Volver
         </a>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form th:action="@{/templates/users/update}" method="post" th:object="${user}">
+            <form th:action="@{/profile/update}" method="post" th:object="${user}">
                 <input type="hidden" name="email" th:value="${user.email}" />
                 <div class="row">
                     <div class="col-md-6">
@@ -76,8 +76,8 @@
                             <label class="form-label text-muted">Rol</label>
                             <p class="form-control-plaintext">
                                 <span class="badge" 
-                                      th:classappend="${user.role.name() == 'ADMIN' ? 'bg-danger' : 'bg-primary'}"
-                                      th:text="${user.role.name()}">ROLE</span>
+                                      th:classappend="${user.role != null and user.role.name() == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-primary'}"
+                                      th:text="${user.role != null ? user.role.name().replace('ROLE_', '') : 'CUSTOMER'}">ROLE</span>
                                 <small class="text-muted ms-2">(No modificable)</small>
                             </p>
                         </div>
@@ -91,7 +91,7 @@
                 
                 <div class="mt-4 pt-4 border-top">
                     <div class="d-flex justify-content-between">
-                        <a th:href="|/user/profile?email=${user.email}|" class="btn btn-secondary">
+                        <a th:href="@{/profile}" class="btn btn-secondary">
                             <i class="fa-solid fa-times"></i> Cancelar
                         </a>
                         <button type="submit" class="btn btn-primary">

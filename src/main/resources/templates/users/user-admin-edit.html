@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Editar usuario')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<main class="product-editor-page flex-grow-1">
+    <div class="container editor-shell">
+        <section class="editor-hero">
+            <span class="editor-eyebrow">Administración de usuarios</span>
+            <h1 class="editor-title">Editar usuario</h1>
+            <p class="editor-subtitle">
+                Actualiza datos de contacto, rol y preferencias del usuario seleccionado.
+            </p>
+        </section>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+
+        <form th:action="@{/admin/users/{id}/edit(id=${user.id})}" th:object="${user}" method="post">
+            <input type="hidden" name="adminEmail" th:value="${adminEmail}">
+
+            <div class="editor-card">
+                <div class="editor-card-header">
+                    <h2 class="editor-card-title" th:text="${user.username}">usuario</h2>
+                    <p class="editor-card-text" th:text="${user.email}">email@example.com</p>
+                </div>
+
+                <div class="editor-card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="form-section">
+                                <div class="section-label">Datos personales</div>
+
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Nombre</label>
+                                    <input id="name" class="form-control" type="text" th:field="*{name}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Apellidos</label>
+                                    <input id="lastName" class="form-control" type="text" th:field="*{lastName}">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input id="email" class="form-control" type="email" th:field="*{email}">
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="phone" class="form-label">Teléfono</label>
+                                    <input id="phone" class="form-control" type="tel" th:field="*{phone}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-section">
+                                <div class="section-label">Cuenta</div>
+
+                                <div class="mb-3">
+                                    <label for="gender" class="form-label">Género</label>
+                                    <select id="gender" class="form-select" th:field="*{gender}">
+                                        <option value="">Sin definir</option>
+                                        <option th:each="genderValue : ${T(com.ecommerce.model.enums.Gender).values()}"
+                                                th:value="${genderValue}"
+                                                th:text="${genderValue.name()}">
+                                            Género
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="paymentMethod" class="form-label">Método de pago</label>
+                                    <select id="paymentMethod" class="form-select" th:field="*{paymentMethod}">
+                                        <option value="">Sin definir</option>
+                                        <option th:each="method : ${T(com.ecommerce.model.enums.PaymentMethod).values()}"
+                                                th:value="${method}"
+                                                th:text="${method.name()}">
+                                            Método
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="role" class="form-label">Rol</label>
+                                    <select id="role" class="form-select" th:field="*{role}">
+                                        <option th:each="roleValue : ${T(com.ecommerce.model.enums.Role).values()}"
+                                                th:value="${roleValue}"
+                                                th:text="${roleValue.name().replace('ROLE_', '')}">
+                                            Rol
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-0">
+                                    <label for="birthday" class="form-label">Fecha de nacimiento</label>
+                                    <input id="birthday" class="form-control" type="date" th:field="*{birthday}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-actions">
+                        <a class="btn btn-premium-secondary" th:href="@{/admin/users(adminEmail=${adminEmail})}">
+                            Cancelar
+                        </a>
+                        <button class="btn btn-premium-primary" type="submit">
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Guardar cambios
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>

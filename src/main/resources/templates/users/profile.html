@@ -8,7 +8,7 @@
         <h1 class="mb-0">
             <i class="fa-solid fa-user text-primary me-2"></i>Mi Perfil
         </h1>
-        <a href="/user/edit" class="btn btn-primary">
+        <a th:href="@{/profile/edit}" class="btn btn-primary">
             <i class="fa-solid fa-edit"></i> Editar Perfil
         </a>
     </div>
@@ -62,9 +62,9 @@
                     <div class="mb-3">
                         <label class="form-label text-muted">Rol</label>
                         <p class="form-control-plaintext">
-                            <span class="badge" 
-                                  th:classappend="${user.role.name() == 'ADMIN' ? 'bg-danger' : 'bg-primary'}"
-                                  th:text="${user.role.name()}">ROLE</span>
+                            <span class="badge"
+                                  th:classappend="${user.role != null and user.role.name() == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-primary'}"
+                                  th:text="${user.role != null ? user.role.name().replace('ROLE_', '') : 'CUSTOMER'}">ROLE</span>
                         </p>
                     </div>
                     
@@ -92,7 +92,7 @@
             <div class="mt-4 pt-4 border-top">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title mb-0">Mis Direcciones</h5>
-                    <a th:href="|/user/addresses/new?email=${user.email}|" class="btn btn-primary btn-sm">
+                    <a th:href="@{/profile/addresses/new(email=${user.email})}" class="btn btn-primary btn-sm">
                         <i class="fa-solid fa-plus"></i> Nueva Dirección
                     </a>
                 </div>
@@ -122,10 +122,10 @@
                                         <span th:text="|${address.country} - ${address.zipCode}|">País - CP</span>
                                     </p>
                                     <div class="d-flex gap-2">
-                                        <a th:href="|/user/addresses/${address.id}/edit?email=${user.email}|" class="btn btn-sm btn-outline-primary">
+                                        <a th:href="@{/profile/addresses/{id}/edit(id=${address.id}, email=${user.email})}" class="btn btn-sm btn-outline-primary">
                                             <i class="fa-solid fa-edit"></i> Editar
                                         </a>
-                                        <form th:action="|/user/addresses/${address.id}/delete?email=${user.email}|" method="post" 
+                                        <form th:action="@{/profile/addresses/{id}/delete(id=${address.id})}" method="post"
                                               onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta dirección?')">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="fa-solid fa-trash"></i> Eliminar
@@ -141,7 +141,7 @@
                 <div th:if="${user.addresses == null or #lists.isEmpty(user.addresses)}" class="text-center py-4">
                     <i class="fa-solid fa-map-location-dot text-muted fs-1 mb-3"></i>
                     <p class="text-muted mb-3">No tienes direcciones registradas</p>
-                    <a th:href="|/user/addresses/new?email=${user.email}|" class="btn btn-primary">
+                    <a th:href="@{/profile/addresses/new(email=${user.email})}" class="btn btn-primary">
                         <i class="fa-solid fa-plus"></i> Agregar mi primera dirección
                     </a>
                 </div>

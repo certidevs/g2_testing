@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import com.ecommerce.model.enums.PaymentMethod;
 import com.ecommerce.model.enums.Gender;
 import com.ecommerce.model.enums.Role;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -48,6 +49,7 @@ public class User implements UserDetails {
     private String password;
 
     // User's Birthday
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime birthday;
 
     // User's gender

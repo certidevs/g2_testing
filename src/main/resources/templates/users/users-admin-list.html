@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout/head :: head('Gestión de usuarios')}"></head>
+<body class="d-flex flex-column min-vh-100">
+<nav th:replace="~{layout/navbar :: navbar}"></nav>
+
+<style>
+    .users-admin-page {
+        padding: 4.5rem 0 5rem;
+    }
+
+    .users-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    .users-hero {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, .12);
+    }
+
+    .users-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        margin-bottom: .75rem;
+        color: #8a6f4d;
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .16em;
+        text-transform: uppercase;
+    }
+
+    .users-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .users-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.7rem);
+        font-weight: 500;
+        letter-spacing: -.055em;
+        line-height: 1;
+    }
+
+    .users-subtitle {
+        max-width: 720px;
+        margin: .85rem 0 0;
+        color: #6b6057;
+        line-height: 1.7;
+    }
+
+    .users-card {
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, .10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, .9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, .08);
+    }
+
+    .users-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.35rem 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, .08);
+        background: linear-gradient(135deg, rgba(255, 255, 255, .95), rgba(247, 243, 236, .82));
+    }
+
+    .users-search {
+        width: min(100%, 360px);
+        border: 1px solid rgba(31, 26, 23, .14);
+        border-radius: 999px;
+        padding: .78rem 1rem;
+        background: #fff;
+        outline: none;
+    }
+
+    .users-table {
+        margin: 0;
+    }
+
+    .users-table thead th {
+        padding: 1rem 1.15rem;
+        border: 0;
+        background: #1f1a17;
+        color: #f8f3ea;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .users-table tbody td {
+        padding: 1.05rem 1.15rem;
+        border-bottom: 1px solid rgba(31, 26, 23, .08);
+        vertical-align: middle;
+    }
+
+    .user-name {
+        margin: 0;
+        color: #1f1a17;
+        font-weight: 800;
+    }
+
+    .user-meta {
+        color: #8c8178;
+        font-size: .82rem;
+    }
+
+    .role-pill,
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        border-radius: 999px;
+        padding: .45rem .68rem;
+        font-size: .76rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .role-pill.admin {
+        background: rgba(31, 26, 23, .10);
+        color: #1f1a17;
+    }
+
+    .role-pill.customer {
+        background: rgba(47, 107, 69, .10);
+        color: #2f6b45;
+    }
+
+    .status-pill.active {
+        background: rgba(47, 107, 69, .10);
+        color: #2f6b45;
+    }
+
+    .status-pill.inactive {
+        background: rgba(127, 29, 29, .10);
+        color: #7f1d1d;
+    }
+
+    .actions-stack {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: .5rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .users-hero,
+        .users-toolbar {
+            align-items: stretch;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<main class="users-admin-page flex-grow-1">
+    <div class="container users-shell">
+        <section class="users-hero">
+            <div>
+                <span class="users-eyebrow">Administración</span>
+                <h1 class="users-title">Gestionar usuarios</h1>
+                <p class="users-subtitle">
+                    Revisa cuentas, roles, estado de acceso y datos principales de los clientes registrados.
+                </p>
+            </div>
+            <a th:href="@{/products}" class="btn btn-premium-secondary">
+                <i class="fa-solid fa-shop me-1"></i> Volver a tienda
+            </a>
+        </section>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            <span th:text="${success}">Operación realizada</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+            <span th:text="${error}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+
+        <section class="users-card">
+            <div class="users-toolbar">
+                <div>
+                    <h2 class="h4 mb-1">Usuarios registrados</h2>
+                    <p class="text-muted mb-0">Total: <strong th:text="${users != null ? #lists.size(users) : 0}">0</strong></p>
+                </div>
+                <input id="usersSearch" class="users-search" type="search" placeholder="Buscar por usuario o email..." aria-label="Buscar usuarios">
+            </div>
+
+            <div class="table-responsive" th:if="${users != null and !#lists.isEmpty(users)}">
+                <table class="table users-table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Estado</th>
+                        <th>Creación</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                    <tr th:each="managedUser : ${users}"
+                        class="user-row"
+                        th:attr="data-search=${(managedUser.username != null ? managedUser.username : '') + ' ' + (managedUser.email != null ? managedUser.email : '') + ' ' + (managedUser.name != null ? managedUser.name : '') + ' ' + (managedUser.lastName != null ? managedUser.lastName : '')}">
+                        <td>
+                            <p class="user-name" th:text="${managedUser.username}">usuario</p>
+                            <span class="user-meta" th:text="|${managedUser.name ?: 'Sin nombre'} ${managedUser.lastName ?: ''}|">Nombre</span>
+                        </td>
+                        <td th:text="${managedUser.email}">email@example.com</td>
+                        <td>
+                            <span class="role-pill"
+                                  th:classappend="${managedUser.role != null and managedUser.role.name() == 'ROLE_ADMIN'} ? ' admin' : ' customer'">
+                                <i class="fa-solid" th:classappend="${managedUser.role != null and managedUser.role.name() == 'ROLE_ADMIN'} ? ' fa-user-shield' : ' fa-user'"></i>
+                                <span th:text="${managedUser.role != null ? managedUser.role.name().replace('ROLE_', '') : 'CUSTOMER'}">CUSTOMER</span>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-pill" th:classappend="${managedUser.active} ? ' active' : ' inactive'">
+                                <i class="fa-solid" th:classappend="${managedUser.active} ? ' fa-circle-check' : ' fa-circle-xmark'"></i>
+                                <span th:text="${managedUser.active ? 'Activo' : 'Inactivo'}">Activo</span>
+                            </span>
+                        </td>
+                        <td th:text="${managedUser.creationDate != null ? #temporals.format(managedUser.creationDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">05/06/2026</td>
+                        <td class="text-end">
+                            <div class="actions-stack">
+                                <a class="btn btn-sm btn-premium-secondary"
+                                   th:href="@{/admin/users/{id}/edit(id=${managedUser.id}, adminEmail=${adminEmail})}">
+                                    <i class="fa-solid fa-pen-to-square me-1"></i> Editar
+                                </a>
+
+                                <form th:action="@{/admin/users/{id}/toggle-status(id=${managedUser.id})}" method="post">
+                                    <input type="hidden" name="adminEmail" th:value="${adminEmail}">
+                                    <button class="btn btn-sm btn-premium-secondary" type="submit">
+                                        <i class="fa-solid fa-power-off me-1"></i>
+                                        <span th:text="${managedUser.active ? 'Desactivar' : 'Activar'}">Cambiar</span>
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/admin/users/{id}/delete(id=${managedUser.id})}" method="post"
+                                      onsubmit="return confirm('¿Desactivar este usuario?')">
+                                    <input type="hidden" name="adminEmail" th:value="${adminEmail}">
+                                    <button class="btn btn-sm btn-premium-danger" type="submit">
+                                        <i class="fa-solid fa-user-slash me-1"></i> Bloquear
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${users == null or #lists.isEmpty(users)}" class="p-5 text-center">
+                <i class="fa-solid fa-users text-muted fs-1 mb-3"></i>
+                <h2 class="h4">No hay usuarios registrados</h2>
+                <p class="text-muted mb-0">Cuando se creen cuentas, aparecerán en este panel.</p>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const search = document.getElementById('usersSearch');
+        const rows = document.querySelectorAll('.user-row');
+
+        if (!search || rows.length === 0) {
+            return;
+        }
+
+        search.addEventListener('input', function () {
+            const query = search.value.trim().toLowerCase();
+            rows.forEach(function (row) {
+                row.classList.toggle('d-none', !(row.dataset.search || '').toLowerCase().includes(query));
+            });
+        });
+    });
+</script>
+<script th:replace="~{layout/footer :: scripts}"></script>
+</body>
+</html>

@@ -9,7 +9,7 @@
             <i class="fa-solid fa-map-location-dot text-primary me-2"></i>
             <span th:text="${address != null ? 'Editar Dirección' : 'Nueva Dirección'}">Dirección</span>
         </h1>
-        <a th:href="|/user/profile?email=${email}|" class="btn btn-outline-secondary">
+        <a th:href="@{/profile}" class="btn btn-outline-secondary">
             <i class="fa-solid fa-arrow-left"></i> Volver al Perfil
         </a>
     </div>
@@ -29,7 +29,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form th:action="${address != null ? |/user/addresses/${address.id}/update?email=${email}| : '/user/addresses/create'}" 
+            <form th:action="${address != null ? |/profile/addresses/${address.id}/update?email=${email}| : '/profile/addresses/create'}"
                   method="post" th:object="${address}">
                 
                 <input type="hidden" th:field="*{usersId}" th:value="${address != null ? address.usersId : ''}" />
@@ -98,7 +98,7 @@
                 <input type="hidden" name="email" th:value="${email}" />
 
                 <div class="d-flex justify-content-between">
-                    <a th:href="|/user/profile?email=${email}|" class="btn btn-outline-secondary">
+                    <a th:href="@{/profile}" class="btn btn-outline-secondary">
                         <i class="fa-solid fa-times"></i> Cancelar
                     </a>
                     <button type="submit" class="btn btn-primary">

@@ -88,6 +88,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/deactivate/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/new").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/products/add").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/edit/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
 
@@ -102,6 +103,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.GET, "/brands/new").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/brands/edit/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/brands/*").permitAll()
+
+                    .requestMatchers("/admin/users", "/admin/users/**").hasRole("ADMIN")
 
                     .requestMatchers(HttpMethod.GET, "/reviews").permitAll()
                     .requestMatchers(HttpMethod.POST, "/reviews").authenticated()

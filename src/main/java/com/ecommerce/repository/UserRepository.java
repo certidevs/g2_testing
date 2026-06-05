@@ -21,6 +21,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     List<User> findByName(String name);
 
     //Traer los user name
+    @EntityGraph(attributePaths = "addresses")
     Optional<User> findByUsername(String username);
         
     // Traer usuario por email
@@ -45,5 +46,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     // Traer usuario por fecha de creacion
     List<User> findByCreationDateBetween(LocalDateTime creationDateAfter, LocalDateTime creationDateBefore);
 
+    @EntityGraph(attributePaths = "addresses")
     Optional<User> findFirstByEmail(String email);
 }

@@ -2,7 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{layout/head :: head('Panel de Administración - Productos')}">
 </head>
-<body class="bg-light">
+<body class="admin-products-body">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <style>
@@ -519,7 +519,7 @@
       </div>
 
       <div>
-        <a th:href="@{/products/add}" class="btn btn-premium-primary">
+        <a th:href="@{/products/new}" class="btn btn-premium-primary">
           <i class="fa-solid fa-plus me-2"></i>
           Nuevo producto
         </a>
@@ -827,7 +827,7 @@
           a construir el inventario de la tienda.
         </p>
 
-        <a th:href="@{/products/add}" class="btn btn-premium-primary">
+        <a th:href="@{/products/new}" class="btn btn-premium-primary">
           <i class="fa-solid fa-plus me-2"></i>
           Crear primer producto
         </a>

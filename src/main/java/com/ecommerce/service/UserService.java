@@ -105,6 +105,7 @@ public class UserService implements UserDetailsService {
         currentUser.setEmail(updatedUser.getEmail());
         currentUser.setGender(updatedUser.getGender());
         currentUser.setBirthday(updatedUser.getBirthday());
+        currentUser.setPaymentMethod(updatedUser.getPaymentMethod());
 
         return userRepository.save(currentUser);
     }

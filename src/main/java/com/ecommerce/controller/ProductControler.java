@@ -131,9 +131,43 @@ public class ProductControler {
         return "products/product-form";
     }
 
+    @GetMapping("/products/add")
+    public String navigateToFormAlias(Model model) {
+        return navigateToForm(model);
+    }
+
+    @GetMapping("/products/edit/{id}")
+    public String navigateToEditForm(@PathVariable UUID id, Model model) {
+        Optional<Product> productOptional = productRepository.findById(id);
+        if (productOptional.isEmpty()) {
+            return "redirect:/admin/products/list";
+        }
+
+        model.addAttribute("product", productOptional.get());
+        model.addAttribute("allStockStatuses", ProductStockStatus.values());
+        model.addAttribute("brands", brandRepository.findAll());
+        model.addAttribute("subcategories", categoryRepository.findAll());
+        return "products/product-form";
+    }
+
     @PostMapping("products")
     public String createProduct(@ModelAttribute Product product){
-        productRepository.save(product);
+        if (product.getId() != null) {
+            productRepository.findById(product.getId()).ifPresent(existingProduct -> {
+                existingProduct.setTitle(product.getTitle());
+                existingProduct.setPrice(product.getPrice());
+                existingProduct.setAvailable(product.isAvailable());
+                existingProduct.setShortDescription(product.getShortDescription());
+                existingProduct.setLongDescription(product.getLongDescription());
+                existingProduct.setStock(product.getStock());
+                existingProduct.setImageUrl(product.getImageUrl());
+                existingProduct.setBrand(product.getBrand());
+                existingProduct.setSubcategory(product.getSubcategory());
+                productRepository.save(existingProduct);
+            });
+        } else {
+            productRepository.save(product);
+        }
         return "redirect:/admin/products/list"; // volver al listado de admin para ver el resultado
     }
 }
