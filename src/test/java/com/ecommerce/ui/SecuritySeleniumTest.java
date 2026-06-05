@@ -15,12 +15,12 @@ public class SecuritySeleniumTest extends BaseSeleniumTest{
         wait.until(ExpectedConditions.urlContains("purchases"));
     }
 
-    // Verifica que
+    // Verifica que un usuario con rol customer no pueda acceder a la página de creación de productos
     @Test
     void userTryAccessAdminPath(){
         loginUser();
         driver.get(baseUrl + "products/new");
-        wait.until(driver -> driver.findElement(By.tagName("h1"))
+        wait.until(driver -> driver.findElement(By.tagName("h2"))
                 .getText().contains("No tienes permisos para acceder a esta sección."));
     }
 }
