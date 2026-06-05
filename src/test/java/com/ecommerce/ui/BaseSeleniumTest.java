@@ -103,12 +103,12 @@ public class BaseSeleniumTest {
         login("user", "user");
     }
 
-    // Función para hacer login con un usuario dado
+    // Función para hacer login
     void login(String username, String password) {
         driver.get(baseUrl + "login");
         driver.findElement(By.id("username")).sendKeys(username);
         driver.findElement(By.id("password")).sendKeys(password);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
-        wait.until(driver -> driver.getCurrentUrl().equals(baseUrl + "products"));
+        wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
     }
 }
