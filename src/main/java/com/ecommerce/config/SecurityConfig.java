@@ -118,9 +118,10 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .anyRequest().authenticated()
     );
 
+    //
     http.formLogin(form ->
             form.loginPage("/login")
-                    .defaultSuccessUrl("/products", true)
+                    .defaultSuccessUrl("/products")
                     .permitAll()
     );
 
