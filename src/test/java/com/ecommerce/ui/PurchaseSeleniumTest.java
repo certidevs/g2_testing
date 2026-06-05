@@ -7,6 +7,7 @@ import org.openqa.selenium.WebElement;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,11 +80,12 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         // [estoy comparando dos formatos diferentes y no se como hacerlo :C]
         // Preguntar si se puede castear variables
 
-        /*
+
 
         String creationDate = firstPurchase.findElement(By.id("creationDate")).getText();
-        assertEquals(creationDate, compraConProductos.getCreationDate().toString());
+        assertEquals(creationDate, compraConProductos.getCreationDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 
+        /*
         WebElement shippingMode = firstPurchase.findElement(By.id("shippingMode"));
         assertEquals(shippingMode, compraConProductos.getShippingMode().toString());
 
