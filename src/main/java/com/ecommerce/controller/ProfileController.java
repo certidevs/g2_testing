@@ -41,12 +41,11 @@ public class ProfileController {
     }
 
     @PostMapping({"/profile/update", "/user/update", "/users/profile/update"})
-    public String updateProfile(@RequestParam String email,
-                               User updatedUser,
+    public String updateProfile(User updatedUser,
                                @AuthenticationPrincipal User authenticatedUser,
                                RedirectAttributes redirectAttributes) {
         try {
-            User currentUser = resolveUser(email, authenticatedUser);
+            User currentUser = resolveAuthenticatedUser(authenticatedUser);
 
             usersService.updateProfile(currentUser.getId(), updatedUser);
             redirectAttributes.addFlashAttribute("success", "Perfil actualizado correctamente");
@@ -141,16 +140,23 @@ public class ProfileController {
 
     private User resolveUser(String email, User authenticatedUser) {
         if (authenticatedUser != null && !usersService.isAdmin(authenticatedUser)) {
-            return usersService.findByUsername(authenticatedUser.getUsername())
-                    .orElseGet(() -> usersService.findProfileByEmail(authenticatedUser.getEmail()));
+            return resolveAuthenticatedUser(authenticatedUser);
         }
         if (email != null && !email.isBlank()) {
             return usersService.findProfileByEmail(email);
         }
         if (authenticatedUser != null) {
-            return usersService.findByUsername(authenticatedUser.getUsername())
-                    .orElseGet(() -> usersService.findProfileByEmail(authenticatedUser.getEmail()));
+            return resolveAuthenticatedUser(authenticatedUser);
         }
         return usersService.findAnyProfileUser();
+    }
+
+    private User resolveAuthenticatedUser(User authenticatedUser) {
+        if (authenticatedUser == null) {
+            throw new RuntimeException("Usuario no autenticado");
+        }
+
+        return usersService.findByUsername(authenticatedUser.getUsername())
+                .orElseGet(() -> usersService.findProfileByEmail(authenticatedUser.getEmail()));
     }
 }

@@ -16,7 +16,6 @@
     <div class="card shadow-sm">
         <div class="card-body">
             <form th:action="@{/profile/update}" method="post" th:object="${user}">
-                <input type="hidden" name="email" th:value="${user.email}" />
                 <div class="row">
                     <div class="col-md-6">
                         <h5 class="card-title mb-4">Información Personal</h5>
@@ -58,7 +57,8 @@
                         
                         <div class="mb-3">
                             <label for="birthday" class="form-label">Fecha de Nacimiento</label>
-                            <input type="date" class="form-control" id="birthday" th:value="${user.birthday != null ? #temporals.format(user.birthday, 'yyyy-MM-dd') : ''}" th:field="*{birthday}" required>
+                            <input type="date" class="form-control" id="birthday" name="birthday"
+                                   th:value="${user.birthday != null ? #temporals.format(user.birthday, 'yyyy-MM-dd') : ''}" required>
                         </div>
                         
                         <div class="mb-3">

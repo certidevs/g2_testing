@@ -98,7 +98,8 @@
 
                                 <div class="mb-0">
                                     <label for="birthday" class="form-label">Fecha de nacimiento</label>
-                                    <input id="birthday" class="form-control" type="date" th:field="*{birthday}">
+                                    <input id="birthday" name="birthday" class="form-control" type="date"
+                                           th:value="${user.birthday != null ? #temporals.format(user.birthday, 'yyyy-MM-dd') : ''}">
                                 </div>
                             </div>
                         </div>
