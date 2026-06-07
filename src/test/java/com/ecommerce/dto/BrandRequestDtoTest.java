@@ -1,65 +1,127 @@
 package com.ecommerce.dto;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BrandRequestDtoTest {
 
-    @BeforeEach
-    void setUp() {
+    private final Validator validator = Validation
+            .buildDefaultValidatorFactory()
+            .getValidator();
+
+    @Test
+    void validDto_shouldHaveNoViolations() {
+        BrandRequestDto dto = validDto();
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations).isEmpty();
     }
 
     @Test
-    void getName() {
+    void name_whenBlank_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setName("");
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name"));
     }
 
     @Test
-    void getNif() {
+    void name_whenLongerThan100_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setName("A".repeat(101));
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("name"));
     }
 
     @Test
-    void getCountry() {
+    void nif_whenBlank_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setNif("");
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("nif"));
     }
 
     @Test
-    void getWebsite() {
+    void nif_whenLessThan9Characters_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setNif("B1234567");
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("nif"));
     }
 
     @Test
-    void getLogo() {
+    void nif_whenMoreThan9Characters_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setNif("B123456789");
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("nif"));
     }
 
     @Test
-    void getActive() {
+    void country_whenLongerThan100_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setCountry("A".repeat(101));
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("country"));
     }
 
     @Test
-    void setName() {
+    void website_whenLongerThan255_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setWebsite("A".repeat(256));
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("website"));
     }
 
     @Test
-    void setNif() {
+    void logo_whenLongerThan255_shouldBeInvalid() {
+        BrandRequestDto dto = validDto();
+        dto.setLogo("A".repeat(256));
+
+        Set<ConstraintViolation<BrandRequestDto>> violations = validator.validate(dto);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("logo"));
     }
 
-    @Test
-    void setCountry() {
-    }
-
-    @Test
-    void setWebsite() {
-    }
-
-    @Test
-    void setLogo() {
-    }
-
-    @Test
-    void setActive() {
-    }
-
-    @Test
-    void builder() {
+    private BrandRequestDto validDto() {
+        return BrandRequestDto.builder()
+                .name("Nike")
+                .nif("B12345678")
+                .country("USA")
+                .website("https://nike.com")
+                .logo("https://nike.com/logo.png")
+                .active(true)
+                .build();
     }
 }
