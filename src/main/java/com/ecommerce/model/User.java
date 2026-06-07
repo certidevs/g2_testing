@@ -100,7 +100,6 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-
     @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
@@ -120,4 +119,9 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    // Un usuario tiene muchas compras
+    @OneToMany
+    @Builder.Default
+    private List<Purchase> purchases = new ArrayList<>();
 }
