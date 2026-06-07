@@ -36,7 +36,7 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body">
                     <div id="purchasesRegistered" class="text-muted small">Compras registradas</div>
-                    <div id="numPurchasesRegistered" style="font-size: 1.5rem" th:text="${purchases != null ? purchases.size() : 0}">0</div>
+                    <div id="numPurchasesRegistered" style="font-size: 1.5rem" th:text="${purchases.size()}"></div>
                 </div>
             </div>
         </div>
