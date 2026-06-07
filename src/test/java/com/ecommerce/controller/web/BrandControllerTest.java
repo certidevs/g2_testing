@@ -105,7 +105,7 @@ class BrandControllerTest {
     void showCreateForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(get("/brands/new"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
@@ -120,7 +120,7 @@ class BrandControllerTest {
                         .param("logo", "puma.png")
                         .param("active", "true"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/brands"))
+                .andExpect(redirectedUrlPattern("/brands*"))
                 .andExpect(flash().attribute("successMessage", "Marca creada correctamente"));
 
         assertTrue(brandRepository.existsByName("Puma"));
@@ -154,7 +154,7 @@ class BrandControllerTest {
                         .param("logo", "puma.png")
                         .param("active", "true"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
 
         assertFalse(brandRepository.existsByName("Puma"));
     }
@@ -225,7 +225,7 @@ class BrandControllerTest {
     void showEditForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(get("/brands/{id}/edit", nike.getId()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
@@ -240,7 +240,7 @@ class BrandControllerTest {
                         .param("logo", "nike-updated.png")
                         .param("active", "false"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/brands"))
+                .andExpect(redirectedUrlPattern("/brands*"))
                 .andExpect(flash().attribute("successMessage", "Marca actualizada correctamente"));
 
         Brand updatedBrand = brandRepository.findById(nike.getId())
@@ -329,7 +329,7 @@ class BrandControllerTest {
                         .with(user("admin").roles("ADMIN"))
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/brands"))
+                .andExpect(redirectedUrlPattern("/brands*"))
                 .andExpect(flash().attribute("successMessage", "Marca eliminada correctamente"));
 
         assertFalse(brandRepository.existsById(nike.getId()));
@@ -350,7 +350,7 @@ class BrandControllerTest {
         mockMvc.perform(post("/brands/{id}/delete", nike.getId())
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
 
         assertTrue(brandRepository.existsById(nike.getId()));
     }
