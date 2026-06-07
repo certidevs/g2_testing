@@ -3,12 +3,7 @@ package com.ecommerce.ui;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
-
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +29,7 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
         // Compras registradas
         assertTrue(driver.findElement(By.id("purchasesRegistered")).getText().contains("Compras registradas"));
-        assertTrue(driver.findElement(By.id("numPurchasesRegistered")).getText().contains(user.getPurchases().size() + ""));
+        assertEquals(purchaseRepository.findAll().size(), Integer.parseInt(driver.findElement(By.id("numPurchasesRegistered")).getText()));
 
         // Correo
         String correoTitulo = driver.findElement(By.id("emailTitle")).getText();
@@ -43,68 +38,46 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         assertEquals("user@gmail.com", correoRegistrado);
 
         // Listado de las compras
-        List<WebElement> cardPurchasesContaining = driver.findElements(By.id("cardPurchasesContaining"));;
-        assertFalse(cardPurchasesContaining.isEmpty());
+        assertFalse(driver.findElements(By.id("cardPurchasesContaining")).isEmpty());
 
-        String headerTabla = driver.findElement(By.id("headerPurchasesContaining")).getText();
-        assertTrue(headerTabla.contains("Compra"));
-        assertTrue(headerTabla.contains("Creación"));
-        assertTrue(headerTabla.contains("Envío"));
-        assertTrue(headerTabla.contains("Estado"));
-        assertTrue(headerTabla.contains("Total"));
-        assertTrue(headerTabla.contains("Finalización"));
-        assertTrue(headerTabla.contains("Acciones"));
-
-        assertEquals(1, cardPurchasesContaining.size());
-        WebElement firstPurchase = cardPurchasesContaining.get(0);
-
-        //TODO poner en la vista dentro de los id la variable de manera dinamica para poder hacer correctamente los test con selenium
+        // Header del listado de las compras
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("COMPRA"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("CREACIÓN"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("ENVÍO"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("ESTADO"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("TOTAL"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("FINALIZACIÓN"));
+        assertTrue(driver.findElement(By.id("headerPurchasesContaining")).getText().contains("ACCIONES"));
 
         // Id de la compra
-        /* String purchaseId = firstPurchase.findElement(By.id("purchaseId")).getText();
-        assertEquals(purchaseId, compraConProductos.getId().toString()); */
+        assertTrue(driver.findElement(By.id("purchaseId-" + compraConProductos.getId())).getText().contains(compraConProductos.getId().toString()));
 
         // Fecha de la creación de la compra
-        // [estoy comparando dos formatos diferentes y no se como hacerlo :C]
-        // Preguntar si se puede castear variables
+        assertTrue(driver.findElement(By.id("purchaseCreationDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
 
+        // Modo de envío
+        assertTrue(driver.findElement(By.id("purchaseShippingDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getShippingMode().toString()));
 
+        // Estado de la compra
+        assertTrue(driver.findElement(By.id("purchaseStatus-" + compraConProductos.getId())).getText().contains(compraConProductos.getPurchaseStatus().toString()));
 
-        String creationDate = firstPurchase.findElement(By.id("creationDate")).getText();
-        assertEquals(creationDate, compraConProductos.getCreationDate().toLocalDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
+        // Precio total de la compra
+        assertTrue(driver.findElement(By.id("purchaseTotal-" + compraConProductos.getId())).getText().contains(compraConProductos.getTotalPrice().toString()));
 
-        /*
-        WebElement shippingMode = firstPurchase.findElement(By.id("shippingMode"));
-        assertEquals(shippingMode, compraConProductos.getShippingMode().toString());
-
-        WebElement shippingStatus = firstPurchase.findElement(By.id("shippingStatus"));
-        assertEquals(shippingStatus, compraConProductos.getShippingStatus().toString());
-
-        WebElement totalPurchase = firstPurchase.findElement(By.id("totalPurchase"));
-        assertTrue(totalPurchase.getText().contains(compraConProductos.getTotalPrice().toString()));
-
-        WebElement finishedDate = firstPurchase.findElement(By.id("finishedDate"));
-        assertEquals(finishedDate, compraConProductos.getFinishedDate().toString());
-
-         */
-
-        /* WebElement finishedDate = firstPurchase.findElement(By.id("finishedDate" + compraConProductos.getId()));
-        assertEquals(finishedDate.getText(), compraConProductos.getFinishedDate().toString()); */
+        // Fecha de finalización de la compra
+        assertTrue(driver.findElement(By.id("purchaseFinishDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getFinishedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
 
         // Acciones de la tabla del listado de las compras
 
         // Detalle de la compra
-        WebElement botonDetalleCompra = firstPurchase.findElement(By.id("detailPurchaseBtn"));
-        assertEquals(botonDetalleCompra.getAttribute("href"), baseUrl + "purchases/" + compraConProductos.getId());
+        assertEquals(driver.findElement(By.id("detailPurchaseBtn-" + compraConProductos.getId())).getAttribute("href"), baseUrl + "purchases/" + compraConProductos.getId());
 
         // Carrito de la compra
-        WebElement botonIrAlCarrito = firstPurchase.findElement(By.id("cartPurchaseBtn"));
-        assertEquals(botonIrAlCarrito.getAttribute("href"), baseUrl + "purchases/" + compraConProductos.getId() + "/cart");
+        assertEquals(driver.findElement(By.id("cartPurchaseBtn-" + compraConProductos.getId())).getAttribute("href"), baseUrl + "purchases/" + compraConProductos.getId() + "/cart");
 
         // Borrar la compra (comprobar que no está porque somos usuarios y no podemos)
-
          assertThrows(NoSuchElementException.class,
-                 () -> firstPurchase.findElement(By.id("deletePurchaseBtn")));
+                 () -> driver.findElement(By.id("deletePurchaseBtn-" + compraConProductos.getId())));
 
         // Entrar como admin y comprobar el boton delete :v
     }
