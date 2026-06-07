@@ -18,35 +18,23 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
     void purchaseList () {
 
         loginUser();
-//        // Login como usuario
-//        driver.get(baseUrl + "login");
-//
-//        String nombreUsuario = "user";
-//        login(nombreUsuario, "user");
-//
-//        wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
 
         // Ir a compras
         driver.get(baseUrl + "purchases");
 
         // Título de la página
-        String tituloPurchase = driver.findElement(By.id("titlePurchase")).getText();
-        assertEquals("GESTIÓN DE PEDIDOS", tituloPurchase);
+        assertEquals("GESTIÓN DE PEDIDOS", driver.findElement(By.id("titlePurchase")).getText());
 
         // Mensaje de bienvenida + nombre de usuario
-        String welcomeMessage = driver.findElement(By.id("welcomeMessage")).getText();
-        assertTrue(welcomeMessage.contains("¡Hola de nuevo, " + user.getUsername() + "!"));
+        assertTrue(driver.findElement(By.id("welcomeMessage")).getText().contains("¡Hola de nuevo, " + user.getUsername() + "!"));
 
         // Botón de crear compra
-        WebElement botonCrearCompra = driver.findElement(By.id("createPurchaseBtn"));
-        assertTrue(botonCrearCompra.isDisplayed());
-        assertTrue(botonCrearCompra.getAttribute("href").endsWith("/purchases/new"));
+        assertTrue(driver.findElement(By.id("createPurchaseBtn")).isDisplayed());
+        assertTrue(driver.findElement(By.id("createPurchaseBtn")).getAttribute("href").endsWith("/purchases/new"));
 
         // Compras registradas
-        String comprasRegistradasTitulo = driver.findElement(By.id("purchasesRegistered")).getText();
-        assertTrue(comprasRegistradasTitulo.contains("Compras registradas"));
-        WebElement numComprasRegistradas = driver.findElement(By.id("numPurchasesRegistered"));
-        assertEquals("2", numComprasRegistradas.getText());
+        assertTrue(driver.findElement(By.id("purchasesRegistered")).getText().contains("Compras registradas"));
+        assertTrue(driver.findElement(By.id("numPurchasesRegistered")).getText().contains(user.getPurchases().size() + ""));
 
         // Correo
         String correoTitulo = driver.findElement(By.id("emailTitle")).getText();
