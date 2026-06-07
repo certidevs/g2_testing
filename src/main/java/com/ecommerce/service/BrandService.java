@@ -69,7 +69,7 @@ public class BrandService
                 .country(dto.getCountry())
                 .website(dto.getWebsite())
                 .logo(dto.getLogo())
-                .active(dto.getActive())
+                .active(dto.getActive() != null ? dto.getActive() : true)
                 .build();
 
         //Persistencia y conversion a DTO de respuesta
@@ -110,7 +110,7 @@ public class BrandService
         brand.setCountry(dto.getCountry());
         brand.setWebsite(dto.getWebsite());
         brand.setLogo(dto.getLogo());
-        brand.setActive(dto.getActive());
+        brand.setActive(dto.getActive() != null ? dto.getActive() : brand.getActive());
 
         //Guardar y devolver DTO actualizado
         return toResponseDto(brandRepository.save(brand));

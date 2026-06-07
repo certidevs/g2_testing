@@ -80,10 +80,12 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     // ORDEN IMPORTANTE
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/hola", "/adios", "/login", "/register", "/chatbot", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+
                     // El chatbot puede responder a visitantes; el historial sí exige login.
                     .requestMatchers(HttpMethod.POST, "/api/chatbot").permitAll()
                     .requestMatchers(HttpMethod.GET, "/chatbot/history", "/chatbot/history/*").authenticated()
 
+                    //PRODUCTS
                     .requestMatchers(HttpMethod.GET, "/products").permitAll()
                     .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/deactivate/*").hasRole("ADMIN")
@@ -92,20 +94,26 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.GET, "/products/edit/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
 
+                    //CATEGORIES
                     .requestMatchers(HttpMethod.GET, "/categories").permitAll()
                     .requestMatchers(HttpMethod.POST, "/categories").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/categories/new").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/categories/edit/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/categories/*").permitAll()
 
-                    .requestMatchers(HttpMethod.GET, "/brands").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/brands").hasRole("ADMIN")
+                    //BRANDS
                     .requestMatchers(HttpMethod.GET, "/brands/new").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/brands/edit/*").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/brands/*/edit").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/brands").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/brands/*/edit").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/brands/*/delete").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/brands").permitAll()
                     .requestMatchers(HttpMethod.GET, "/brands/*").permitAll()
 
+                    //USERS
                     .requestMatchers("/admin/users", "/admin/users/**").hasRole("ADMIN")
 
+                    //REVIEWS
                     .requestMatchers(HttpMethod.GET, "/reviews").permitAll()
                     .requestMatchers(HttpMethod.POST, "/reviews").authenticated()
                     .requestMatchers(HttpMethod.GET, "/reviews/new").authenticated()
@@ -114,6 +122,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.GET, "/reviews/delete/*").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/reviews/*").permitAll()
 
+                    //PURCHASES
                     .requestMatchers("/purchases", "/purchases/**").authenticated()
                     .anyRequest().authenticated()
     );

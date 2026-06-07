@@ -20,6 +20,7 @@ public class BrandRequestDto
     @Size(min = 9, max = 9, message = "El NIF debe tener 9 caracteres")
     private String nif;
 
+    @NotBlank(message = "El país es obligatorio")
     @Size(max = 100, message = "EL país no puede superar 100 caracteres")
     private String country;
 

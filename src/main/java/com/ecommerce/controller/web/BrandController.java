@@ -103,7 +103,7 @@ public class BrandController
         {
          brandService.create(dto);
          //Correccion: clave del flash debe ser "successMessage"
-         redirectAttributes.addFlashAttribute("susccessMessage", "Marca creada correctamente");
+            redirectAttributes.addFlashAttribute("successMessage", "Marca creada correctamente");
          return "redirect:/brands";
         }
         catch (RuntimeException ex)
@@ -142,7 +142,7 @@ public class BrandController
         model.addAttribute("brand", dto);
         // Añadir el id de la marca para que el formulario sepa si es edición
         model.addAttribute("brandId", id);
-        model.addAttribute("formActive", "/brands/" + id + "/edit");
+        model.addAttribute("formAction", "/brands/" + id + "/edit");
 
         return "brands/brand-form";
     }
