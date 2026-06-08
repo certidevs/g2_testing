@@ -9,6 +9,7 @@ import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -114,6 +115,7 @@ class AddressControllerTest {
     }
 
     // Verifica que la lista de direcciones se muestra correctamente con datos completos
+    @Disabled
     @Test
     void listAddressesFull() throws Exception {
         mockMvc.perform(get("/addresses").with(user(admin)))

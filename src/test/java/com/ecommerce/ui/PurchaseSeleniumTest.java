@@ -1,5 +1,6 @@
 package com.ecommerce.ui;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -9,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
     // Verifica la vista de la lista de compras

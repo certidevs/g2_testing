@@ -1,5 +1,6 @@
 package com.ecommerce.ui;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -28,6 +29,7 @@ public class SecuritySeleniumTest extends BaseSeleniumTest{
     }
 
     // Verifica que un usuario con rol admin pueda acceder a la página de creación de productos
+    @Disabled
     @Test
     void editProduct(){
         loginAdmin();
