@@ -90,7 +90,6 @@ class BrandServiceTest {
         verify(brandRepository).findById(id);
     }
 
-    @Disabled
     @Test
     void findById_whenBrandDoesNotExist_shouldThrowException() {
         UUID id = UUID.randomUUID();
@@ -99,7 +98,7 @@ class BrandServiceTest {
 
         assertThatThrownBy(() -> brandService.findById(id))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Marca no encontrada");
+                .hasMessageContaining("Brand no found");
 
         verify(brandRepository).findById(id);
     }
@@ -217,7 +216,6 @@ class BrandServiceTest {
         assertThat(brandCaptor.getValue().getActive()).isTrue();
     }
 
-    @Disabled
     @Test
     void update_whenBrandDoesNotExist_shouldThrowException() {
         UUID id = UUID.randomUUID();
@@ -232,7 +230,7 @@ class BrandServiceTest {
 
         assertThatThrownBy(() -> brandService.update(id, dto))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Marca no encontrada");
+                .hasMessageContaining("Brand no found");
 
         verify(brandRepository).findById(id);
         verify(brandRepository, never()).save(any());
