@@ -3,12 +3,15 @@ package com.ecommerce.ui;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
+    // Verifica la vista de la lista de compras
     @Test
     void purchaseList () {
 
@@ -82,6 +85,7 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         // Entrar como admin y comprobar el boton delete :v
     }
 /*
+    // Verifica la vista del detalle de la compra
     @Test
     void purchaseDetail () {
         
@@ -115,8 +119,7 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         assertEquals("1/5", secondReview.findElement(By.className("review-rating")).getText());
     }
 
-    // restaurant list filters
-
+    // Verifica la vista del formulario de la compra
     @Test
     void purchaseForm(){
         loginAdmin();
@@ -135,8 +138,25 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
     }
 */
+    // Verifica el proceso de creación de una compra
+    @Test
+    void startPurchase() {
+        loginUser();
+        driver.navigate().to(baseUrl + "products/" + camiseta.getId());
+        wait.until(ExpectedConditions.elementToBeClickable(By.linkText("AÑADIR AL CARRITO")));
+        driver.findElement(By.linkText("AÑADIR AL CARRITO")).click();
+        wait.until(ExpectedConditions.urlContains("/purchases/purchaseId="));
+        driver.findElement(By.id("addBtn-" + camiseta.getId())).click();
+        wait.until(ExpectedConditions.urlContains("/purchases/new?purchaseId=" + camiseta.getId()));
+        driver.findElement(By.id("lessBtn-" + camiseta.getId())).click();
+        wait.until(ExpectedConditions.urlContains("/purchases/new?purchaseId=" + camiseta.getId()));
 
-    // StartPurchase
+        driver.findElement(By.id("numPeople")).sendKeys("2");
+        driver.findElement(By.id("userSuggestions")).sendKeys("al fondo a la derecha");
+        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        wait.until(ExpectedConditions.urlContains("/orders/"));
+        assertTrue(driver.findElement(By.tagName("h1")).getText().contains("Pedido #"));
+    }
 
     // UpdatePurchase | Add Product
 
