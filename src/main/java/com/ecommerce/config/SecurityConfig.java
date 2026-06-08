@@ -81,7 +81,17 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/api/v1/**").permitAll()
-                    .requestMatchers("/error", "/login", "/register", "/uploads/**", "/css/**", "/images/**", "/webjars/**").permitAll()
+                    .requestMatchers(
+                            "/error",
+                            "/login",
+                            "/register",
+                            "/uploads/**",
+                            "/css/**",
+                            "/js/**",
+                            "/images/**",
+                            "/webjars/**",
+                            "/favicon.ico"
+                    ).permitAll()
 
                     // El chatbot puede responder a visitantes; el historial sí exige login.
                     .requestMatchers(HttpMethod.POST, "/api/chatbot").permitAll()
@@ -132,7 +142,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     //
     http.formLogin(form ->
             form.loginPage("/login")
-                    .defaultSuccessUrl("/products")
+                    .loginProcessingUrl("/login")
+                    .defaultSuccessUrl("/products", true)
+                    .failureUrl("/login?error")
                     .permitAll()
     );
 
