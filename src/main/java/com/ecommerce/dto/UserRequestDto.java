@@ -28,6 +28,7 @@ public class UserRequestDto
     )
     private String password;
 
+    @NotBlank(message = "Debes repetir la contraseña")
     private String passwordConfirm;
 
     //@NotBlank(message = "Aceptar las condiciones es obligatorio")

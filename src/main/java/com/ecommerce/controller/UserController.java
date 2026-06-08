@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,15 +26,31 @@ public class UserController {
     }
 
     @PostMapping("register")
-    public String register(@Valid @ModelAttribute UserRequestDto form, RedirectAttributes redirectAttributes)
+    public String register(@Valid @ModelAttribute("user") UserRequestDto form, BindingResult bindingResult, Model model, RedirectAttributes redirectAttributes)
     {
+        if (form.getPassword() != null
+                && form.getPasswordConfirm() != null
+                && !form.getPassword().equals(form.getPasswordConfirm())) {
+
+            bindingResult.rejectValue(
+                    "passwordConfirm",
+                    "passwordConfirm.error",
+                    "Las contraseñas no coinciden"
+            );
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "/auth/register";
+        }
+
         try {
             userService.register(form);
-            redirectAttributes.addFlashAttribute("message", "Cuenta creada correctamente, inicia sesion");
+            redirectAttributes.addFlashAttribute("message", "Cuenta creada correctamente, inicia sesión");
             return "redirect:/login";
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/register";
+            model.addAttribute("error", e.getMessage());
+            return "/auth/register";
         }
     }
 

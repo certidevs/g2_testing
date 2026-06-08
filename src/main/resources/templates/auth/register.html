@@ -239,13 +239,19 @@
                                     </p>
                                 </div>
 
-                                <div th:if="${error}" class="alert alert-danger" th:text="${error}">
-                                    Ha ocurrido un error al crear la cuenta.
+                                <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger">
+                                    <strong>Revisa los datos del formulario:</strong>
+                                    <ul class="mb-0 mt-2">
+                                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}">
+                                            Error de validación
+                                        </li>
+                                    </ul>
                                 </div>
 
                                 <div class="form-floating mb-3">
                                     <input type="text"
                                            class="form-control"
+                                           th:classappend="${#fields.hasErrors('username')} ? ' is-invalid'"
                                            id="username"
                                            placeholder="pepe666"
                                            required
@@ -254,41 +260,56 @@
                                            maxlength="100"
                                            autocomplete="username">
                                     <label for="username">Usuario</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">
+                                        El nombre es obligatorio
+                                    </div>
                                 </div>
 
                                 <div class="form-floating mb-3">
                                     <input type="email"
                                            class="form-control"
+                                           th:classappend="${#fields.hasErrors('email')} ? ' is-invalid'"
                                            id="email"
                                            placeholder="pepe@gmail.com"
                                            required
                                            th:field="*{email}"
                                            autocomplete="email">
                                     <label for="email">Email</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                        El email no tiene un formato válido
+                                    </div>
                                 </div>
 
                                 <div class="form-floating mb-3">
                                     <input type="password"
                                            th:field="*{password}"
                                            class="form-control"
+                                           th:classappend="${#fields.hasErrors('password')} ? ' is-invalid'"
                                            id="password"
                                            placeholder="Contraseña"
                                            required
-                                           minlength="4"
+                                           minlength="8"
                                            autocomplete="new-password">
                                     <label for="password">Contraseña</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">
+                                        La contraseña debe tener al menos 8 caracteres
+                                    </div>
                                 </div>
 
                                 <div class="form-floating mb-3">
                                     <input type="password"
                                            th:field="*{passwordConfirm}"
                                            class="form-control"
+                                           th:classappend="${#fields.hasErrors('passwordConfirm')} ? ' is-invalid'"
                                            id="passwordConfirm"
                                            placeholder="Repite la contraseña"
                                            required
-                                           minlength="4"
+                                           minlength="8"
                                            autocomplete="new-password">
                                     <label for="passwordConfirm">Repite la contraseña</label>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}">
+                                        Debes repetir la contraseña
+                                    </div>
                                 </div>
 
                                 <button type="submit"
