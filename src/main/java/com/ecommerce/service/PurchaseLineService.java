@@ -17,29 +17,29 @@ public class PurchaseLineService {
 
     private final PurchaseLineRepository purchaseLineRepository;
 
-    // Get all purchase lines
+    // Obtiene todas las líneas de compra
     public List<PurchaseLine> getAllPurchaseLines() {
         return purchaseLineRepository.findAll();
     }
 
-    // Get purchase line by ID
+    // Obtiene una línea de compra por su ID
     public Optional<PurchaseLine> getPurchaseLineById(UUID id) {
         return purchaseLineRepository.findById(id);
     }
 
-    // Helper to get purchase line or throw exception
+    // FUnción auxiliar para obtener una línea de compra por su ID o lanzar una excepción si no se encuentra
     private PurchaseLine getPurchaseLineEntityById(UUID id) {
         return purchaseLineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("PurchaseLine not found with id: " + id));
     }
 
-    // Create purchase line
+    // Crea una nueva línea de compra
     @Transactional
     public PurchaseLine createPurchaseLine(PurchaseLine purchaseLine) {
         return purchaseLineRepository.save(purchaseLine);
     }
 
-    // Update purchase line
+    // Actualiza una línea de compra existente
     @Transactional
     public PurchaseLine updatePurchaseLine(UUID id, PurchaseLine purchaseLineDetails) {
         PurchaseLine line = getPurchaseLineEntityById(id);
@@ -52,7 +52,7 @@ public class PurchaseLineService {
         return purchaseLineRepository.save(line);
     }
 
-    // Update quantity of purchase line
+    // Actualiza la cantidad de una línea de compra
     @Transactional
     public PurchaseLine updateQuantity(UUID id, int newQuantity) {
         PurchaseLine line = getPurchaseLineEntityById(id);
@@ -60,13 +60,13 @@ public class PurchaseLineService {
         return purchaseLineRepository.save(line);
     }
 
-    // Delete purchase line by ID
+    // Elimina una línea de compra por su ID
     @Transactional
     public void deletePurchaseLine(UUID id) {
         purchaseLineRepository.deleteById(id);
     }
 
-    // Get purchase lines by purchase
+    // Obtiene todas las líneas de compra asociadas a una compra específica
     public List<PurchaseLine> getPurchaseLinesByPurchase(Purchase purchase) {
         return purchaseLineRepository.findByPurchase(purchase);
     }
