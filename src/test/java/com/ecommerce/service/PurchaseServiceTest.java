@@ -1,14 +1,8 @@
 package com.ecommerce.service;
 
-import com.ecommerce.model.Product;
-import com.ecommerce.model.Purchase;
-import com.ecommerce.model.PurchaseLine;
-import com.ecommerce.model.User;
-import com.ecommerce.model.enums.PaymentStatus;
-import com.ecommerce.model.enums.ProcessStatus;
-import com.ecommerce.model.enums.PurchaseStatus;
-import com.ecommerce.model.enums.ShippingMode;
-import com.ecommerce.model.enums.ShippingStatus;
+import com.ecommerce.model.*;
+import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
@@ -40,6 +34,9 @@ class PurchaseServiceTest {
     ProductRepository productRepository;
 
     @Mock
+    AddressRepository addressRepository;
+
+    @Mock
     PurchaseLineRepository purchaseLineRepository;
 
     @InjectMocks
@@ -50,12 +47,28 @@ class PurchaseServiceTest {
     UUID userId;
     UUID productId;
     UUID purchaseId;
+    Address address;
+    Purchase purchase;
 
     @BeforeEach
     void setUp() {
         userId = UUID.randomUUID();
         productId = UUID.randomUUID();
         purchaseId = UUID.randomUUID();
+
+        address = Address.builder()
+                .id(UUID.randomUUID())
+                .street("Street")
+                .city("City")
+                .country("Country")
+                .state("State")
+                .zipCode("12345")
+                .number("123")
+                .complement("Apt 4B")
+                .addressType(AddressType.BILLING)
+                .user(user)
+                .purchase(purchase)
+                .build();
 
         user = User.builder()
                 .id(userId)
@@ -94,6 +107,10 @@ class PurchaseServiceTest {
                 .quantity(3)
                 .build();
         purchase.getLines().addAll(List.of(line1, line2));
+        purchase.setAddressId(address.getId());
+        when(addressRepository.findById(address.getId())).thenReturn(Optional.of(address));
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(user.getId(), PurchaseStatus.INITIATED)).thenReturn(Optional.empty());
+
 
         purchaseService.createPurchase(purchase, user);
 
@@ -110,6 +127,9 @@ class PurchaseServiceTest {
     void createPurchaseWithNullLinesAssignsUserAndZeroTotal() {
         Purchase purchase = new Purchase();
         purchase.setLines(null);
+        purchase.setAddressId(address.getId());
+        when(addressRepository.findById(address.getId())).thenReturn(Optional.of(address));
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(user.getId(), PurchaseStatus.INITIATED)).thenReturn(Optional.empty());
 
         purchaseService.createPurchase(purchase, user);
 
@@ -117,6 +137,38 @@ class PurchaseServiceTest {
         assertNotNull(purchase.getCreationDate());
         assertEquals(0.0, purchase.getTotalPrice());
         verify(purchaseRepository).save(purchase);
+    }
+
+    // Verifica que al intentar crear una compra si el usuario ya tiene un carrito activo, se lance una excepción
+    @Test
+    void createPurchaseThrowsWhenUserHasActiveCart() {
+        Purchase activeCart = purchaseWithLine(1);
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(user.getId(), PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.createPurchase(new Purchase(), user));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("User already has an active cart", exception.getReason());
+        verify(purchaseRepository, never()).save(any());
+    }
+
+    // Verifica que al intentar crear una compra si la dirección no existe, se lance una excepción
+    @Test
+    void createPurchaseThrowsWhenAddressNotFound() {
+        Purchase purchase = new Purchase();
+        purchase.setAddressId(UUID.randomUUID());
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(user.getId(), PurchaseStatus.INITIATED))
+                .thenReturn(Optional.empty());
+        when(addressRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.createPurchase(purchase, user));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("Address not found", exception.getReason());
+        verify(purchaseRepository, never()).save(any());
     }
 
     // Verifica que al agregar un producto al carrito, si no hay un carrito activo para el usuario, se crea uno nuevo con el producto agregado como línea, se asigna el usuario a la compra, se calcula el total y se guarda la línea y la compra en el repositorio
@@ -362,6 +414,17 @@ class PurchaseServiceTest {
         assertEquals(purchase, result.get());
     }
 
+    // Verifica que al obtener o crear un carrito para un usuario, si no existe un carrito activo para ese usuario, se devuelve un Optional vacío
+    @Test
+    void getOrCreateCartForUserReturnsEmptyOptionalWhenNoActiveCart() {
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.empty());
+
+        Optional<Purchase> result = purchaseService.getOrCreateCartForUser(userId);
+
+        assertFalse(result.isPresent());
+    }
+
     // Verifica que al completar una compra, si la compra existe y tiene líneas se actualiza el estatus de la compra a FINISHED y se establece la fecha de finalización, por último se guarda la compra actualizada en el repositorio
     @Test
     void completePurchaseMarksPurchaseAsFinished() {
@@ -399,6 +462,119 @@ class PurchaseServiceTest {
         verify(purchaseRepository, never()).save(any());
     }
 
+    // Verifica que al completar el carrito actual, se actualiza correctamente el estado de la compra y se guarda en el repositorio
+    @Test
+    void completeCurrentCartCompletesPurchaseSuccessfully() {
+        Purchase activeCart = purchaseWithLine(1);
+        activeCart.setTotalPrice(10.0);
+        Address userAddress = Address.builder().id(UUID.randomUUID()).user(user).build();
+        List<PurchaseLine> lines = List.of(PurchaseLine.builder().product(product).quantity(1).build());
+
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(lines);
+        when(addressRepository.findById(userAddress.getId())).thenReturn(Optional.of(userAddress));
+        when(purchaseRepository.save(any(Purchase.class))).thenReturn(activeCart);
+
+        Purchase completedPurchase = purchaseService.completeCurrentCart(user, userAddress.getId(), ShippingMode.EXPRESS);
+
+        assertNotNull(completedPurchase.getFinishedDate());
+        assertEquals(PurchaseStatus.FINISHED, completedPurchase.getPurchaseStatus());
+        assertEquals(PaymentStatus.PAID, completedPurchase.getPaymentStatus());
+        assertEquals(ProcessStatus.COMPLETED, completedPurchase.getProcessStatus());
+        assertEquals(ShippingStatus.PENDING, completedPurchase.getShippingStatus());
+        assertEquals(ShippingMode.EXPRESS, completedPurchase.getShippingMode());
+        assertEquals(userAddress, completedPurchase.getAddress());
+        assertEquals(10.0, completedPurchase.getTotalPrice());
+        verify(purchaseRepository).save(activeCart);
+    }
+
+    // Verifica que al intentar completar el carrito actual si el usuario es nulo, se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenUserIsNull() {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(null, UUID.randomUUID(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+        assertEquals("Authenticated user is required", exception.getReason());
+        verifyNoInteractions(purchaseRepository, purchaseLineRepository, addressRepository);
+    }
+
+    // Verifica que al intentar completar el carrito actual si no hay un carrito activo para el usuario, se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenNoActiveCart() {
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, UUID.randomUUID(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("No active cart found", exception.getReason());
+        verify(purchaseLineRepository, never()).findByPurchaseId(any());
+        verify(addressRepository, never()).findById(any());
+        verify(purchaseRepository, never()).save(any());
+    }
+
+    // Verifica que al intentar completar el carrito actual si el carrito no tiene líneas, se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenCartHasNoLines() {
+        Purchase activeCart = purchaseWithLine(0); // Cart with no lines
+        activeCart.getLines().clear(); // Ensure lines list is empty
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(new ArrayList<>()); // Return empty list for lines
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, UUID.randomUUID(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Can not finish a purchase without lines", exception.getReason());
+        verify(addressRepository, never()).findById(any());
+        verify(purchaseRepository, never()).save(any());
+    }
+
+    // Verifica que al intentar completar el carrito actual si la dirección no existe, se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenAddressNotFound() {
+        Purchase activeCart = purchaseWithLine(1);
+        Address userAddress = Address.builder().id(UUID.randomUUID()).user(user).build();
+        List<PurchaseLine> lines = List.of(PurchaseLine.builder().product(product).quantity(1).build());
+
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(lines);
+        when(addressRepository.findById(userAddress.getId())).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, userAddress.getId(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+        assertEquals("Address not found", exception.getReason());
+        verify(purchaseRepository, never()).save(any());
+    }
+
+    // Verifica que al intentar completar el carrito actual si la dirección no pertenece al usuario autenticado, se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenAddressDoesNotBelongToUser() {
+        Purchase activeCart = purchaseWithLine(1);
+        User otherUser = User.builder().id(UUID.randomUUID()).username("other").build();
+        Address otherUserAddress = Address.builder().id(UUID.randomUUID()).user(otherUser).build();
+        List<PurchaseLine> lines = List.of(PurchaseLine.builder().product(product).quantity(1).build());
+
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(lines);
+        when(addressRepository.findById(otherUserAddress.getId())).thenReturn(Optional.of(otherUserAddress));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, otherUserAddress.getId(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+        assertEquals("This address does not belong to the authenticated user", exception.getReason());
+        verify(purchaseRepository, never()).save(any());
+    }
+
     // Verifica que al obtener todas las compras, se devuelven los resultados que devuelve el repositorio
     @Test
     void getAllPurchasesReturnsRepositoryResults() {
@@ -432,6 +608,17 @@ class PurchaseServiceTest {
         verify(purchaseRepository).save(purchase);
     }
 
+    // Verifica que al intentar actualizar el estatus de pago de una compra que no existe, se lance una excepción
+    @Test
+    void updatePaymentStatusThrowsWhenPurchaseDoesNotExist() {
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.updatePaymentStatus(purchaseId, PaymentStatus.PAID));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    }
+
     // Verifica que al actualizar el modo de envío de una compra, se actualiza correctamente el campo de modo de envío y se guarda la compra actualizada en el repositorio
     @Test
     void updatePaymentStatusSavesUpdatedPurchase() {
@@ -442,6 +629,17 @@ class PurchaseServiceTest {
 
         assertEquals(PaymentStatus.PAID, result.getPaymentStatus());
         verify(purchaseRepository).save(purchase);
+    }
+
+    // Verifica que al intentar actualizar el estatus de proceso de una compra que no existe, se lance una excepción
+    @Test
+    void updateProcessStatusThrowsWhenPurchaseDoesNotExist() {
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.updateProcessStatus(purchaseId, ProcessStatus.COMPLETED));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
 
     // Verifica que al actualizar el modo de envío de una compra, se actualiza correctamente el campo de modo de envío y se guarda la compra actualizada en el repositorio
@@ -456,6 +654,17 @@ class PurchaseServiceTest {
         verify(purchaseRepository).save(purchase);
     }
 
+    // Verifica que al intentar actualizar el estatus de envío de una compra que no existe, se lance una excepción
+    @Test
+    void updateShippingStatusThrowsWhenPurchaseDoesNotExist() {
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.updateShippingStatus(purchaseId, ShippingStatus.DELIVERED));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    }
+
     // Verifica que al actualizar el modo de envío de una compra, se actualiza correctamente el campo de modo de envío y se guarda la compra actualizada en el repositorio
     @Test
     void updateShippingStatusSavesUpdatedPurchase() {
@@ -468,6 +677,17 @@ class PurchaseServiceTest {
         verify(purchaseRepository).save(purchase);
     }
 
+    // Verifica que al intentar actualizar el modo de envío de una compra que no existe, se lance una excepción
+    @Test
+    void updateShippingModeThrowsWhenPurchaseDoesNotExist() {
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.updateShippingMode(purchaseId, ShippingMode.EXPRESS));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    }
+
     // Verifica que al actualizar el modo de envío de una compra, se actualiza correctamente el campo de modo de envío y se guarda la compra actualizada en el repositorio
     @Test
     void updateShippingModeSavesUpdatedPurchase() {
@@ -478,6 +698,17 @@ class PurchaseServiceTest {
 
         assertEquals(ShippingMode.EXPRESS, result.getShippingMode());
         verify(purchaseRepository).save(purchase);
+    }
+
+    // Verifica que al intentar actualizar el comentario de usuario de una compra que no existe, se lance una excepción
+    @Test
+    void updateUserCommentThrowsWhenPurchaseDoesNotExist() {
+        when(purchaseRepository.findById(purchaseId)).thenReturn(Optional.empty());
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.updateUserComment(purchaseId, "Leave at door"));
+
+        assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
     }
 
     // Verifica que al actualizar el comentario de usuario de una compra, se actualiza correctamente el campo de comentario adicional del envío y se guarda la compra actualizada en el repositorio
