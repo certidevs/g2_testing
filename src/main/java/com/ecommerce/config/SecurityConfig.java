@@ -79,7 +79,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             auth -> auth
                     // ORDEN IMPORTANTE
                     .requestMatchers("/h2-console/**").permitAll()
-                    .requestMatchers("/hola", "/adios", "/login", "/register", "/chatbot", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                    .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/api/v1/**").permitAll()
+                    .requestMatchers("/error", "/login", "/register", "/uploads/**", "/css/**", "/images/**", "/webjars/**").permitAll()
 
                     // El chatbot puede responder a visitantes; el historial sí exige login.
                     .requestMatchers(HttpMethod.POST, "/api/chatbot").permitAll()
