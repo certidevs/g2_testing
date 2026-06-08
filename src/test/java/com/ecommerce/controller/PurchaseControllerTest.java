@@ -280,7 +280,7 @@ class PurchaseControllerTest {
         mockMvc.perform(get("/purchases/delete/{id}", purchase1.getId()).with(user(admin)))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/purchases*"))
-                .andExpect(flash().attribute("message", "Purchase deleted successfully"));
+                .andExpect(flash().attribute("message", "La compra se ha eliminado correctamente"));
 
         verify(purchaseService).deletePurchase(purchase1.getId());
     }
