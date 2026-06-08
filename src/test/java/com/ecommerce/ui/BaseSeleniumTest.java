@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -78,10 +79,18 @@ public class BaseSeleniumTest {
 
         // Inicializar y configuración de driver
         baseUrl = "http://localhost:" + port + "/";
-        driver = new ChromeDriver();
-        driver.manage().window().maximize();
 
         // Subimos el timeout para operaciones como login y procesamiento de formularios
+        wait = new WebDriverWait(driver, Duration.ofSeconds(30L));
+
+        // Opciones para GitHub Actions
+        boolean ci = System.getenv("CI") != null; // GitHub Actions pone CI=True
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--window-size=1920,1080");
+        if (ci) {
+            chromeOptions.addArguments("--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+        }
+        driver = new ChromeDriver(chromeOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(30L));
     }
 
