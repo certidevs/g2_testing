@@ -94,53 +94,53 @@
                     <!-- ID DE LA COMPRA -->
                     <td>
                         <div class="fw-semibold">Pedido</div>
-                        <div th:id="'purchaseId' + ${purchase.id}" class="text-muted small font-monospace" th:text="${purchase.id}"></div>
+                        <div th:id="'purchaseId-' + ${purchase.id}" class="text-muted small font-monospace" th:text="${purchase.id}"></div>
                     </td>
 
                     <!-- FECHA DE CREACIÓN -->
-                    <td id="'creationDate' + ${purchase.id}" th:text="${purchase.creationDate != null ? #temporals.format(purchase.creationDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}"></td>
+                    <td th:id="'creationDate-' + ${purchase.id}" th:text="${purchase.creationDate != null ? #temporals.format(purchase.creationDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}"></td>
 
                     <!-- MODO DE ENVÍO -->
                     <td>
-                        <span id="'shippingMode' + ${purchase.id}" class="badge rounded-pill text-bg-light border"
+                        <span th:id="'shippingMode-' + ${purchase.id}" class="badge rounded-pill text-bg-light border"
                               th:text="${purchase.shippingMode != null ? purchase.shippingMode : 'Sin definir'}"></span>
                     </td>
 
                     <!-- ESTADO DE LA COMPRA -->
-                    <td id="'purchaseStatus' + ${purchase.id}" >
+                    <td  >
                         <span th:switch="${purchase.purchaseStatus}">
-                            <span th:case="${T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}" class="badge rounded-pill text-bg-success">Finalizada</span>
-                            <span th:case="${T(com.ecommerce.model.enums.PurchaseStatus).INITIATED}" class="badge rounded-pill text-bg-primary">Iniciada</span>
-                            <span th:case="${T(com.ecommerce.model.enums.PurchaseStatus).INACTIVE}" class="badge rounded-pill text-bg-secondary">Inactiva</span>
-                            <span th:case="*" class="badge rounded-pill text-bg-light border">Sin estado</span>
+                            <span th:id="'purchaseStatus-' + ${purchase.id}" th:case="${T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}" class="badge rounded-pill text-bg-success">Finalizada</span>
+                            <span th:id="'purchaseStatus-' + ${purchase.id}" th:case="${T(com.ecommerce.model.enums.PurchaseStatus).INITIATED}" class="badge rounded-pill text-bg-primary">Iniciada</span>
+                            <span th:id="'purchaseStatus-' + ${purchase.id}" th:case="${T(com.ecommerce.model.enums.PurchaseStatus).INACTIVE}" class="badge rounded-pill text-bg-secondary">Inactiva</span>
+                            <span th:id="'purchaseStatus-' + ${purchase.id}" th:case="*" class="badge rounded-pill text-bg-light border">Sin estado</span>
                         </span>
                     </td>
 
                     <!-- PRECIO TOTAL -->
-                    <td id="'totalPurchase' + ${purchase.id}" class="fw-semibold"
+                    <td th:id="'totalPurchase-' + ${purchase.id}" class="fw-semibold"
                         th:text="${purchase.totalPrice != null ? #numbers.formatDecimal(purchase.totalPrice, 1, 2) + ' €' : '0,00 €'}"></td>
 
                     <!-- FECHA DE FINALIZACIÓN -->
-                    <td id="'finishedDate' + ${purchase.id}" th:text="${purchase.finishedDate != null ? #temporals.format(purchase.finishedDate, 'dd/MM/yyyy HH:mm') : 'Pendiente'}"></td>
+                    <td th:id="'finishedDate-' + ${purchase.id}" th:text="${purchase.finishedDate != null ? #temporals.format(purchase.finishedDate, 'dd/MM/yyyy HH:mm') : 'Pendiente'}"></td>
 
                     <!-- ACCIONES -->
                     <td>
                         <div class="d-flex justify-content-end gap-2">
 
                             <!-- BOTÓN PARA IR A DETALLES DE LA COMPRA -->
-                            <a id="'detailPurchaseBtn' + ${purchase.id}" th:href="@{/purchases/{id}(id=${purchase.id})}" class="btn btn-sm btn-outline-primary" title="Ver compra">
+                            <a th:id="'detailPurchaseBtn-' + ${purchase.id}" th:href="@{/purchases/{id}(id=${purchase.id})}" class="btn btn-sm btn-outline-primary" title="Ver compra">
                                 <i class="fa-regular fa-eye"></i>
                             </a>
 
                             <!-- BOTÓN PARA IR AL CARRITO DE LA COMPRA SI NO ESTÁ EL ESTADO DE LA COMPRA FINALIZADO -->
-                            <a id="'cartPurchaseBtn' + ${purchase.id}" th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"
+                            <a th:id="'cartPurchaseBtn-' + ${purchase.id}" th:if="${purchase.purchaseStatus != T(com.ecommerce.model.enums.PurchaseStatus).FINISHED}"
                                th:href="@{/purchases/{id}/cart(id=${purchase.id})}"
                                class="btn btn-sm btn-outline-success" title="Ir al carrito">
                                 <i class="fa-solid fa-cart-arrow-down"></i>
                             </a>
 
                             <!-- BOTÓN DE BORRAR COMPRA -->
-                            <a id="'deletePurchaseBtn' + ${purchase.id}" sec:authorize="hasRole('ADMIN')" th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
+                            <a th:id="'deletePurchaseBtn-' + ${purchase.id}" sec:authorize="hasRole('ADMIN')" th:href="@{/purchases/delete/{id}(id=${purchase.id})}"
                                class="btn btn-sm btn-outline-danger"
                                title="Borrar compra"
                                onclick="return confirm('¿Seguro que quieres borrar esta compra?');">

@@ -58,19 +58,20 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         assertTrue(driver.findElement(By.id("purchaseId-" + compraConProductos.getId())).getText().contains(compraConProductos.getId().toString()));
 
         // Fecha de la creación de la compra
-        assertTrue(driver.findElement(By.id("purchaseCreationDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+        assertTrue(driver.findElement(By.id("creationDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getCreationDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
 
         // Modo de envío
-        assertTrue(driver.findElement(By.id("purchaseShippingDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getShippingMode().toString()));
+        assertTrue(driver.findElement(By.id("shippingMode-" + compraConProductos.getId())).getText().contains(compraConProductos.getShippingMode().toString()));
 
         // Estado de la compra
-        assertTrue(driver.findElement(By.id("purchaseStatus-" + compraConProductos.getId())).getText().contains(compraConProductos.getPurchaseStatus().toString()));
+        assertTrue(driver.findElement(By.id("purchaseStatus-" + compraConProductos.getId())).getText().contains("Iniciada"));
 
         // Precio total de la compra
-        assertTrue(driver.findElement(By.id("purchaseTotal-" + compraConProductos.getId())).getText().contains(compraConProductos.getTotalPrice().toString()));
+        assertTrue(driver.findElement(By.id("totalPurchase-" + compraConProductos.getId())).getText().contains("100,00 €"));
 
         // Fecha de finalización de la compra
-        assertTrue(driver.findElement(By.id("purchaseFinishDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getFinishedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+//        assertTrue(driver.findElement(By.id("finishedDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getFinishedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+        assertTrue(driver.findElement(By.id("finishedDate-" + compraConProductos.getId())).getText().contains("Pendiente"));
 
         // Acciones de la tabla del listado de las compras
 

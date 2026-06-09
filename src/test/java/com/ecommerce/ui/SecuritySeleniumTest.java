@@ -16,6 +16,7 @@ public class SecuritySeleniumTest extends BaseSeleniumTest{
         driver.get(baseUrl + "purchases");
         wait.until(ExpectedConditions.urlContains("login"));
         loginUser();
+        driver.get(baseUrl + "purchases");
         wait.until(ExpectedConditions.urlContains("purchases"));
     }
 
@@ -29,14 +30,13 @@ public class SecuritySeleniumTest extends BaseSeleniumTest{
     }
 
     // Verifica que un usuario con rol admin pueda acceder a la página de creación de productos
-    @Disabled
     @Test
     void editProduct(){
         loginAdmin();
         driver.get(baseUrl + "products/edit/" + camiseta.getId());
 
         // Verifica que el valor del nombre del producto aparezca en la ranura de nombre para editar
-        WebElement nameInput = driver.findElement(By.id("nameProduct")); // TODO poner el id "nameProduct" a la casilla donde se edita el nombre del producto
+        WebElement nameInput = driver.findElement(By.id("title")); // TODO poner el id "nameProduct" a la casilla donde se edita el nombre del producto
         assertEquals("Camiseta", nameInput.getAttribute("value"));
     }
 
