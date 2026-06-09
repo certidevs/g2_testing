@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Map;
 
 @ExtendWith(ScreenshotOnFailure.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -88,6 +89,12 @@ public class BaseSeleniumTest {
         boolean ci = System.getenv("CI") != null; // GitHub Actions pone CI=True
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--window-size=1920,1080");
+        // Forzar es-ES en el navegador -> Accept-Language es-ES -> el servidor formatea los
+        // decimales con coma igual en local y en CI. (El <input type="date"> NO se controla
+        // con esto en Linux: usa el locale del SO; por eso su fecha se fija por valor ISO
+        // en el propio test, no tecleando.)
+        chromeOptions.addArguments("--lang=es-ES");
+        chromeOptions.setExperimentalOption("prefs", Map.of("intl.accept_languages", "es-ES"));
         if (ci) {
             chromeOptions.addArguments("--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
         }
