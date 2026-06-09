@@ -42,7 +42,7 @@ class PurchaseRestControllerTest {
 
 
         purchase = purchaseRepository.save(Purchase.builder()
-                .id(UUID.randomUUID())
+//                .id(UUID.randomUUID())
                 .creationDate(LocalDateTime.of(2026, 5, 30, 12, 30))
                 .purchaseStatus(PurchaseStatus.INITIATED)
                 .shippingStatus(ShippingStatus.PENDING)
@@ -62,7 +62,7 @@ class PurchaseRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id").value(purchase.getId()))
+                .andExpect(jsonPath("$[0].id").value(purchase.getId().toString()))
                 .andExpect(jsonPath("$[0].creationDate").value(purchase.getCreationDate()))
                 .andExpect(jsonPath("$[0].shippingMode").value(purchase.getShippingMode().name()))
                 .andExpect(jsonPath("$[0].purchaseStatus").value(purchase.getPurchaseStatus().name()))
