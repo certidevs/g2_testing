@@ -615,16 +615,16 @@ main .container > .row:first-child h1 {
 /* Botón de registro */
 
 /* Estado normal */
-.button-brown {
+.button-color {
     border: 1px solid #000000;
-    background-color: #b89b63;
+    background-color: #8FA386;
     color: #212529;
     transition: background-color 0.2s ease;
 }
 
 /* Estado hover */
-.button-brown:hover {
-    background-color: #78663e;
+.button-color:hover {
+    background-color: #52634D;
     color: #000000;
 }
 
@@ -632,10 +632,10 @@ main .container > .row:first-child h1 {
 
 /* Estado normal */
 .brown-options {
-    color: #b89b63;
+    color: #8FA386;
 }
 
 /* Estado hover */
 .brown-options:hover {
-    color: #78663e;
+    color:  #52634D;
 }
