@@ -8,11 +8,30 @@
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
 
 <style>
+    :root {
+        --premium-ink: #181818;
+        --premium-ink-soft: #2B2B2B;
+        --premium-ivory: #F6F1E8;
+        --premium-ivory-soft: #FAF7F0;
+        --premium-white: #FFFDF8;
+        --premium-sage: #A7B8A1;
+        --premium-sage-dark: #5E6F5A;
+        --premium-sage-soft: #EEF2EB;
+        --premium-muted: #6F6F68;
+        --premium-muted-light: #8A8A82;
+        --premium-border: rgba(24, 24, 24, 0.10);
+        --premium-border-strong: rgba(24, 24, 24, 0.18);
+        --premium-shadow: rgba(24, 24, 24, 0.08);
+        --premium-shadow-strong: rgba(24, 24, 24, 0.18);
+        --premium-success: #5E6F5A;
+        --premium-danger: #7A2E35;
+    }
+
     .checkout-body {
         background:
-                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 35%),
-                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
-        color: #1f1a17;
+                radial-gradient(circle at top left, rgba(167, 184, 161, 0.24), transparent 35%),
+                linear-gradient(180deg, var(--premium-ivory) 0%, var(--premium-sage-soft) 100%);
+        color: var(--premium-ink);
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -33,7 +52,7 @@
         gap: 1.5rem;
         margin-bottom: 2rem;
         padding-bottom: 1.5rem;
-        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+        border-bottom: 1px solid var(--premium-border);
     }
 
     .checkout-eyebrow {
@@ -41,7 +60,7 @@
         align-items: center;
         gap: 0.55rem;
         margin-bottom: 0.8rem;
-        color: #8a6f4d;
+        color: var(--premium-sage-dark);
         font-size: 0.76rem;
         font-weight: 800;
         letter-spacing: 0.16em;
@@ -57,7 +76,7 @@
 
     .checkout-title {
         margin: 0;
-        color: #1f1a17;
+        color: var(--premium-ink);
         font-family: Georgia, "Times New Roman", serif;
         font-size: clamp(2.1rem, 4vw, 3.8rem);
         font-weight: 500;
@@ -68,7 +87,7 @@
     .checkout-subtitle {
         max-width: 720px;
         margin: 0.9rem 0 0;
-        color: #6b6057;
+        color: var(--premium-muted);
         font-size: 1rem;
         line-height: 1.7;
     }
@@ -87,41 +106,41 @@
         font-weight: 800;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
     }
 
     .btn-premium-primary {
-        border: 1px solid #1f1a17;
-        background: #1f1a17;
+        border: 1px solid var(--premium-ink);
+        background: var(--premium-ink);
         color: #fff;
-        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+        box-shadow: 0 16px 34px var(--premium-shadow-strong);
     }
 
     .btn-premium-primary:hover {
-        background: #352d27;
-        border-color: #352d27;
+        background: var(--premium-ink-soft);
+        border-color: var(--premium-ink-soft);
         color: #fff;
         transform: translateY(-1px);
-        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+        box-shadow: 0 22px 44px rgba(24, 24, 24, 0.24);
     }
 
     .btn-premium-primary:disabled {
-        border-color: rgba(31, 26, 23, 0.28);
-        background: rgba(31, 26, 23, 0.35);
+        border-color: rgba(24, 24, 24, 0.28);
+        background: rgba(24, 24, 24, 0.35);
         box-shadow: none;
         transform: none;
     }
 
     .btn-premium-secondary {
-        border: 1px solid rgba(31, 26, 23, 0.14);
-        background: rgba(255, 255, 255, 0.86);
-        color: #1f1a17;
+        border: 1px solid var(--premium-border-strong);
+        background: rgba(255, 253, 248, 0.88);
+        color: var(--premium-ink);
     }
 
     .btn-premium-secondary:hover {
-        border-color: rgba(31, 26, 23, 0.30);
+        border-color: rgba(94, 111, 90, 0.42);
         background: #fff;
-        color: #1f1a17;
+        color: var(--premium-sage-dark);
         transform: translateY(-1px);
     }
 
@@ -131,8 +150,8 @@
         gap: 0.45rem;
         padding: 0.62rem 0.9rem;
         border-radius: 999px;
-        background: rgba(47, 107, 69, 0.10);
-        color: #2f6b45;
+        background: rgba(167, 184, 161, 0.24);
+        color: var(--premium-sage-dark);
         font-size: 0.78rem;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -147,15 +166,15 @@
     }
 
     .alert-premium-success {
-        border-color: rgba(47, 107, 69, 0.18);
-        background: rgba(47, 107, 69, 0.08);
-        color: #2f6b45;
+        border-color: rgba(94, 111, 90, 0.20);
+        background: rgba(167, 184, 161, 0.18);
+        color: var(--premium-success);
     }
 
     .alert-premium-danger {
-        border-color: rgba(127, 29, 29, 0.18);
-        background: rgba(127, 29, 29, 0.08);
-        color: #7f1d1d;
+        border-color: rgba(122, 46, 53, 0.18);
+        background: rgba(122, 46, 53, 0.08);
+        color: var(--premium-danger);
     }
 
     .summary-grid {
@@ -169,10 +188,10 @@
     .checkout-card,
     .order-card,
     .empty-cart-card {
-        border: 1px solid rgba(31, 26, 23, 0.10);
+        border: 1px solid var(--premium-border);
         border-radius: 30px;
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+        background: rgba(255, 253, 248, 0.92);
+        box-shadow: 0 24px 70px var(--premium-shadow);
         backdrop-filter: blur(12px);
         overflow: hidden;
     }
@@ -184,7 +203,7 @@
 
     .summary-label {
         margin: 0 0 0.55rem;
-        color: #8a6f4d;
+        color: var(--premium-sage-dark);
         font-size: 0.72rem;
         font-weight: 800;
         letter-spacing: 0.13em;
@@ -193,7 +212,7 @@
 
     .summary-value {
         margin: 0;
-        color: #1f1a17;
+        color: var(--premium-ink);
         font-family: Georgia, "Times New Roman", serif;
         font-size: 1.75rem;
         font-weight: 500;
@@ -202,26 +221,26 @@
     }
 
     .summary-value.success {
-        color: #2f6b45;
+        color: var(--premium-success);
     }
 
     .summary-text {
         margin: 0.35rem 0 0;
-        color: #7a7068;
+        color: var(--premium-muted);
         font-size: 0.86rem;
     }
 
     .checkout-card-header,
     .order-card-header {
         padding: 1.35rem 1.5rem;
-        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(247, 243, 236, 0.84));
+        border-bottom: 1px solid var(--premium-border);
+        background: linear-gradient(135deg, rgba(255, 253, 248, 0.98), rgba(246, 241, 232, 0.82));
     }
 
     .checkout-card-title,
     .order-card-title {
         margin: 0;
-        color: #1f1a17;
+        color: var(--premium-ink);
         font-family: Georgia, "Times New Roman", serif;
         font-size: 1.45rem;
         font-weight: 500;
@@ -231,7 +250,7 @@
     .checkout-card-text,
     .order-card-text {
         margin: 0.3rem 0 0;
-        color: #74685f;
+        color: var(--premium-muted);
         font-size: 0.9rem;
     }
 
@@ -253,7 +272,7 @@
         align-items: center;
         gap: 0.65rem;
         margin-bottom: 1.1rem;
-        color: #8a6f4d;
+        color: var(--premium-sage-dark);
         font-size: 0.74rem;
         font-weight: 800;
         letter-spacing: 0.13em;
@@ -264,46 +283,46 @@
         content: "";
         flex: 1;
         height: 1px;
-        background: rgba(31, 26, 23, 0.10);
+        background: var(--premium-border);
     }
 
     .form-label {
         margin-bottom: 0.45rem;
-        color: #2d2621;
+        color: var(--premium-ink-soft);
         font-size: 0.88rem;
         font-weight: 800;
     }
 
     .form-control,
     .form-select {
-        border: 1px solid rgba(31, 26, 23, 0.16);
+        border: 1px solid rgba(24, 24, 24, 0.16);
         border-radius: 16px;
         padding: 0.82rem 0.95rem;
-        background-color: rgba(255, 255, 255, 0.94);
-        color: #1f1a17;
+        background-color: rgba(255, 253, 248, 0.96);
+        color: var(--premium-ink);
         font-size: 0.95rem;
         transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
 
     .form-control:focus,
     .form-select:focus {
-        border-color: rgba(138, 111, 77, 0.65);
-        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13);
+        border-color: rgba(94, 111, 90, 0.68);
+        box-shadow: 0 0 0 0.22rem rgba(167, 184, 161, 0.22);
         background-color: #fff;
     }
 
     .address-warning {
         margin-top: 0.75rem;
         padding: 0.9rem 1rem;
-        border: 1px solid rgba(127, 29, 29, 0.14);
+        border: 1px solid rgba(122, 46, 53, 0.16);
         border-radius: 18px;
-        background: rgba(127, 29, 29, 0.06);
-        color: #7f1d1d;
+        background: rgba(122, 46, 53, 0.07);
+        color: var(--premium-danger);
         font-size: 0.88rem;
     }
 
     .address-warning a {
-        color: #7f1d1d;
+        color: var(--premium-danger);
         font-weight: 800;
     }
 
@@ -320,7 +339,7 @@
         top: 50%;
         right: 1rem;
         transform: translateY(-50%);
-        color: #8a6f4d;
+        color: var(--premium-sage-dark);
         pointer-events: none;
     }
 
@@ -329,17 +348,17 @@
         gap: 0.7rem;
         margin-top: 1.3rem;
         padding: 1rem;
-        border: 1px solid rgba(47, 107, 69, 0.12);
+        border: 1px solid rgba(94, 111, 90, 0.16);
         border-radius: 20px;
-        background: rgba(47, 107, 69, 0.07);
-        color: #486553;
+        background: rgba(167, 184, 161, 0.16);
+        color: var(--premium-sage-dark);
         font-size: 0.88rem;
         line-height: 1.6;
     }
 
     .payment-note i {
         margin-top: 0.2rem;
-        color: #2f6b45;
+        color: var(--premium-sage-dark);
     }
 
     .order-card {
@@ -357,7 +376,7 @@
         display: flex;
         gap: 0.85rem;
         padding: 0.85rem;
-        border: 1px solid rgba(31, 26, 23, 0.08);
+        border: 1px solid var(--premium-border);
         border-radius: 20px;
         background: #fff;
     }
@@ -370,9 +389,9 @@
         place-items: center;
         overflow: hidden;
         border-radius: 16px;
-        background: #faf7f1;
-        border: 1px solid rgba(31, 26, 23, 0.08);
-        color: #9a8d82;
+        background: var(--premium-ivory-soft);
+        border: 1px solid var(--premium-border);
+        color: var(--premium-muted-light);
         font-size: 1.35rem;
     }
 
@@ -383,7 +402,7 @@
 
     .order-line-title {
         margin: 0;
-        color: #1f1a17;
+        color: var(--premium-ink);
         font-size: 0.95rem;
         font-weight: 800;
         line-height: 1.3;
@@ -391,7 +410,7 @@
 
     .order-line-meta {
         margin-top: 0.28rem;
-        color: #7a7068;
+        color: var(--premium-muted);
         font-size: 0.82rem;
     }
 
@@ -404,12 +423,12 @@
     }
 
     .order-line-price {
-        color: #2f6b45;
+        color: var(--premium-success);
         font-weight: 900;
     }
 
     .order-line-original {
-        color: #8a8179;
+        color: var(--premium-muted-light);
         font-size: 0.82rem;
         text-decoration: line-through;
     }
@@ -427,20 +446,20 @@
     }
 
     .discount-pill {
-        background: rgba(127, 29, 29, 0.10);
-        color: #7f1d1d;
+        background: rgba(122, 46, 53, 0.10);
+        color: var(--premium-danger);
     }
 
     .no-discount-pill {
-        border: 1px solid rgba(31, 26, 23, 0.12);
+        border: 1px solid var(--premium-border);
         background: #fff;
-        color: #7a7068;
+        color: var(--premium-muted);
     }
 
     .order-total-box {
         padding: 1.15rem;
         border-radius: 22px;
-        background: #1f1a17;
+        background: var(--premium-ink);
         color: #fff;
     }
 
@@ -478,20 +497,20 @@
         gap: 0.7rem;
         margin-top: 1.25rem;
         padding-top: 1.2rem;
-        border-top: 1px solid rgba(31, 26, 23, 0.10);
+        border-top: 1px solid var(--premium-border);
     }
 
     .service-item {
         display: flex;
         gap: 0.7rem;
-        color: #6d6259;
+        color: var(--premium-muted);
         font-size: 0.86rem;
         line-height: 1.5;
     }
 
     .service-item i {
         margin-top: 0.2rem;
-        color: #8a6f4d;
+        color: var(--premium-sage-dark);
     }
 
     .empty-cart-card {
@@ -509,14 +528,14 @@
         margin-bottom: 1.1rem;
         border-radius: 50%;
         background: #fff;
-        color: #8a6f4d;
-        box-shadow: 0 16px 36px rgba(31, 26, 23, 0.08);
+        color: var(--premium-sage-dark);
+        box-shadow: 0 16px 36px var(--premium-shadow);
         font-size: 1.7rem;
     }
 
     .empty-title {
         margin: 0;
-        color: #1f1a17;
+        color: var(--premium-ink);
         font-family: Georgia, "Times New Roman", serif;
         font-size: 1.75rem;
         font-weight: 500;
@@ -526,7 +545,7 @@
     .empty-text {
         max-width: 520px;
         margin: 0.75rem auto 1.5rem;
-        color: #74685f;
+        color: var(--premium-muted);
         line-height: 1.7;
     }
 
@@ -575,7 +594,6 @@
         }
     }
 </style>
-
 <main class="checkout-page">
     <div class="container checkout-shell">
 
