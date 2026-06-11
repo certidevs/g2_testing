@@ -64,7 +64,7 @@ public class CategoryService
     {
         // Reutiliza el metodo auxiliar para obtener la entidad y convertirla
         Category category = categoryRepository.findByIdWithCategories(id)
-                .orElseThrow(() -> new RuntimeException("Categories not found"));
+                .orElseThrow(() -> new RuntimeException("Category not found"));
         return toResponseDtoWithChildren(category);
     }
 
@@ -84,21 +84,18 @@ public class CategoryService
 
         if (dto.getParentId() != null)
         {
-            // Si se especifica parentId, verificar que exista
             parent = findCategoryEntityById(dto.getParentId());
 
-            // Validación: slug único dentro del mismo padre
             if (categoryRepository.existsByParentIdAndSlug(dto.getParentId(), dto.getSlug()))
             {
-                throw new RuntimeException("Ya existe una subCategoria con ese slug dentro de esta categoria");
+                throw new RuntimeException("Ya existe una subcategoria con ese slug dentro de esta categoria");
             }
-            else
+        }
+        else
+        {
+            if (categoryRepository.existsByParentIsNullAndSlug(dto.getSlug()))
             {
-                // Validación adicional: si existe una raíz con ese slug, evitar conflicto (según regla de negocio)
-                if (categoryRepository.existsByParentIsNullAndSlug(dto.getSlug()))
-                {
-                    throw new RuntimeException("Ya existe una categoria raiz con ese slug");
-                }
+                throw new RuntimeException("Ya existe una categoria raiz con ese slug");
             }
         }
         //Construccion de la entidad a partir del DTO
@@ -150,7 +147,7 @@ public class CategoryService
         category.setSlug(dto.getSlug());
         category.setDescription(dto.getDescription());
         category.setImageUrl(dto.getImageUrl());
-        category.setActive(dto.getActive());
+        category.setActive(dto.getActive() != null ? dto.getActive() : category.getActive());
         category.setParent(parent);
 
         //Guardar y devolver DTO con children actualizados

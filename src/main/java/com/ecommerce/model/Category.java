@@ -24,7 +24,7 @@ public class Category
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-    @Column(nullable = false, unique = true, length = 120)
+    @Column(nullable = false,  length = 120)
     private String slug; // parte final de una URL que identifica de forma legible una pagina
 
     @Column(length = 500)
