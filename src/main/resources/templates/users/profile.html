@@ -90,9 +90,12 @@
             </div>
             
             <div class="mt-4 pt-4 border-top">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title mb-0">Mis Direcciones</h5>
-                    <a th:href="@{/profile/addresses/new(email=${user.email})}" class="btn btn-primary btn-sm">
+                <div class="d-flex justify-content-start align-items-start mb-3">
+                    <h5 class="card-title mb-0 me-2">Mis Direcciones</h5>
+                    <a th:href="@{/addresses}" class="btn btn-primary btn-sm me-2">
+                        <i class="fa-solid fa-plus"></i> Gestionar direcciones
+                    </a>
+                    <a th:href="@{/addresses/new}" class="btn btn-primary btn-sm">
                         <i class="fa-solid fa-plus"></i> Nueva Dirección
                     </a>
                 </div>
@@ -121,17 +124,20 @@
                                         <span th:if="${address.state}" th:text="${address.state}">Estado</span><br>
                                         <span th:text="|${address.country} - ${address.zipCode}|">País - CP</span>
                                     </p>
-                                    <div class="d-flex gap-2">
-                                        <a th:href="@{/profile/addresses/{id}/edit(id=${address.id}, email=${user.email})}" class="btn btn-sm btn-outline-primary">
-                                            <i class="fa-solid fa-edit"></i> Editar
-                                        </a>
-                                        <form th:action="@{/profile/addresses/{id}/delete(id=${address.id})}" method="post"
-                                              onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta dirección?')">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="fa-solid fa-trash"></i> Eliminar
-                                            </button>
-                                        </form>
-                                    </div>
+<!--                                    <div class="d-flex gap-2">-->
+<!--                                        <a th:href="@{/addresses/{id}/edit(id=${address.id})}" class="btn btn-sm btn-outline-primary">-->
+<!--                                            <i class="fa-solid fa-edit"></i> Editar-->
+<!--                                        </a>-->
+<!--                                        <a th:href="@{/addresses}" class="btn btn-sm btn-outline-primary">-->
+<!--                                            <i class="fa-solid fa-edit"></i> Editar-->
+<!--                                        </a>-->
+<!--                                        <form th:action="@{/addresses/{id}/delete(id=${address.id})}" method="post"-->
+<!--                                              onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta dirección?')">-->
+<!--                                            <button type="submit" class="btn btn-sm btn-outline-danger">-->
+<!--                                                <i class="fa-solid fa-trash"></i> Eliminar-->
+<!--                                            </button>-->
+<!--                                        </form>-->
+<!--                                    </div>-->
                                 </div>
                             </div>
                         </div>

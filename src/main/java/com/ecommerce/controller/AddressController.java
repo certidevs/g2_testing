@@ -5,6 +5,7 @@ import com.ecommerce.dto.AddressResponseDto;
 import com.ecommerce.model.Address;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.AddressType;
+import com.ecommerce.model.enums.Role;
 import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.service.AddressService;
 import jakarta.validation.Valid;
@@ -35,7 +36,13 @@ public class AddressController {
             return "redirect:/login";
         }
 
-        List<AddressResponseDto> userAddresses = addressService.findByUser(user);
+        List<AddressResponseDto> userAddresses;
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            userAddresses = addressService.findAll();
+        } else {
+            userAddresses = addressService.findByUser(user);
+        }
+
         model.addAttribute("addresses", userAddresses);
         model.addAttribute("addressTypes", AddressType.values());
 

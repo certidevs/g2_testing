@@ -82,6 +82,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .requestMatchers("/api/v1/**").permitAll()
                     .requestMatchers(
+                            "/",
                             "/error",
                             "/login",
                             "/register",
@@ -143,7 +144,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
     http.formLogin(form ->
             form.loginPage("/login")
                     .loginProcessingUrl("/login")
-                    .defaultSuccessUrl("/products", true)
+                    .defaultSuccessUrl("/products")
                     .failureUrl("/login?error")
                     .permitAll()
     );
