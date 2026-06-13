@@ -86,6 +86,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                             "/error",
                             "/login",
                             "/register",
+                            "/forgot-password",
+                            "/reset-password",
                             "/uploads/**",
                             "/css/**",
                             "/js/**",
