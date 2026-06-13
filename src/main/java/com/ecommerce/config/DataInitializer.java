@@ -132,6 +132,51 @@ public class DataInitializer  implements CommandLineRunner {
                 .active(true)
                 .build());
 
+        var brand2 = brandRepo.save(Brand.builder()
+                .name("Apple")
+                .nif("223456789")
+                .country("US")
+                .website("https://www.apple.com")
+                .logo("https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg")
+                .active(true)
+                .build());
+
+        var brand3 = brandRepo.save(Brand.builder()
+                .name("Pandora")
+                .nif("323456789")
+                .country("DK")
+                .website("https://www.pandora.net")
+                .logo("https://upload.wikimedia.org/wikipedia/commons/2/25/Pandora_Logo.svg")
+                .active(true)
+                .build());
+
+        var brand4 = brandRepo.save(Brand.builder()
+                .name("Decathlon")
+                .nif("423456789")
+                .country("FR")
+                .website("https://www.decathlon.es")
+                .logo("https://upload.wikimedia.org/wikipedia/commons/c/c4/Decathlon_Logo.svg")
+                .active(true)
+                .build());
+
+        var brand5 = brandRepo.save(Brand.builder()
+                .name("LEGO")
+                .nif("523456789")
+                .country("DK")
+                .website("https://www.lego.com")
+                .logo("https://upload.wikimedia.org/wikipedia/commons/2/24/LEGO_logo.svg")
+                .active(true)
+                .build());
+
+        var brand6 = brandRepo.save(Brand.builder()
+                .name("IKEA")
+                .nif("623456789")
+                .country("SE")
+                .website("https://www.ikea.com")
+                .logo("https://upload.wikimedia.org/wikipedia/commons/c/c5/Ikea_logo.svg")
+                .active(true)
+                .build());
+
         // -------- CATEGORÍAS INICIALES (SI NO EXISTEN) --------
         Category ropaRoot = categoryRepo.findBySlug("ropa")
                 .orElseGet(() -> categoryRepo.save(Category.builder()
@@ -209,6 +254,126 @@ public class DataInitializer  implements CommandLineRunner {
                         .parent(electronicaRoot)
                         .build()));
 
+        Category joyeriaRoot = categoryRepo.findBySlug("joyeria")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Joyeria")
+                        .slug("joyeria")
+                        .description("Joyeria elegante para regalos y ocasiones especiales")
+                        .imageUrl("https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(null)
+                        .build()));
+
+        Category deporteRoot = categoryRepo.findBySlug("deporte")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Deporte")
+                        .slug("deporte")
+                        .description("Material deportivo para entrenar en casa, gimnasio o exterior")
+                        .imageUrl("https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(null)
+                        .build()));
+
+        Category juguetesRoot = categoryRepo.findBySlug("juguetes")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Juguetes")
+                        .slug("juguetes")
+                        .description("Juguetes educativos, creativos y familiares")
+                        .imageUrl("https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(null)
+                        .build()));
+
+        Category hogarRoot = categoryRepo.findBySlug("hogar")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Hogar")
+                        .slug("hogar")
+                        .description("Decoracion, organizacion y accesorios para casa")
+                        .imageUrl("https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(null)
+                        .build()));
+
+        Category collares = categoryRepo.findBySlug("collares")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Collares")
+                        .slug("collares")
+                        .description("Collares y cadenas para looks diarios o eventos")
+                        .imageUrl("https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(joyeriaRoot)
+                        .build()));
+
+        Category relojes = categoryRepo.findBySlug("relojes")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Relojes")
+                        .slug("relojes")
+                        .description("Relojes modernos y accesorios premium")
+                        .imageUrl("https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(joyeriaRoot)
+                        .build()));
+
+        Category fitness = categoryRepo.findBySlug("fitness")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Fitness")
+                        .slug("fitness")
+                        .description("Accesorios para entrenamientos de fuerza y movilidad")
+                        .imageUrl("https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(deporteRoot)
+                        .build()));
+
+        Category ciclismo = categoryRepo.findBySlug("ciclismo")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Ciclismo")
+                        .slug("ciclismo")
+                        .description("Productos para rutas urbanas y salidas deportivas")
+                        .imageUrl("https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(deporteRoot)
+                        .build()));
+
+        Category construccion = categoryRepo.findBySlug("construccion")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Construccion")
+                        .slug("construccion")
+                        .description("Sets de construccion y juegos creativos")
+                        .imageUrl("https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(juguetesRoot)
+                        .build()));
+
+        Category educativos = categoryRepo.findBySlug("educativos")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Educativos")
+                        .slug("educativos")
+                        .description("Juegos para aprender, experimentar y resolver retos")
+                        .imageUrl("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(juguetesRoot)
+                        .build()));
+
+        Category decoracion = categoryRepo.findBySlug("decoracion")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Decoracion")
+                        .slug("decoracion")
+                        .description("Piezas decorativas para dar personalidad al hogar")
+                        .imageUrl("https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(hogarRoot)
+                        .build()));
+
+        Category cocina = categoryRepo.findBySlug("cocina")
+                .orElseGet(() -> categoryRepo.save(Category.builder()
+                        .name("Cocina")
+                        .slug("cocina")
+                        .description("Utensilios y organizadores para cocinar mejor")
+                        .imageUrl("https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80")
+                        .active(true)
+                        .parent(hogarRoot)
+                        .build()));
+
 
         // -------- PRODUCTOS --------
         var product1 = productRepo.save(Product.builder()
@@ -252,14 +417,162 @@ public class DataInitializer  implements CommandLineRunner {
                 .longDescription("iphone 15 128g")
                 .imageUrl("https://imgs.search.brave.com/ESQDLqeCxUyCOQQrWLBxQsuDBwmLcHYDjL-jh_-U7iY/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWFn/ZXMudW5zcGxhc2gu/Y29tL3Bob3RvLTE3/MDQzODA4OTUzMTYt/Y2FhMmU0ZDY4YTdl/P2ZtPWpwZyZxPTYw/Jnc9MzAwMCZhdXRv/PWZvcm1hdCZmaXQ9/Y3JvcCZpeGxpYj1y/Yi00LjEuMCZpeGlk/PU0zd3hNakEzZkRC/OE1IeHpaV0Z5WTJo/OE4zeDhhWEJvYjI1/bEpUSXdNVFY4Wlc1/OE1IeDhNSHg4ZkRB/PQ")
                         .stock(20)
-                .price(1200.00).brand(brand1).build());
+                .price(1200.00).brand(brand2).build());
         var product6 = productRepo.save(Product.builder()
                 .title("Macbook Pro 16")
                 .subcategory(portatil)
                 .longDescription("Macbook Pro 16 pulgadas con chip M1 Pro, 16GB RAM, 512GB SSD")
                         .imageUrl("https://imgs.search.brave.com/sciRFp0EHNluo57mCivZlwX-wnfY53SR_AfdnAIF4PE/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/Y25ldC5jb20vYS9p/bWcvcmVzaXplLzJm/OTg0ZTczODVjYWJl/NjRlYmZhZWFiZjI1/ZjYzNDFjZmUzZDYz/MWEvaHViLzIwMTkv/MTEvMTIvODRlMTE1/OWMtYjhjYi00MzQ5/LTllM2ItM2MzN2Nj/Nzg5NDVmLzM2LW1h/Y2Jvb2stcHJvLTE2/LWluY2guanBnP2F1/dG89d2VicCZ3aWR0/aD0xMjAw")
                         .stock(10)
-                .price(2500.00).brand(brand1).build());
+                .price(2500.00).brand(brand2).build());
+
+        var product7 = productRepo.save(Product.builder()
+                .title("Collar Corazon Plata")
+                .subcategory(collares)
+                .shortDescription("Collar de plata con colgante en forma de corazon.")
+                .longDescription("Collar de plata de ley con acabado brillante, ideal para regalo. Incluye cadena ajustable y cierre de seguridad.")
+                .imageUrl("https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=80")
+                .stock(35)
+                .price(59.90)
+                .discountPercentage(15)
+                .brand(brand3).build());
+
+        var product8 = productRepo.save(Product.builder()
+                .title("Pulsera Charms Elegance")
+                .subcategory(collares)
+                .shortDescription("Pulsera personalizable con charms decorativos.")
+                .longDescription("Pulsera ajustable con charms intercambiables, pensada para combinar con estilos casuales o eventos especiales.")
+                .imageUrl("https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&w=1200&q=80")
+                .stock(28)
+                .price(49.90)
+                .brand(brand3).build());
+
+        var product9 = productRepo.save(Product.builder()
+                .title("Reloj Minimal Black")
+                .subcategory(relojes)
+                .shortDescription("Reloj analogico negro con esfera minimalista.")
+                .longDescription("Reloj elegante con correa de acero inoxidable, resistente al uso diario y facil de combinar.")
+                .imageUrl("https://images.unsplash.com/photo-1523170335258-f5ed11844a49?auto=format&fit=crop&w=1200&q=80")
+                .stock(18)
+                .price(89.90)
+                .discountPercentage(10)
+                .brand(brand3).build());
+
+        var product10 = productRepo.save(Product.builder()
+                .title("Esterilla Yoga Pro")
+                .subcategory(fitness)
+                .shortDescription("Esterilla antideslizante para yoga, pilates y estiramientos.")
+                .longDescription("Esterilla acolchada con superficie antideslizante, facil de transportar y perfecta para entrenar en casa.")
+                .imageUrl("https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?auto=format&fit=crop&w=1200&q=80")
+                .stock(50)
+                .price(24.99)
+                .brand(brand4).build());
+
+        var product11 = productRepo.save(Product.builder()
+                .title("Set Mancuernas 10kg")
+                .subcategory(fitness)
+                .shortDescription("Set de mancuernas ajustables para entrenamiento funcional.")
+                .longDescription("Pack de mancuernas con discos intercambiables, agarre comodo y cierres seguros para rutinas de fuerza.")
+                .imageUrl("https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=1200&q=80")
+                .stock(22)
+                .price(39.95)
+                .discountPercentage(12)
+                .brand(brand4).build());
+
+        var product12 = productRepo.save(Product.builder()
+                .title("Casco Ciclismo Aero")
+                .subcategory(ciclismo)
+                .shortDescription("Casco ligero con ventilacion para rutas largas.")
+                .longDescription("Casco de ciclismo con ajuste trasero, interior acolchado y diseno ventilado para mayor comodidad.")
+                .imageUrl("https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80")
+                .stock(16)
+                .price(54.99)
+                .brand(brand4).build());
+
+        var product13 = productRepo.save(Product.builder()
+                .title("Balon Futbol Training")
+                .subcategory(fitness)
+                .shortDescription("Balon resistente para entrenamientos y partidos casuales.")
+                .longDescription("Balon de futbol con cubierta resistente y buen tacto, preparado para cesped artificial y pistas exteriores.")
+                .imageUrl("https://images.unsplash.com/photo-1614632537190-23e4146777db?auto=format&fit=crop&w=1200&q=80")
+                .stock(60)
+                .price(19.99)
+                .discountPercentage(5)
+                .brand(brand4).build());
+
+        var product14 = productRepo.save(Product.builder()
+                .title("LEGO Ciudad Creativa")
+                .subcategory(construccion)
+                .shortDescription("Set de construccion con edificios, vehiculos y personajes.")
+                .longDescription("Caja de construccion para crear una pequena ciudad con piezas variadas, ideal para desarrollar creatividad y paciencia.")
+                .imageUrl("https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=1200&q=80")
+                .stock(30)
+                .price(69.99)
+                .discountPercentage(8)
+                .brand(brand5).build());
+
+        var product15 = productRepo.save(Product.builder()
+                .title("Puzzle Mapa del Mundo")
+                .subcategory(educativos)
+                .shortDescription("Puzzle educativo para aprender geografia jugando.")
+                .longDescription("Puzzle de piezas resistentes con mapa del mundo ilustrado, perfecto para aprender paises, continentes y oceanos.")
+                .imageUrl("https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&w=1200&q=80")
+                .stock(45)
+                .price(16.50)
+                .brand(brand5).build());
+
+        var product16 = productRepo.save(Product.builder()
+                .title("Kit Ciencia Junior")
+                .subcategory(educativos)
+                .shortDescription("Juego educativo con experimentos sencillos y seguros.")
+                .longDescription("Kit de ciencia para descubrir conceptos basicos con actividades guiadas, materiales incluidos e instrucciones paso a paso.")
+                .imageUrl("https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=1200&q=80")
+                .stock(24)
+                .price(29.90)
+                .discountPercentage(10)
+                .brand(brand5).build());
+
+        var product17 = productRepo.save(Product.builder()
+                .title("Lampara Mesa Nordic")
+                .subcategory(decoracion)
+                .shortDescription("Lampara decorativa con luz calida para dormitorio o salon.")
+                .longDescription("Lampara de mesa con diseno nordico, pantalla textil y luz calida para crear ambientes acogedores.")
+                .imageUrl("https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80")
+                .stock(32)
+                .price(34.99)
+                .brand(brand6).build());
+
+        var product18 = productRepo.save(Product.builder()
+                .title("Set Organizadores Bambu")
+                .subcategory(cocina)
+                .shortDescription("Organizadores de bambu para cajones y encimeras.")
+                .longDescription("Set modular de organizadores de bambu para cubiertos, especias y pequenos utensilios de cocina.")
+                .imageUrl("https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80")
+                .stock(40)
+                .price(22.95)
+                .discountPercentage(7)
+                .brand(brand6).build());
+
+        var product19 = productRepo.save(Product.builder()
+                .title("Manta Sofa Soft")
+                .subcategory(decoracion)
+                .shortDescription("Manta suave para sofa, cama o rincon de lectura.")
+                .longDescription("Manta de tacto suave con textura decorativa, ideal para dar color al salon y mejorar el confort diario.")
+                .imageUrl("https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=1200&q=80")
+                .stock(27)
+                .price(27.99)
+                .brand(brand6).build());
+
+        var product20 = productRepo.save(Product.builder()
+                .title("Sarten Antiadherente 28cm")
+                .subcategory(cocina)
+                .shortDescription("Sarten antiadherente para cocina diaria.")
+                .longDescription("Sarten de 28 cm con revestimiento antiadherente, mango ergonomico y base apta para varios tipos de cocina.")
+                .imageUrl("https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80")
+                .stock(36)
+                .price(31.90)
+                .discountPercentage(15)
+                .brand(brand6).build());
 
 //        // -------- COMPRAS --------
 //        var purchase1 = Purchase.builder()
