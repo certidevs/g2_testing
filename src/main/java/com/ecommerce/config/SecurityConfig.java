@@ -107,10 +107,14 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
 
                     //CATEGORIES
-                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/categories").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/categories/new").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/categories/edit/*").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/categories/*/edit").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/categories").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/categories/*/edit").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/categories/*/delete").hasRole("ADMIN")
+
+                    .requestMatchers(HttpMethod.GET, "/categories").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/categories/tree").permitAll()
                     .requestMatchers(HttpMethod.GET, "/categories/*").permitAll()
 
                     //BRANDS
