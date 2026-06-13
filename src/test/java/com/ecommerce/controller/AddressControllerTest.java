@@ -115,7 +115,7 @@ class AddressControllerTest {
     }
 
     // Verifica que la lista de direcciones se muestra correctamente con datos completos
-    @Disabled
+//    @Disabled
     @Test
     void listAddressesFull() throws Exception {
         mockMvc.perform(get("/addresses").with(user(admin)))

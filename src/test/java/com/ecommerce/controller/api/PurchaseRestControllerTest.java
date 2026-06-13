@@ -43,7 +43,7 @@ class PurchaseRestControllerTest {
 
         purchase = purchaseRepository.save(Purchase.builder()
 //                .id(UUID.randomUUID())
-                .creationDate(LocalDateTime.of(2026, 5, 30, 12, 30))
+                .creationDate(LocalDateTime.of(2026, 5, 30, 12, 30, 0))
                 .purchaseStatus(PurchaseStatus.INITIATED)
                 .shippingStatus(ShippingStatus.PENDING)
                 .paymentStatus(PaymentStatus.PENDING)
@@ -63,14 +63,14 @@ class PurchaseRestControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(purchase.getId().toString()))
-                .andExpect(jsonPath("$[0].creationDate").value(purchase.getCreationDate()))
+                .andExpect(jsonPath("$[0].creationDate", containsString(purchase.getCreationDate().toString())))
                 .andExpect(jsonPath("$[0].shippingMode").value(purchase.getShippingMode().name()))
                 .andExpect(jsonPath("$[0].purchaseStatus").value(purchase.getPurchaseStatus().name()))
                 .andExpect(jsonPath("$[0].shippingStatus").value(purchase.getShippingStatus().name()))
                 .andExpect(jsonPath("$[0].paymentStatus").value(purchase.getPaymentStatus().name()))
                 .andExpect(jsonPath("$[0].processStatus").value(purchase.getProcessStatus().name()))
                 .andExpect(jsonPath("$[0].userComment").value(purchase.getUserComment()))
-                .andExpect(jsonPath("$[0].finishedDate").value(purchase.getFinishedDate()))
+                .andExpect(jsonPath("$[0].finishedDate", nullValue()))
                 .andExpect(jsonPath("$[0].totalPrice").value(purchase.getTotalPrice()));
     }
 
