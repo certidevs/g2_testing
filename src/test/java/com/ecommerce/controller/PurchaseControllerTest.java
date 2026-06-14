@@ -63,6 +63,7 @@ class PurchaseControllerTest {
     PurchaseService purchaseService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     User user1;
     User user2;
 
@@ -75,6 +76,7 @@ class PurchaseControllerTest {
     Purchase purchase4;
     User user;
     User admin;
+
     @BeforeEach
     void setUp(){
         purchaseLineRepository.deleteAll();
