@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.test.context.ActiveProfiles;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,221 +19,251 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@DataJpaTest
-public class UserRepositoryTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
+@DataJpaTest
+@ActiveProfiles("test")
+public class UserRepositoryTest
+{
     @Autowired
     private UserRepository userRepository;
 
-    User user1;
-    User user2;
-    User user3;
+    @Autowired
+    private TestEntityManager entityManager;
 
-    @BeforeEach
-    void setUp() {
-        // Create test users with different data
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime twoWeeksAgo = now.minusWeeks(2);
-        LocalDateTime oneMonthAgo = now.minusMonths(1);
-        
-        user1 = userRepository.save(User.builder()
-            .username("john.doe")
-            .name("John")
-            .lastName("Doe")
-            .email("john.doe@example.com")
-            .phone("123456789")
-            .password("password1")
-            .gender(Gender.MALE)
-            .role(Role.ROLE_CUSTOMER)
-            .creationDate(now)
-            .addresses(new ArrayList<>()) // Inicializar para evitar null
-            .build());
+    @Test
+    void save_whenUserIsValid_shouldPersistUserWithGeneratedId()
+    {
+        User user = buildUser("yepe", "yepe@example.com", Role.ROLE_CUSTOMER);
 
-        user2 = userRepository.save(User.builder()
-            .username("jane.smith")
-            .name("Jane")
-            .lastName("Smith")
-            .email("jane.smith@example.com")
-            .phone("987654321")
-            .password("password2")
-            .gender(Gender.FEMALE)
-            .role(Role.ROLE_ADMIN)
-            .creationDate(twoWeeksAgo)
-            .addresses(new ArrayList<>()) // Inicializar para evitar null
-            .build());
+        User savedUser = userRepository.saveAndFlush(user);
 
-        user3 = userRepository.save(User.builder()
-            .username("alice.johnson")
-            .name("Alice")
-            .lastName("Johnson")
-            .email("alice.johnson@example.com")
-            .phone("555555555")
-            .password("password3")
-            .gender(Gender.FEMALE)
-            .role(Role.ROLE_CUSTOMER)
-            .creationDate(oneMonthAgo)
-            .addresses(new ArrayList<>()) // Inicializar para evitar null
-            .build());
+        assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getUsername()).isEqualTo("yepe");
+        assertThat(savedUser.getEmail()).isEqualTo("yepe@example.com");
+        assertThat(savedUser.getRole()).isEqualTo(Role.ROLE_CUSTOMER);
+        assertThat(savedUser.isActive()).isTrue();
+        assertThat(savedUser.getCreationDate()).isNotNull();
     }
 
     @Test
-    void findById() {
-        UUID userId = user1.getId();
+    void existsByUsername_whenUsernameExists_shouldReturnTrue()
+    {
+        persistUser(buildUser("yuca", "yuca@example.com", Role.ROLE_CUSTOMER));
 
-        Optional<User> foundUser = userRepository.findById(userId);
-        
+        boolean exists = userRepository.existsByUsername("yuca");
 
-        assertTrue(foundUser.isPresent());
-        assertEquals(userId, foundUser.get().getId());
-        assertEquals("John", foundUser.get().getName());
-        assertEquals("john.doe@example.com", foundUser.get().getEmail());
+        assertThat(exists).isTrue();
     }
 
     @Test
-    void findById_NotFound() {
-        UUID nonExistentId = UUID.randomUUID();
+    void existsByUsername_whenUsernameDoesNotExist_shouldReturnFalse()
+    {
+        boolean exists = userRepository.existsByUsername("unknown");
 
-        Optional<User> foundUser = userRepository.findById(nonExistentId);
-
-        assertFalse(foundUser.isPresent());
+        assertThat(exists).isFalse();
     }
 
     @Test
-    void findByName() {
-        String name = "John";
+    void existsByEmail_whenEmailExists_shouldReturnTrue()
+    {
+        persistUser(buildUser("alba", "alba@example.com", Role.ROLE_CUSTOMER));
 
-        List<User> users = userRepository.findByName(name);
+        boolean exists = userRepository.existsByEmail("alba@example.com");
 
-        assertEquals(1, users.size());
-        assertEquals("John", users.get(0).getName());
-        assertEquals("Doe", users.get(0).getLastName());
+        assertThat(exists).isTrue();
     }
 
     @Test
-    void findByName_NotFound() {
-        String nonExistentName = "NonExistent";
+    void existsByEmail_whenEmailDoesNotExist_shouldReturnFalse()
+    {
+        boolean exists = userRepository.existsByEmail("unknown@example.com");
 
-        List<User> users = userRepository.findByName(nonExistentName);
-
-        assertEquals(0, users.size());
+        assertThat(exists).isFalse();
     }
 
     @Test
-    void findByEmail() {
-        String email = "jane.smith@example.com";
+    void findByUsername_whenUsernameExists_shouldReturnUser()
+    {
+        persistUser(buildUser("jeanpaul", "jeanpaul@example.com", Role.ROLE_CUSTOMER));
 
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> result = userRepository.findByUsername("jeanpaul");
 
-        assertTrue(user.isPresent());
-        assertEquals(email, user.get().getEmail());
-        assertEquals("Jane", user.get().getName());
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo("jeanpaul@example.com");
     }
 
     @Test
-    void findByEmail_NotFound() {
-        String nonExistentEmail = "nonexistent@example.com";
+    void findByUsername_whenUsernameDoesNotExist_shouldReturnEmpty()
+    {
+        Optional<User> result = userRepository.findByUsername("unknown");
 
-        Optional<User> user = userRepository.findByEmail(nonExistentEmail);
-
-        assertTrue(user.isEmpty());
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void findByPhone() {
-        String phone = "555555555";
+    void findByEmail_whenEmailExists_shouldReturnUser()
+    {
+        persistUser(buildUser("kent", "kent@example.com", Role.ROLE_CUSTOMER));
 
-        List<User> users = userRepository.findByPhone(phone);
+        Optional<User> result = userRepository.findByEmail("kent@example.com");
 
-        assertEquals(1, users.size());
-        assertEquals(phone, users.get(0).getPhone());
-        assertEquals("Alice", users.get(0).getName());
+        assertThat(result).isPresent();
+        assertThat(result.get().getUsername()).isEqualTo("kent");
     }
 
     @Test
-    void findByPhone_NotFound() {
-        String nonExistentPhone = "000000000";
+    void findByEmail_whenEmailDoesNotExist_shouldReturnEmpty()
+    {
+        Optional<User> result = userRepository.findByEmail("unknown@example.com");
 
-        List<User> users = userRepository.findByPhone(nonExistentPhone);
-
-        assertEquals(0, users.size());
+        assertThat(result).isEmpty();
     }
 
     @Test
-    void findByGender() {
-        Gender gender = Gender.FEMALE;
+    void findFirstByEmail_whenEmailExists_shouldReturnUser()
+    {
+        persistUser(buildUser("shota", "shota@example.com", Role.ROLE_CUSTOMER));
 
-        List<User> users = userRepository.findByGender(gender);
+        Optional<User> result = userRepository.findFirstByEmail("shota@example.com");
 
-        assertEquals(2, users.size()); // Jane and Alice
-        for (User user : users) {
-            assertEquals(Gender.FEMALE, user.getGender());
-        }
+        assertThat(result).isPresent();
+        assertThat(result.get().getUsername()).isEqualTo("shota");
     }
 
     @Test
-    void findByGender_NotFound() {
-        Gender gender = Gender.OTHER;
+    void findByName_whenNameExists_shouldReturnUsersWithThatName()
+    {
+        User user1 = buildUser("danger1", "danger1@example.com", Role.ROLE_CUSTOMER);
+        user1.setName("Danger");
 
-        List<User> users = userRepository.findByGender(gender);
+        User user2 = buildUser("danger2", "danger2@example.com", Role.ROLE_CUSTOMER);
+        user2.setName("Danger");
 
-        assertEquals(0, users.size());
+        User user3 = buildUser("ana", "ana@example.com", Role.ROLE_CUSTOMER);
+        user3.setName("Ana");
+
+        persistUser(user1);
+        persistUser(user2);
+        persistUser(user3);
+
+        List<User> result = userRepository.findByName("Danger");
+
+        assertThat(result).hasSize(2);
+        assertThat(result)
+                .extracting(User::getUsername)
+                .containsExactlyInAnyOrder("danger1", "danger2");
     }
 
     @Test
-    void findByRole() {
-        Role role = Role.ROLE_CUSTOMER;
+    void findByPhone_whenPhoneExists_shouldReturnUser()
+    {
+        User user = buildUser("alan", "alan@example.com", Role.ROLE_CUSTOMER);
+        user.setPhone("600111222");
+        persistUser(user);
 
-        List<User> users = userRepository.findByRole(role);
+        List<User> result = userRepository.findByPhone("600111222");
 
-        assertEquals(2, users.size()); // John and Alice
-        for (User user : users) {
-            assertEquals(Role.ROLE_CUSTOMER, user.getRole());
-        }
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("alan");
     }
 
     @Test
-    void findByRole_NotFound() {
-        Role role = Role.ROLE_ADMIN; // Solo hay 1 admin (Jane)
+    void findByGender_whenGenderExists_shouldReturnUsersWithThatGender()
+    {
+        Gender gender = Gender.values()[0];
 
-        List<User> users = userRepository.findByRole(role);
+        User user = buildUser("carlos", "carlos@example.com", Role.ROLE_CUSTOMER);
+        user.setGender(gender);
+        persistUser(user);
 
-        assertEquals(1, users.size()); // Solo Jane es ADMIN
+        List<User> result = userRepository.findByGender(gender);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getGender()).isEqualTo(gender);
     }
 
     @Test
-    void findByCreationDateBetween() {
-        LocalDateTime startDate = LocalDateTime.now().minusWeeks(3);
-        LocalDateTime endDate = LocalDateTime.now();
+    void findByRole_whenRoleExists_shouldReturnUsersWithThatRole()
+    {
+        persistUser(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
+        persistUser(buildUser("customer", "customer@example.com", Role.ROLE_CUSTOMER));
 
-        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
+        List<User> result = userRepository.findByRole(Role.ROLE_ADMIN);
 
-        assertEquals(2, users.size());
-
-        for (User user : users) {
-            assertTrue(user.getCreationDate().isAfter(startDate));
-            assertTrue(user.getCreationDate().isBefore(endDate));
-        }
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("admin");
     }
 
     @Test
-    void findByCreationDateBetween_NoResults() {
-        LocalDateTime startDate = LocalDateTime.now().plusDays(1);
-        LocalDateTime endDate = LocalDateTime.now().plusDays(7);
+    void findFirstByRole_whenAdminExists_shouldReturnAdmin()
+    {
+        persistUser(buildUser("customer", "customer@example.com", Role.ROLE_CUSTOMER));
+        persistUser(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
 
-        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
+        Optional<User> result = userRepository.findFirstByRole(Role.ROLE_ADMIN);
 
-        assertEquals(0, users.size());
+        assertThat(result).isPresent();
+        assertThat(result.get().getRole()).isEqualTo(Role.ROLE_ADMIN);
     }
 
     @Test
-    void findByCreationDateBetween_AllUsers() {
+    void findFirstByOrderByCreationDateAsc_shouldReturnOldestUser()
+    {
+        User oldest = buildUser("oldest", "oldest@example.com", Role.ROLE_CUSTOMER);
+        oldest.setCreationDate(LocalDateTime.now().minusDays(10));
 
-        LocalDateTime startDate = LocalDateTime.now().minusMonths(2);
-        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+        User newest = buildUser("newest", "newest@example.com", Role.ROLE_CUSTOMER);
+        newest.setCreationDate(LocalDateTime.now());
 
-        List<User> users = userRepository.findByCreationDateBetween(startDate, endDate);
+        persistUser(newest);
+        persistUser(oldest);
 
-        assertEquals(3, users.size()); // All users
+        Optional<User> result = userRepository.findFirstByOrderByCreationDateAsc();
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getUsername()).isEqualTo("oldest");
     }
 
+    @Test
+    void findByCreationDateBetween_whenUsersExistInRange_shouldReturnMatchingUsers()
+    {
+        User userInRange = buildUser("inrange", "inrange@example.com", Role.ROLE_CUSTOMER);
+        userInRange.setCreationDate(LocalDateTime.of(2026, 1, 10, 12, 0));
+
+        User userOutOfRange = buildUser("outrange", "outrange@example.com", Role.ROLE_CUSTOMER);
+        userOutOfRange.setCreationDate(LocalDateTime.of(2025, 1, 10, 12, 0));
+
+        persistUser(userInRange);
+        persistUser(userOutOfRange);
+
+        List<User> result = userRepository.findByCreationDateBetween(
+                LocalDateTime.of(2026, 1, 1, 0, 0),
+                LocalDateTime.of(2026, 1, 31, 23, 59)
+        );
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("inrange");
+    }
+
+    private User persistUser(User user)
+    {
+        User savedUser = entityManager.persistAndFlush(user);
+        entityManager.clear();
+        return savedUser;
+    }
+
+    private User buildUser(String username, String email, Role role)
+    {
+        return User.builder()
+                .username(username)
+                .name("Nombre " + username)
+                .lastName("Apellido " + username)
+                .email(email)
+                .password("encoded-password")
+                .role(role)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
+    }
 }
