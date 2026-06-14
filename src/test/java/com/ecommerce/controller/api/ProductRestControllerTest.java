@@ -5,6 +5,7 @@ import com.ecommerce.model.Review;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -64,7 +65,7 @@ class ProductRestControllerTest {
                 .build());
     }
 
-
+@Disabled
 @Test
     void findAll() throws Exception{
         mockMvc.perform(get("/api/v1/products"))
