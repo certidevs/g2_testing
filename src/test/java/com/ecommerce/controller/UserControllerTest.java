@@ -17,181 +17,172 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-@Disabled
+
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
-class UserControllerTest {
+class UserControllerTest
+{
+    @Autowired
+    private MockMvc mockMvc;
 
     @Autowired
-    UserRepository userRepository;
-    @Autowired
-    PasswordEncoder encoder;
+    private UserRepository userRepository;
 
     @Autowired
-    MockMvc mockMvc;
+    private PasswordEncoder passwordEncoder;
 
-    User user1;
-    User user2;
-    User user3;
-
-    @BeforeEach
-    void setUp() {
-        user1 = userRepository.save(User.builder()
-                .name("Juan")
-                .lastName("Pérez")
-                .username("juan.perez")
-                .email("juan.perez@gmail.com")
-                .phone("123456789")
-                .password(encoder.encode("123456"))
-                .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
-                .gender(Gender.MALE)
-                .role(Role.ROLE_CUSTOMER)
-                .creationDate(LocalDateTime.now())
-                .build());
-
-        user2 = userRepository.save(User.builder()
-                .name("María")
-                .lastName("García")
-                .username("maria.garcia")
-                .email("maria.garcia@gmail.com")
-                .phone("987654321")
-                .password(encoder.encode("123456"))
-                .birthday(LocalDateTime.of(1985, Month.MARCH, 15, 0, 0))
-                .gender(Gender.FEMALE)
-                .role(Role.ROLE_ADMIN)
-                .creationDate(LocalDateTime.now())
-                .build());
-
-        user3 = userRepository.save(User.builder()
-                .name("Carlos")
-                .lastName("López")
-                .username("carlos.lopez")
-                .email("carlos.lopez@gmail.com")
-                .phone("555555555")
-                .password(encoder.encode("123456"))
-                .birthday(LocalDateTime.of(1995, Month.JULY, 20, 0, 0))
-                .gender(Gender.MALE)
-                .role(Role.ROLE_CUSTOMER)
-                .creationDate(LocalDateTime.now())
-                .build());
+    @Test
+    void login_whenUserIsAnonymous_shouldReturnLoginView() throws Exception
+    {
+        mockMvc.perform(get("/login"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/auth/login"));
     }
 
     @Test
-    void listUsersFull() throws Exception {
-        mockMvc.perform(get("/users"))
+    void registerForm_whenUserIsAnonymous_shouldReturnRegisterView() throws Exception
+    {
+        mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/users-list"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(3)));
+                .andExpect(view().name("/auth/register"))
+                .andExpect(model().attributeExists("user"));
     }
 
     @Test
-    void listUsersEmpty() throws Exception {
-        userRepository.deleteAll();
+    void register_whenDataIsValid_shouldCreateUserAndRedirectToLogin() throws Exception
+    {
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("username", "cliente")
+                        .param("email", "cliente@example.com")
+                        .param("password", "Password1!")
+                        .param("passwordConfirm", "Password1!"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/login*"))
+                .andExpect(flash().attributeExists("message"));
 
-        mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("users/users-list"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(0)));
+        Optional<User> savedUser = userRepository.findByUsername("cliente");
+
+        assertThat(savedUser).isPresent();
+        assertThat(savedUser.get().getEmail()).isEqualTo("cliente@example.com");
+        assertThat(savedUser.get().getRole()).isEqualTo(Role.ROLE_CUSTOMER);
+        assertThat(savedUser.get().getPassword()).isNotEqualTo("Password1!");
+        assertThat(passwordEncoder.matches("Password1!", savedUser.get().getPassword())).isTrue();
     }
 
     @Test
-    void userDetailFound() throws Exception {
-        mockMvc.perform(get("/users/{id}", user1.getId()))
+    void register_whenPasswordConfirmDoesNotMatch_shouldReturnRegisterViewWithFieldError() throws Exception
+    {
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("username", "cliente")
+                        .param("email", "cliente@example.com")
+                        .param("password", "Password1!")
+                        .param("passwordConfirm", "Different1!"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/user-detail"))
+                .andExpect(view().name("/auth/register"))
                 .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", hasProperty("id", is(user1.getId()))))
-                .andExpect(model().attribute("user", hasProperty("name", is("Juan"))))
-                .andExpect(model().attribute("user", hasProperty("lastName", is("Pérez"))))
-                .andExpect(model().attribute("user", hasProperty("email", is("juan.perez@gmail.com"))))
-                .andExpect(model().attribute("user", hasProperty("role", is(Role.ROLE_CUSTOMER))));
+                .andExpect(model().attributeHasFieldErrors("user", "passwordConfirm"));
+
+        assertThat(userRepository.existsByUsername("cliente")).isFalse();
     }
 
     @Test
-    void userDetailNotFound() throws Exception {
-        UUID randomId = UUID.randomUUID();
-
-        mockMvc.perform(get("/users/{id}", randomId))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void adminUsersListOk() throws Exception {
-        mockMvc.perform(get("/admin/users").param("adminEmail", user2.getEmail()))
+    void register_whenDtoValidationFails_shouldReturnRegisterViewWithErrors() throws Exception
+    {
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("username", "")
+                        .param("email", "invalid-email")
+                        .param("password", "weak")
+                        .param("passwordConfirm", ""))
                 .andExpect(status().isOk())
-                .andExpect(view().name("users/users-admin-list"))
-                .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("users", hasSize(3)));
-    }
-
-    @Test
-    void adminEditUserFormOk() throws Exception {
-        mockMvc.perform(get("/admin/users/{id}/edit", user1.getId()).param("adminEmail", user2.getEmail()))
-                .andExpect(status().isOk())
-                .andExpect(view().name("users/user-admin-edit"))
+                .andExpect(view().name("/auth/register"))
                 .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("user", hasProperty("id", is(user1.getId()))));
+                .andExpect(model().attributeHasFieldErrors(
+                        "user",
+                        "username",
+                        "email",
+                        "password",
+                        "passwordConfirm"
+                ));
+
+        assertThat(userRepository.count()).isZero();
     }
 
     @Test
-    void adminUpdatesUserData() throws Exception {
-        mockMvc.perform(post("/admin/users/{id}/edit", user1.getId())
-                        .param("adminEmail", user2.getEmail())
-                        .param("name", "Juan Actualizado")
-                        .param("lastName", "Pérez")
-                        .param("email", "juan.actualizado@gmail.com")
-                        .param("phone", "111111111")
-                        .param("gender", "MALE")
-                         .param("role", "CUSTOMER"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
+    void register_whenUsernameAlreadyExists_shouldReturnRegisterViewWithError() throws Exception
+    {
+        userRepository.save(buildUser("cliente", "existing@example.com"));
 
-        User updatedUser = userRepository.findById(user1.getId()).orElseThrow();
-        org.junit.jupiter.api.Assertions.assertEquals("Juan Actualizado", updatedUser.getName());
-        org.junit.jupiter.api.Assertions.assertEquals("juan.actualizado@gmail.com", updatedUser.getEmail());
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("username", "cliente")
+                        .param("email", "new@example.com")
+                        .param("password", "Password1!")
+                        .param("passwordConfirm", "Password1!"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/auth/register"))
+                .andExpect(model().attributeExists("user"))
+                .andExpect(model().attributeExists("error"));
+
+        assertThat(userRepository.findByEmail("new@example.com")).isEmpty();
     }
 
     @Test
-    void adminCanToggleCustomerStatus() throws Exception {
-        mockMvc.perform(post("/admin/users/{id}/toggle-status", user1.getId())
-                        .param("adminEmail", user2.getEmail()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
+    void register_whenEmailAlreadyExists_shouldReturnRegisterViewWithError() throws Exception
+    {
+        userRepository.save(buildUser("existing", "cliente@example.com"));
 
-        User updatedUser = userRepository.findById(user1.getId()).orElseThrow();
-        org.junit.jupiter.api.Assertions.assertFalse(updatedUser.isActive());
+        mockMvc.perform(post("/register")
+                        .with(csrf())
+                        .param("username", "new-user")
+                        .param("email", "cliente@example.com")
+                        .param("password", "Password1!")
+                        .param("passwordConfirm", "Password1!"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("/auth/register"))
+                .andExpect(model().attributeExists("user"))
+                .andExpect(model().attributeExists("error"));
+
+        assertThat(userRepository.findByUsername("new-user")).isEmpty();
     }
 
     @Test
-    void adminCanSoftDeleteCustomer() throws Exception {
-        mockMvc.perform(post("/admin/users/{id}/delete", user3.getId())
-                        .param("adminEmail", user2.getEmail()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
+    void register_whenPostWithoutCsrf_shouldReturnForbidden() throws Exception
+    {
+        mockMvc.perform(post("/register")
+                        .param("username", "cliente")
+                        .param("email", "cliente@example.com")
+                        .param("password", "Password1!")
+                        .param("passwordConfirm", "Password1!"))
+                .andExpect(status().isForbidden());
 
-        User deletedUser = userRepository.findById(user3.getId()).orElseThrow();
-        org.junit.jupiter.api.Assertions.assertFalse(deletedUser.isActive());
+        assertThat(userRepository.existsByUsername("cliente")).isFalse();
     }
 
-    @Test
-    void adminCannotToggleAnotherAdmin() throws Exception {
-        mockMvc.perform(post("/admin/users/{id}/toggle-status", user2.getId())
-                        .param("adminEmail", user2.getEmail()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/admin/users?adminEmail=" + user2.getEmail() + "*"));
-
-        User adminUser = userRepository.findById(user2.getId()).orElseThrow();
-        org.junit.jupiter.api.Assertions.assertTrue(adminUser.isActive());
+    private User buildUser(String username, String email)
+    {
+        return User.builder()
+                .username(username)
+                .name("Nombre")
+                .lastName("Apellido")
+                .email(email)
+                .password(passwordEncoder.encode("Password1!"))
+                .role(Role.ROLE_CUSTOMER)
+                .active(true)
+                .creationDate(LocalDateTime.now())
+                .build();
     }
 }
 
