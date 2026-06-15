@@ -128,4 +128,23 @@ public class BaseSeleniumTest {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
         wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
     }
+
+    void open(String path) {
+        driver.get(baseUrl + path);
+    }
+
+    void type(By locator, String value) {
+        var element = wait.until(d -> d.findElement(locator));
+        element.clear();
+        element.sendKeys(value);
+    }
+
+    void click(By locator) {
+        wait.until(d -> d.findElement(locator).isDisplayed() && d.findElement(locator).isEnabled());
+        driver.findElement(locator).click();
+    }
+
+    void waitUntilPageContains(String text) {
+        wait.until(d -> d.getPageSource().contains(text));
+    }
 }
