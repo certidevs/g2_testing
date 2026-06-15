@@ -6,105 +6,567 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar::navbar}"></nav>
-<main class="flex-grow-1">
-    <div class="container py-5">
+<style>
+    .brand-list-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 36%),
+                radial-gradient(circle at bottom right, rgba(31, 26, 23, 0.08), transparent 34%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .brand-list-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
+
+    .brand-list-shell {
+        max-width: 1240px;
+        margin: 0 auto;
+    }
+
+    .brand-list-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
+
+    .brand-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .brand-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .brand-list-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.15rem, 4vw, 4rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .brand-list-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .brand-list-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary,
+    .btn-premium-danger {
+        border-radius: 999px;
+        padding: 0.78rem 1.15rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    .btn-premium-danger {
+        border: 1px solid rgba(127, 29, 29, 0.18);
+        background: rgba(127, 29, 29, 0.06);
+        color: #7f1d1d;
+    }
+
+    .btn-premium-danger:hover {
+        border-color: rgba(127, 29, 29, 0.35);
+        background: rgba(127, 29, 29, 0.10);
+        color: #7f1d1d;
+        transform: translateY(-1px);
+    }
+
+    .brand-success-alert {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.4rem;
+        border: 1px solid rgba(47, 107, 69, 0.16);
+        border-radius: 22px;
+        background: rgba(47, 107, 69, 0.08);
+        color: #2f6b45;
+        font-size: 0.94rem;
+        font-weight: 700;
+        box-shadow: 0 14px 34px rgba(31, 26, 23, 0.045);
+    }
+
+    .brand-success-alert .btn-close {
+        box-shadow: none;
+    }
+
+    .brand-table-card {
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 26px 74px rgba(31, 26, 23, 0.10);
+        backdrop-filter: blur(12px);
+    }
+
+    .brand-table-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.35rem 1.45rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.13), transparent 36%),
+                rgba(255, 255, 255, 0.76);
+    }
+
+    .brand-table-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.65rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+    }
+
+    .brand-table-text {
+        margin: 0.35rem 0 0;
+        color: #74685f;
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    .brand-table-counter {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border-radius: 999px;
+        padding: 0.62rem 0.9rem;
+        background: #1f1a17;
+        color: #fff;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .brand-table-responsive {
+        overflow-x: auto;
+    }
+
+    .brand-premium-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .brand-premium-table thead th {
+        padding: 1rem 1.15rem;
+        border: 0;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        background: #faf7f1;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .brand-premium-table tbody td {
+        padding: 1.1rem 1.15rem;
+        border: 0;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.07);
+        color: #1f1a17;
+        font-size: 0.93rem;
+        vertical-align: middle;
+    }
+
+    .brand-premium-table tbody tr {
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .brand-premium-table tbody tr:hover {
+        background: rgba(250, 247, 241, 0.78);
+    }
+
+    .brand-premium-table tbody tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .brand-name-cell {
+        font-weight: 850;
+        color: #1f1a17;
+    }
+
+    .brand-muted-cell {
+        color: #74685f;
+        font-weight: 650;
+    }
+
+    .brand-web-link {
+        display: inline-block;
+        max-width: 260px;
+        color: #1f1a17;
+        font-weight: 700;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(138, 111, 77, 0.45);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .brand-web-link:hover {
+        color: #8a6f4d;
+        border-color: #8a6f4d;
+    }
+
+    .brand-empty-dash {
+        color: #a49a91;
+        font-weight: 700;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.42rem;
+        border-radius: 999px;
+        padding: 0.52rem 0.78rem;
+        font-size: 0.74rem;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+    .status-pill.active {
+        background: rgba(47, 107, 69, 0.10);
+        color: #2f6b45;
+    }
+
+    .status-pill.inactive {
+        background: rgba(127, 29, 29, 0.10);
+        color: #7f1d1d;
+    }
+
+    .brand-row-actions {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.45rem;
+        flex-wrap: wrap;
+    }
+
+    .brand-row-actions form {
+        margin: 0;
+    }
+
+    .brand-row-actions .btn {
+        padding: 0.52rem 0.78rem;
+        font-size: 0.7rem;
+    }
+
+    .brand-empty-state {
+        padding: 4rem 1.5rem;
+        text-align: center;
+    }
+
+    .brand-empty-icon {
+        display: grid;
+        place-items: center;
+        width: 86px;
+        height: 86px;
+        margin: 0 auto 1.1rem;
+        border-radius: 50%;
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.18), transparent 44%),
+                #faf7f1;
+        color: #8a6f4d;
+        font-size: 2rem;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.08);
+    }
+
+    .brand-empty-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.65rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+    }
+
+    .brand-empty-text {
+        max-width: 440px;
+        margin: 0.55rem auto 0;
+        color: #74685f;
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    @media (max-width: 991.98px) {
+        .brand-list-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .brand-list-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .brand-list-actions {
+            width: 100%;
+        }
+
+        .brand-list-actions .btn {
+            width: 100%;
+        }
+
+        .brand-table-top {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .brand-list-title {
+            font-size: 2.35rem;
+        }
+
+        .brand-table-card {
+            border-radius: 26px;
+        }
+
+        .brand-table-top {
+            padding: 1.15rem;
+        }
+
+        .brand-premium-table thead th,
+        .brand-premium-table tbody td {
+            padding: 0.95rem;
+        }
+
+        .brand-row-actions {
+            justify-content: flex-start;
+        }
+    }
+</style>
+
+<main class="brand-list-page">
+    <div class="container brand-list-shell">
 
         <!-- Encabezado -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 mb-0">Marcas</h1>
-            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/new}" class="btn btn-primary">Crear Marca</a>
-        </div>
+        <section class="brand-list-hero">
+            <div>
+                <span class="brand-eyebrow">Catálogo comercial</span>
+
+                <h1 class="brand-list-title">Marcas</h1>
+
+                <p class="brand-list-subtitle">
+                    Administra las marcas disponibles en el catálogo, revisa sus datos principales y controla su visibilidad comercial.
+                </p>
+            </div>
+
+            <div class="brand-list-actions">
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/brands/new}"
+                   class="btn btn-premium-primary">
+                    <i class="fa-solid fa-plus me-2"></i>
+                    Crear Marca
+                </a>
+            </div>
+        </section>
 
         <!-- Mensaje de éxito -->
         <div th:if="${successMessage}"
-             class="alert alert-success alert-dismissible fade show"
+             class="alert brand-success-alert alert-dismissible fade show"
              role="alert">
+            <i class="fa-solid fa-circle-check"></i>
             <span th:text="${successMessage}">Mensaje</span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
 
         <!-- Tabla -->
-        <div class="table-responsive shadow-sm rounded">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                <tr>
-                    <th>Nombre</th>
-                    <th>NIF</th>
-                    <th>País</th>
-                    <th>Web</th>
-                    <th>Activa</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-                </thead>
+        <section class="brand-table-card">
 
-                <tbody>
+            <div class="brand-table-top">
+                <div>
+                    <h2 class="brand-table-title">Listado de marcas</h2>
 
-                <!-- Sin marcas -->
-                <tr th:if="${#lists.isEmpty(brands)}">
-                    <td colspan="6" class="text-center py-4 text-muted">
-                        No hay marcas registradas.
-                    </td>
-                </tr>
+                    <p class="brand-table-text">
+                        Consulta, edita o elimina marcas registradas según tus permisos.
+                    </p>
+                </div>
 
-                <!-- Filas -->
-                <tr th:each="brand : ${brands}">
-                    <td th:text="${brand.name}">Nombre</td>
-                    <td th:text="${brand.nif}">NIF</td>
-                    <td th:text="${brand.country}">País</td>
+                <div class="brand-table-counter">
+                    <i class="fa-solid fa-tags"></i>
+                    <span th:text="${#lists.size(brands)}">0</span>
+                    marcas
+                </div>
+            </div>
 
-                    <!-- Website -->
-                    <td>
-                        <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
-                           th:href="${brand.website}"
-                           th:text="${brand.website}"
-                           class="text-decoration-none"
-                           target="_blank">
-                            Web
-                        </a>
-                        <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
-                    </td>
+            <div class="brand-table-responsive">
+                <table class="brand-premium-table table align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>NIF</th>
+                        <th>País</th>
+                        <th>Web</th>
+                        <th>Activa</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                    </thead>
 
-                    <!-- Activa -->
-                    <td>
-                        <span th:if="${brand.active}" class="badge bg-success">Sí</span>
-                        <span th:unless="${brand.active}" class="badge bg-danger">No</span>
-                    </td>
+                    <tbody>
 
-                    <!-- Acciones -->
-                    <td class="text-center">
+                    <!-- Sin marcas -->
+                    <tr th:if="${#lists.isEmpty(brands)}">
+                        <td colspan="6">
+                            <div class="brand-empty-state">
+                                <div class="brand-empty-icon">
+                                    <i class="fa-regular fa-bookmark"></i>
+                                </div>
 
-                        <div class="d-flex justify-content-center gap-2">
+                                <h3 class="brand-empty-title">
+                                    No hay marcas registradas
+                                </h3>
 
-                            <a th:href="@{/brands/{id}(id=${brand.id})}"
-                               class="btn btn-sm btn-outline-primary">
-                                Ver
+                                <p class="brand-empty-text">
+                                    Cuando crees una marca, aparecerá aquí con sus datos comerciales, fiscales y estado de visibilidad.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Filas -->
+                    <tr th:each="brand : ${brands}">
+                        <td class="brand-name-cell" th:text="${brand.name}">Nombre</td>
+
+                        <td class="brand-muted-cell" th:text="${brand.nif}">NIF</td>
+
+                        <td class="brand-muted-cell" th:text="${brand.country}">País</td>
+
+                        <!-- Website -->
+                        <td>
+                            <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
+                               th:href="${brand.website}"
+                               th:text="${brand.website}"
+                               class="brand-web-link"
+                               target="_blank">
+                                Web
                             </a>
 
-                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/{id}/edit(id=${brand.id})}"
-                               class="btn btn-sm btn-outline-secondary">
-                                Editar
-                            </a>
+                            <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}"
+                                  class="brand-empty-dash">
+                                -
+                            </span>
+                        </td>
 
-                            <form sec:authorize="hasRole('ADMIN')" th:action="@{/brands/{id}/delete(id=${brand.id})}"
-                                  method="post"
-                                  onsubmit="return confirm('¿Seguro que quieres eliminar esta marca?')">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    Eliminar
-                                </button>
-                            </form>
+                        <!-- Activa -->
+                        <td>
+                            <span th:if="${brand.active}" class="status-pill active">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Sí
+                            </span>
 
-                        </div>
+                            <span th:unless="${brand.active}" class="status-pill inactive">
+                                <i class="fa-solid fa-circle-pause"></i>
+                                No
+                            </span>
+                        </td>
 
-                    </td>
-                </tr>
+                        <!-- Acciones -->
+                        <td class="text-center">
+                            <div class="brand-row-actions">
 
-                </tbody>
-            </table>
-        </div>
+                                <a th:href="@{/brands/{id}(id=${brand.id})}"
+                                   class="btn btn-premium-secondary">
+                                    Ver
+                                </a>
+
+                                <a sec:authorize="hasRole('ADMIN')"
+                                   th:href="@{/brands/{id}/edit(id=${brand.id})}"
+                                   class="btn btn-premium-secondary">
+                                    Editar
+                                </a>
+
+                                <form sec:authorize="hasRole('ADMIN')"
+                                      th:action="@{/brands/{id}/delete(id=${brand.id})}"
+                                      method="post"
+                                      onsubmit="return confirm('¿Seguro que quieres eliminar esta marca?')">
+                                    <button type="submit" class="btn btn-premium-danger">
+                                        Eliminar
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
 
     </div>
 </main>
+
 <footer th:replace="~{layout/footer::footer}"></footer>
 <script th:replace="~{layout/footer::scripts}"></script>
+
 </body>
 </html>

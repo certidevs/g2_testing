@@ -6,96 +6,521 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar::navbar}"></nav>
-<main class="flex-grow-1">
-    <div class="container py-5">
+<style>
+    .brand-detail-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 36%),
+                radial-gradient(circle at bottom right, rgba(31, 26, 23, 0.08), transparent 34%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
+    .brand-detail-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-                <div class="card shadow-sm rounded-3">
-                    <div class="card-body">
+    .brand-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 
-                        <h1 class="h4 mb-4">Detalle de marca</h1>
+    .brand-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
 
-                        <ul class="list-group list-group-flush">
+    .brand-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
 
-                            <!-- Nombre -->
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-semibold">Nombre:</span>
-                                <span th:text="${brand.name}">Nombre</span>
-                            </li>
+    .brand-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
 
-                            <!-- NIF -->
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-semibold">NIF:</span>
-                                <span th:text="${brand.nif}">NIF</span>
-                            </li>
+    .brand-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.1rem, 4vw, 4rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
 
-                            <!-- País -->
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-semibold">País:</span>
-                                <span th:text="${brand.country}">País</span>
-                            </li>
+    .brand-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
 
-                            <!-- Website -->
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-semibold">Web:</span>
+    .brand-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
 
-                                <span>
-                  <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
-                     th:href="${brand.website}"
-                     th:text="${brand.website}"
-                     class="text-decoration-none"
-                     target="_blank">
-                    Web
-                  </a>
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.82rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
 
-                  <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">-</span>
-                </span>
-                            </li>
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
 
-                            <!-- Logo -->
-                            <li class="list-group-item">
-                                <span class="fw-semibold d-block mb-2">Logo:</span>
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
 
-                                <div th:if="${brand.logo != null and !#strings.isEmpty(brand.logo)}" class="text-center">
-                                    <img th:src="${brand.logo}"
-                                         alt="Logo de la marca"
-                                         class="img-fluid rounded shadow-sm mb-2"
-                                         style="max-height: 120px; object-fit: contain;">
-                                    <p class="text-muted small mb-0" th:text="${brand.logo}">URL logo</p>
-                                </div>
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
 
-                                <span th:if="${brand.logo == null or #strings.isEmpty(brand.logo)}">-</span>
-                            </li>
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
 
-                            <!-- Activa -->
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="fw-semibold">Activa:</span>
+    .brand-detail-card {
+        display: grid;
+        grid-template-columns: 0.9fr 1.35fr;
+        gap: 0;
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 26px 74px rgba(31, 26, 23, 0.10);
+        backdrop-filter: blur(12px);
+    }
 
-                                <span>
-                  <span th:if="${brand.active}" class="badge bg-success">Sí</span>
-                  <span th:unless="${brand.active}" class="badge bg-danger">No</span>
-                </span>
-                            </li>
+    .brand-visual-panel {
+        position: relative;
+        min-height: 480px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.5rem;
+        background:
+                radial-gradient(circle at top, rgba(181, 154, 110, 0.30), transparent 42%),
+                linear-gradient(135deg, #2d2621, #1f1a17);
+        color: #fff;
+    }
 
-                        </ul>
+    .brand-visual-panel::after {
+        content: "";
+        position: absolute;
+        inset: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 26px;
+        pointer-events: none;
+    }
 
-                        <!-- Botones -->
-                        <div class="mt-4 d-flex gap-2">
-                            <a th:href="@{/brands}" class="btn btn-outline-secondary">Volver</a>
-                            <a sec:authorize="hasRole('ADMIN')" th:href="@{/brands/{id}/edit(id=${brand.id})}" class="btn btn-primary">Editar</a>
-                        </div>
+    .brand-logo-box {
+        position: relative;
+        z-index: 2;
+        min-height: 250px;
+        display: grid;
+        place-items: center;
+        margin-top: 2rem;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
+    }
 
+    .brand-logo-box img {
+        max-width: 78%;
+        max-height: 170px;
+        object-fit: contain;
+        filter: drop-shadow(0 14px 24px rgba(31, 26, 23, 0.12));
+    }
+
+    .brand-logo-empty {
+        display: grid;
+        place-items: center;
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        background: #faf7f1;
+        color: #8a6f4d;
+        font-size: 2.2rem;
+    }
+
+    .brand-logo-url {
+        position: relative;
+        z-index: 2;
+        margin: 1rem 0 0;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.78rem;
+        line-height: 1.55;
+        word-break: break-all;
+    }
+
+    .brand-feature-text {
+        position: relative;
+        z-index: 2;
+    }
+
+    .brand-feature-label {
+        margin-bottom: 0.6rem;
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .brand-feature-title {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.8rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+    }
+
+    .brand-info-panel {
+        padding: 1.7rem;
+    }
+
+    .brand-card-header {
+        padding-bottom: 1.25rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+    }
+
+    .brand-card-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.75rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+    }
+
+    .brand-card-text {
+        margin: 0.45rem 0 0;
+        color: #74685f;
+        font-size: 0.94rem;
+        line-height: 1.7;
+    }
+
+    .brand-info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .brand-info-item {
+        min-height: 118px;
+        padding: 1.15rem;
+        border: 1px solid rgba(31, 26, 23, 0.09);
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 14px 34px rgba(31, 26, 23, 0.04);
+    }
+
+    .brand-info-item.full {
+        grid-column: 1 / -1;
+    }
+
+    .brand-info-label {
+        margin-bottom: 0.45rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+    }
+
+    .brand-info-value {
+        margin: 0;
+        color: #1f1a17;
+        font-size: 1rem;
+        font-weight: 750;
+        line-height: 1.55;
+        word-break: break-word;
+    }
+
+    .brand-link {
+        color: #1f1a17;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(138, 111, 77, 0.45);
+        transition: color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .brand-link:hover {
+        color: #8a6f4d;
+        border-color: #8a6f4d;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.42rem;
+        border-radius: 999px;
+        padding: 0.52rem 0.78rem;
+        font-size: 0.76rem;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .status-pill.active {
+        background: rgba(47, 107, 69, 0.10);
+        color: #2f6b45;
+    }
+
+    .status-pill.inactive {
+        background: rgba(127, 29, 29, 0.10);
+        color: #7f1d1d;
+    }
+
+    .brand-footer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        padding-top: 1.35rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.08);
+    }
+
+    @media (max-width: 991.98px) {
+        .brand-detail-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .brand-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .brand-detail-card {
+            grid-template-columns: 1fr;
+        }
+
+        .brand-visual-panel {
+            min-height: 380px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .brand-info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .brand-actions,
+        .brand-footer-actions {
+            width: 100%;
+        }
+
+        .brand-actions .btn,
+        .brand-footer-actions .btn {
+            width: 100%;
+        }
+
+        .brand-info-panel {
+            padding: 1.2rem;
+        }
+
+        .brand-visual-panel {
+            padding: 1.15rem;
+        }
+
+        .brand-title {
+            font-size: 2.35rem;
+        }
+    }
+</style>
+
+<main class="brand-detail-page">
+    <div class="container brand-shell">
+
+        <section class="brand-hero">
+            <div>
+                <span class="brand-eyebrow">Marca ecommerce</span>
+
+                <h1 class="brand-title" th:text="${brand.name}">
+                    Detalle de marca
+                </h1>
+
+                <p class="brand-subtitle">
+                    Información comercial, fiscal y visual de la marca dentro del catálogo.
+                </p>
+            </div>
+
+            <div class="brand-actions">
+                <a th:href="@{/brands}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i>
+                    Volver
+                </a>
+
+                <a sec:authorize="hasRole('ADMIN')"
+                   th:href="@{/brands/{id}/edit(id=${brand.id})}"
+                   class="btn btn-premium-primary">
+                    <i class="fa-solid fa-pen-to-square me-2"></i>
+                    Editar
+                </a>
+            </div>
+        </section>
+
+        <section class="brand-detail-card">
+
+            <aside class="brand-visual-panel">
+                <div class="brand-logo-box">
+                    <img th:if="${brand.logo != null and !#strings.isEmpty(brand.logo)}"
+                         th:src="${brand.logo}"
+                         alt="Logo de la marca">
+
+                    <div th:if="${brand.logo == null or #strings.isEmpty(brand.logo)}"
+                         class="brand-logo-empty">
+                        <i class="fa-regular fa-image"></i>
                     </div>
                 </div>
 
+                <p th:if="${brand.logo != null and !#strings.isEmpty(brand.logo)}"
+                   class="brand-logo-url"
+                   th:text="${brand.logo}">
+                    URL logo
+                </p>
+
+                <div class="brand-feature-text">
+                    <div class="brand-feature-label">Identidad de marca</div>
+
+                    <h2 class="brand-feature-title" th:text="${brand.name}">
+                        Nombre de marca
+                    </h2>
+                </div>
+            </aside>
+
+            <div class="brand-info-panel">
+
+                <div class="brand-card-header">
+                    <h2 class="brand-card-title">Datos principales</h2>
+
+                    <p class="brand-card-text">
+                        Revisa la información pública y administrativa asociada a esta marca.
+                    </p>
+                </div>
+
+                <div class="brand-info-grid">
+
+                    <article class="brand-info-item">
+                        <div class="brand-info-label">Nombre</div>
+
+                        <p class="brand-info-value" th:text="${brand.name}">
+                            Nombre
+                        </p>
+                    </article>
+
+                    <article class="brand-info-item">
+                        <div class="brand-info-label">NIF</div>
+
+                        <p class="brand-info-value" th:text="${brand.nif}">
+                            NIF
+                        </p>
+                    </article>
+
+                    <article class="brand-info-item">
+                        <div class="brand-info-label">País</div>
+
+                        <p class="brand-info-value" th:text="${brand.country}">
+                            País
+                        </p>
+                    </article>
+
+                    <article class="brand-info-item">
+                        <div class="brand-info-label">Estado</div>
+
+                        <span th:if="${brand.active}" class="status-pill active">
+                            <i class="fa-solid fa-circle-check"></i>
+                            Activa
+                        </span>
+
+                        <span th:unless="${brand.active}" class="status-pill inactive">
+                            <i class="fa-solid fa-circle-pause"></i>
+                            Inactiva
+                        </span>
+                    </article>
+
+                    <article class="brand-info-item full">
+                        <div class="brand-info-label">Website</div>
+
+                        <p class="brand-info-value">
+                            <a th:if="${brand.website != null and !#strings.isEmpty(brand.website)}"
+                               th:href="${brand.website}"
+                               th:text="${brand.website}"
+                               class="brand-link"
+                               target="_blank">
+                                Web
+                            </a>
+
+                            <span th:if="${brand.website == null or #strings.isEmpty(brand.website)}">
+                                Sin website disponible
+                            </span>
+                        </p>
+                    </article>
+
+                </div>
+
+                <div class="brand-footer-actions">
+                    <a th:href="@{/brands}" class="btn btn-premium-secondary">
+                        <i class="fa-solid fa-arrow-left-long me-2"></i>
+                        Volver a marcas
+                    </a>
+
+                    <a sec:authorize="hasRole('ADMIN')"
+                       th:href="@{/brands/{id}/edit(id=${brand.id})}"
+                       class="btn btn-premium-primary">
+                        <i class="fa-solid fa-pen-to-square me-2"></i>
+                        Editar marca
+                    </a>
+                </div>
+
             </div>
-        </div>
+
+        </section>
 
     </div>
 </main>
+
 <footer th:replace="~{layout/footer::footer}"></footer>
 <script th:replace="~{layout/footer::scripts}"></script>
+
 </body>
 </html>

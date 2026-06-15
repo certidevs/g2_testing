@@ -6,114 +6,653 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar::navbar}"></nav>
-<main class="flex-grow-1">
-    <div class="container py-5">
+<style>
+    .brand-form-body {
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 36%),
+                radial-gradient(circle at bottom right, rgba(31, 26, 23, 0.08), transparent 34%),
+                linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-6">
+    .brand-form-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
 
-                <div class="card shadow-sm rounded-3">
-                    <div class="card-body">
+    .brand-form-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
 
-                        <h1 class="h4 mb-3" th:text="${brandId != null} ? 'Editar marca' : 'Crear marca'">Formulario marca</h1>
-                        <p class="text-muted mb-4">Completa los datos de la marca. Los campos marcados con * son obligatorios.</p>
+    .brand-form-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
 
-                        <form th:object="${brand}"
-                              th:action="@{${formAction}}"
-                              method="post"
-                              novalidate>
+    .brand-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.8rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
 
-                            <!-- PUT para edición -->
-<!--                            <input type="hidden" name="_method" value="put" th:if="${brandId != null}"/>-->
+    .brand-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
 
-                            <!-- Errores globales -->
-                            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-                                <ul class="mb-0">
-                                    <li th:each="error : ${#fields.globalErrors()}" th:text="${error}"></li>
-                                </ul>
+    .brand-form-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.15rem, 4vw, 4rem);
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.055em;
+    }
+
+    .brand-form-subtitle {
+        max-width: 720px;
+        margin: 0.9rem 0 0;
+        color: #6b6057;
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+
+    .brand-form-actions-top {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .brand-form-card {
+        display: grid;
+        grid-template-columns: 0.9fr 1.35fr;
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 26px 74px rgba(31, 26, 23, 0.10);
+        backdrop-filter: blur(12px);
+    }
+
+    .brand-form-side {
+        position: relative;
+        min-height: 620px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.5rem;
+        background:
+                radial-gradient(circle at top, rgba(181, 154, 110, 0.30), transparent 42%),
+                linear-gradient(135deg, #2d2621, #1f1a17);
+        color: #fff;
+    }
+
+    .brand-form-side::after {
+        content: "";
+        position: absolute;
+        inset: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 26px;
+        pointer-events: none;
+    }
+
+    .brand-form-preview {
+        position: relative;
+        z-index: 2;
+        margin-top: 2rem;
+        padding: 1.3rem;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #1f1a17;
+        box-shadow: 0 24px 56px rgba(0, 0, 0, 0.18);
+    }
+
+    .brand-preview-logo {
+        min-height: 190px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 1.1rem;
+        border-radius: 22px;
+        background:
+                radial-gradient(circle at top left, rgba(181, 154, 110, 0.16), transparent 44%),
+                #faf7f1;
+        border: 1px solid rgba(31, 26, 23, 0.08);
+        overflow: hidden;
+    }
+
+    .brand-preview-img {
+        display: block;
+        max-width: 78%;
+        max-height: 145px;
+        object-fit: contain;
+        filter: drop-shadow(0 14px 24px rgba(31, 26, 23, 0.12));
+    }
+
+    .brand-preview-empty {
+        display: grid;
+        place-items: center;
+        width: 86px;
+        height: 86px;
+        border-radius: 50%;
+        background: #fff;
+        color: #8a6f4d;
+        font-size: 2rem;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.08);
+    }
+
+    .brand-preview-kicker {
+        margin-bottom: 0.45rem;
+        color: #8a6f4d;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .brand-preview-name {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.65rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.15;
+    }
+
+    .brand-preview-text {
+        margin: 0.65rem 0 0;
+        color: #74685f;
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    .brand-side-copy {
+        position: relative;
+        z-index: 2;
+    }
+
+    .brand-side-label {
+        margin-bottom: 0.65rem;
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+    }
+
+    .brand-side-title {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.85rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+    }
+
+    .brand-side-description {
+        max-width: 360px;
+        margin: 0.85rem 0 0;
+        color: rgba(255, 255, 255, 0.70);
+        font-size: 0.95rem;
+        line-height: 1.7;
+    }
+
+    .brand-form-panel {
+        padding: 1.7rem;
+    }
+
+    .brand-form-panel-header {
+        margin-bottom: 1.4rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+    }
+
+    .brand-form-panel-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: 1.75rem;
+        font-weight: 500;
+        letter-spacing: -0.04em;
+    }
+
+    .brand-form-panel-text {
+        margin: 0.5rem 0 0;
+        color: #74685f;
+        font-size: 0.94rem;
+        line-height: 1.7;
+    }
+
+    .brand-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .brand-form-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .brand-form-body .form-floating > .form-control {
+        min-height: 62px;
+        border: 1px solid rgba(31, 26, 23, 0.12);
+        border-radius: 20px;
+        background-color: #fff;
+        color: #1f1a17;
+        font-weight: 650;
+        box-shadow: 0 12px 30px rgba(31, 26, 23, 0.045);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .brand-form-body .form-floating > .form-control:focus {
+        border-color: rgba(138, 111, 77, 0.65);
+        box-shadow: 0 0 0 0.22rem rgba(138, 111, 77, 0.13), 0 16px 36px rgba(31, 26, 23, 0.07);
+        transform: translateY(-1px);
+    }
+
+    .brand-form-body .form-floating > label {
+        color: #8a8179;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+
+    .brand-form-body .form-control.is-invalid {
+        border-color: #9f3030;
+        background-image: none;
+    }
+
+    .brand-form-body .invalid-feedback {
+        margin-top: 0.45rem;
+        padding-left: 0.35rem;
+        color: #9f3030;
+        font-size: 0.82rem;
+        font-weight: 650;
+    }
+
+    .brand-alert {
+        border: 1px solid rgba(127, 29, 29, 0.14);
+        border-radius: 22px;
+        background: rgba(127, 29, 29, 0.07);
+        color: #7f1d1d;
+        font-size: 0.92rem;
+        font-weight: 650;
+    }
+
+    .brand-switch-card {
+        grid-column: 1 / -1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 0.15rem;
+        padding: 1.1rem 1.15rem;
+        border: 1px solid rgba(31, 26, 23, 0.09);
+        border-radius: 22px;
+        background:
+                linear-gradient(135deg, rgba(250, 247, 241, 0.95), rgba(255, 255, 255, 0.95));
+        box-shadow: 0 14px 34px rgba(31, 26, 23, 0.04);
+    }
+
+    .brand-switch-title {
+        margin: 0;
+        color: #1f1a17;
+        font-weight: 800;
+    }
+
+    .brand-switch-text {
+        margin: 0.25rem 0 0;
+        color: #74685f;
+        font-size: 0.86rem;
+        line-height: 1.5;
+    }
+
+    .brand-form-body .form-check-input {
+        width: 3.2rem;
+        height: 1.7rem;
+        cursor: pointer;
+        border-color: rgba(31, 26, 23, 0.20);
+        background-color: #d8d0c5;
+        box-shadow: none;
+    }
+
+    .brand-form-body .form-check-input:checked {
+        border-color: #2f6b45;
+        background-color: #2f6b45;
+    }
+
+    .brand-form-body .form-check-input:focus {
+        box-shadow: 0 0 0 0.22rem rgba(47, 107, 69, 0.14);
+    }
+
+    .brand-form-footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 1.55rem;
+        padding-top: 1.35rem;
+        border-top: 1px solid rgba(31, 26, 23, 0.08);
+    }
+
+    .btn-premium-primary,
+    .btn-premium-secondary {
+        border-radius: 999px;
+        padding: 0.88rem 1.3rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-premium-primary {
+        border: 1px solid #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+        box-shadow: 0 16px 34px rgba(31, 26, 23, 0.18);
+    }
+
+    .btn-premium-primary:hover {
+        background: #352d27;
+        border-color: #352d27;
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 22px 44px rgba(31, 26, 23, 0.23);
+    }
+
+    .btn-premium-secondary {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        background: rgba(255, 255, 255, 0.86);
+        color: #1f1a17;
+    }
+
+    .btn-premium-secondary:hover {
+        border-color: rgba(31, 26, 23, 0.30);
+        background: #fff;
+        color: #1f1a17;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 991.98px) {
+        .brand-form-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .brand-form-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .brand-form-card {
+            grid-template-columns: 1fr;
+        }
+
+        .brand-form-side {
+            min-height: 460px;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .brand-form-title {
+            font-size: 2.35rem;
+        }
+
+        .brand-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .brand-form-panel {
+            padding: 1.2rem;
+        }
+
+        .brand-form-side {
+            padding: 1.15rem;
+        }
+
+        .brand-form-actions-top,
+        .brand-form-footer {
+            width: 100%;
+        }
+
+        .brand-form-actions-top .btn,
+        .brand-form-footer .btn,
+        .brand-form-footer button {
+            width: 100%;
+        }
+
+        .brand-switch-card {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<main class="brand-form-page">
+    <div class="container brand-form-shell">
+
+        <section class="brand-form-hero">
+            <div>
+                <span class="brand-eyebrow">Gestión de marca</span>
+
+                <h1 class="brand-form-title"
+                    th:text="${brandId != null} ? 'Editar marca' : 'Crear marca'">
+                    Formulario marca
+                </h1>
+
+                <p class="brand-form-subtitle">
+                    Define la identidad comercial de la marca, sus datos fiscales y su presencia visual dentro del catálogo.
+                </p>
+            </div>
+
+            <div class="brand-form-actions-top">
+                <a th:href="@{/brands}" class="btn btn-premium-secondary">
+                    <i class="fa-solid fa-arrow-left-long me-2"></i>
+                    Volver
+                </a>
+            </div>
+        </section>
+
+        <section class="brand-form-card">
+
+            <aside class="brand-form-side">
+
+                <div class="brand-form-preview">
+
+                    <div class="brand-preview-logo">
+
+                        <img id="brandLogoPreview"
+                             th:src="${#strings.isEmpty(brand.logo) ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==' : brand.logo}"
+                             th:classappend="${#strings.isEmpty(brand.logo)} ? ' d-none' : ''"
+                             alt="Logo de la marca"
+                             class="brand-preview-img">
+
+                        <div id="brandLogoEmpty"
+                             class="brand-preview-empty"
+                             th:classappend="${#strings.isEmpty(brand.logo)} ? '' : ' d-none'">
+                            <i class="fa-regular fa-image"></i>
+                        </div>
+
+                    </div>
+
+                    <div class="brand-preview-kicker">Vista previa</div>
+
+                    <h2 id="brandNamePreview"
+                        class="brand-preview-name"
+                        th:text="${#strings.isEmpty(brand.name) ? 'Nueva marca' : brand.name}">
+                        Nueva marca
+                    </h2>
+
+                    <p class="brand-preview-text">
+                        El logo y los datos principales ayudarán a presentar la marca de forma profesional en la tienda.
+                    </p>
+                </div>
+
+                <div class="brand-side-copy">
+                    <div class="brand-side-label">Identidad premium</div>
+
+                    <h2 class="brand-side-title">
+                        Cada marca debe sentirse clara, confiable y deseable.
+                    </h2>
+
+                    <p class="brand-side-description">
+                        Completa los campos esenciales para mejorar la presentación comercial y mantener una ficha limpia.
+                    </p>
+                </div>
+
+            </aside>
+
+            <div class="brand-form-panel">
+
+                <div class="brand-form-panel-header">
+                    <h2 class="brand-form-panel-title">Datos de la marca</h2>
+
+                    <p class="brand-form-panel-text">
+                        Los campos marcados con * son obligatorios.
+                    </p>
+                </div>
+
+                <form th:object="${brand}"
+                      th:action="@{${formAction}}"
+                      method="post"
+                      novalidate>
+
+                    <!-- PUT para edición -->
+                    <!-- <input type="hidden" name="_method" value="put" th:if="${brandId != null}"/> -->
+
+                    <!-- Errores globales -->
+                    <div th:if="${#fields.hasGlobalErrors()}" class="alert brand-alert mb-4">
+                        <ul class="mb-0">
+                            <li th:each="error : ${#fields.globalErrors()}" th:text="${error}"></li>
+                        </ul>
+                    </div>
+
+                    <div class="brand-form-grid">
+
+                        <!-- Nombre -->
+                        <div class="form-floating brand-form-field full">
+                            <input id="name" type="text"
+                                   th:field="*{name}"
+                                   placeholder="Nombre de la marca"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"/>
+                            <label for="name">Nombre *</label>
+                            <div class="invalid-feedback"
+                                 th:errors="*{name}"
+                                 th:if="${#fields.hasErrors('name')}"></div>
+                        </div>
+
+                        <!-- NIF -->
+                        <div class="form-floating brand-form-field">
+                            <input id="nif" type="text"
+                                   th:field="*{nif}"
+                                   placeholder="Ej: B12345678"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('nif')} ? ' is-invalid' : ''"/>
+                            <label for="nif">NIF *</label>
+                            <div class="invalid-feedback"
+                                 th:errors="*{nif}"
+                                 th:if="${#fields.hasErrors('nif')}"></div>
+                        </div>
+
+                        <!-- País -->
+                        <div class="form-floating brand-form-field">
+                            <input id="country" type="text"
+                                   th:field="*{country}"
+                                   placeholder="Ej: España"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('country')} ? ' is-invalid' : ''"/>
+                            <label for="country">País *</label>
+                            <div class="invalid-feedback"
+                                 th:errors="*{country}"
+                                 th:if="${#fields.hasErrors('country')}"></div>
+                        </div>
+
+                        <!-- Website -->
+                        <div class="form-floating brand-form-field full">
+                            <input id="website" type="text"
+                                   th:field="*{website}"
+                                   placeholder="https://example.com"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('website')} ? ' is-invalid' : ''"/>
+                            <label for="website">Sitio web</label>
+                            <div class="invalid-feedback"
+                                 th:errors="*{website}"
+                                 th:if="${#fields.hasErrors('website')}"></div>
+                        </div>
+
+                        <!-- Logo -->
+                        <div class="form-floating brand-form-field full">
+                            <input id="logo" type="text"
+                                   th:field="*{logo}"
+                                   placeholder="URL del logo"
+                                   class="form-control"
+                                   th:classappend="${#fields.hasErrors('logo')} ? ' is-invalid' : ''"/>
+                            <label for="logo">Logo URL</label>
+                            <div class="invalid-feedback"
+                                 th:errors="*{logo}"
+                                 th:if="${#fields.hasErrors('logo')}"></div>
+                        </div>
+
+                        <!-- Activa -->
+                        <div class="brand-switch-card">
+                            <div>
+                                <p class="brand-switch-title">Marca activa</p>
+                                <p class="brand-switch-text">
+                                    Una marca activa podrá mostrarse y asociarse a productos dentro del catálogo.
+                                </p>
                             </div>
 
-                            <!-- Nombre -->
-                            <div class="form-floating mb-3">
-                                <input id="name" type="text"
-                                       th:field="*{name}"
-                                       placeholder="Nombre de la marca"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('name')} ? ' is-invalid' : ''"/>
-                                <label for="name">Nombre *</label>
-                                <div class="invalid-feedback" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
-                            </div>
-
-                            <!-- NIF -->
-                            <div class="form-floating mb-3">
-                                <input id="nif" type="text"
-                                       th:field="*{nif}"
-                                       placeholder="Ej: B12345678"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('nif')} ? ' is-invalid' : ''"/>
-                                <label for="nif">NIF *</label>
-                                <div class="invalid-feedback" th:errors="*{nif}" th:if="${#fields.hasErrors('nif')}"></div>
-                            </div>
-
-                            <!-- País -->
-                            <div class="form-floating mb-3">
-                                <input id="country" type="text"
-                                       th:field="*{country}"
-                                       placeholder="Ej: España"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('country')} ? ' is-invalid' : ''"/>
-                                <label for="country">País *</label>
-                                <div class="invalid-feedback" th:errors="*{country}" th:if="${#fields.hasErrors('country')}"></div>
-                            </div>
-
-                            <!-- Website -->
-                            <div class="form-floating mb-3">
-                                <input id="website" type="text"
-                                       th:field="*{website}"
-                                       placeholder="https://example.com"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('website')} ? ' is-invalid' : ''"/>
-                                <label for="website">Sitio web</label>
-                                <div class="invalid-feedback" th:errors="*{website}" th:if="${#fields.hasErrors('website')}"></div>
-                            </div>
-
-                            <!-- Logo -->
-                            <div class="form-floating mb-3">
-                                <input id="logo" type="text"
-                                       th:field="*{logo}"
-                                       placeholder="URL del logo"
-                                       class="form-control rounded-3 shadow-sm"
-                                       th:classappend="${#fields.hasErrors('logo')} ? ' is-invalid' : ''"/>
-                                <label for="logo">Logo (URL)</label>
-                                <div class="invalid-feedback" th:errors="*{logo}" th:if="${#fields.hasErrors('logo')}"></div>
-                            </div>
-
-                            <!-- Activa -->
-                            <div class="form-check form-switch mb-4">
+                            <div class="form-check form-switch m-0">
                                 <input id="active" type="checkbox"
                                        th:field="*{active}"
                                        class="form-check-input"/>
-                                <label for="active" class="form-check-label">Marca activa</label>
+                                <label for="active" class="visually-hidden">Marca activa</label>
                             </div>
-
-                            <!-- Botones -->
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary btn-lg"
-                                        th:text="${brandId != null} ? 'Actualizar' : 'Crear'">Guardar</button>
-                                <a th:href="@{/brands}" class="btn btn-outline-secondary btn-lg">Volver</a>
-                            </div>
-
-                        </form>
+                        </div>
 
                     </div>
-                </div>
+
+                    <!-- Botones -->
+                    <div class="brand-form-footer">
+                        <button type="submit"
+                                class="btn btn-premium-primary"
+                                th:text="${brandId != null} ? 'Actualizar marca' : 'Crear marca'">
+                            Guardar
+                        </button>
+
+                        <a th:href="@{/brands}" class="btn btn-premium-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+
+                </form>
 
             </div>
-        </div>
+
+        </section>
 
     </div>
 </main>
+
 <footer th:replace="~{layout/footer::footer}"></footer>
 <script th:replace="~{layout/footer::scripts}"></script>
+
+<script th:src="@{/js/brand-form-preview.js}"></script>
+
 </body>
 </html>
