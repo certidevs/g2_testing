@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,11 +22,11 @@ class CategorySeleniumTest extends BaseSeleniumTest {
     CategoryRepository categoryRepository;
 
     private static final String CATEGORY_NAME = "Selenium Category";
-    private static final String CATEGORY_SLUG = "selenium-category";
+    private static final String CATEGORY_SLUG = "seleniumcategory";
     private static final String CATEGORY_DESCRIPTION = "Categoria creada desde Selenium";
 
     private static final String UPDATED_CATEGORY_NAME = "Selenium Category Updated";
-    private static final String UPDATED_CATEGORY_SLUG = "selenium-category-updated";
+    private static final String UPDATED_CATEGORY_SLUG = "seleniumcategoryupdated";
     private static final String UPDATED_CATEGORY_DESCRIPTION = "Categoria actualizada desde Selenium";
 
     private static final String CATEGORY_IMAGE_URL = "https://example.com/category.png";
@@ -52,6 +53,8 @@ class CategorySeleniumTest extends BaseSeleniumTest {
         type(By.id("slug"), CATEGORY_SLUG);
         type(By.id("description"), CATEGORY_DESCRIPTION);
         setInputValue(By.id("imageUrl"), CATEGORY_IMAGE_URL);
+        new Actions(driver).moveToElement(driver.findElement(By.id("active"))).click().perform();
+//        click(By.id("active"));
 
         submitCategoryForm();
 
