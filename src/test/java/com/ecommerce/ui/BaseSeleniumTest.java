@@ -13,6 +13,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,18 +31,24 @@ import java.util.Map;
 
 @ExtendWith(ScreenshotOnFailure.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 public class BaseSeleniumTest {
 
     @LocalServerPort
     int port;
+
     @Autowired
     ProductRepository productRepository;
+
     @Autowired
     PurchaseRepository purchaseRepository;
+
     @Autowired
     ReviewRepository reviewRepository;
+
     @Autowired
     UserRepository userRepository;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
@@ -54,7 +62,8 @@ public class BaseSeleniumTest {
     Product pantalon;
     Review productMal;
     Review productOK;
-    User user, admin;
+    User user;
+    User admin;
 
     @BeforeEach
     void setUp() {
@@ -65,44 +74,94 @@ public class BaseSeleniumTest {
         userRepository.deleteAll();
 
         user = userRepository.save(User.builder()
-                .username("user").email("user@gmail.com").password(passwordEncoder.encode("user")).role(Role.ROLE_CUSTOMER)
+                .username("user")
+                .email("user@gmail.com")
+                .password(passwordEncoder.encode("user"))
+                .role(Role.ROLE_CUSTOMER)
                 .build());
 
         admin = userRepository.save(User.builder()
-                .username("admin").email("admin@gmail.com").password(passwordEncoder.encode("admin")).role(Role.ROLE_ADMIN)
+                .username("admin")
+                .email("admin@gmail.com")
+                .password(passwordEncoder.encode("admin"))
+                .role(Role.ROLE_ADMIN)
                 .build());
 
-        compraConProductos = purchaseRepository.save(Purchase.builder().user(user).purchaseStatus(PurchaseStatus.INITIATED).shippingMode(ShippingMode.STANDARD).shippingStatus(ShippingStatus.PENDING).paymentStatus(PaymentStatus.PENDING).processStatus(ProcessStatus.PROCESSING).totalPrice(100.0).build());;
-        compraSinProductos = purchaseRepository.save(Purchase.builder().creationDate(LocalDateTime.of(2020, Month.MAY, 30, 18, 45)).user(user).purchaseStatus(PurchaseStatus.INITIATED).shippingMode(ShippingMode.STANDARD).shippingStatus(ShippingStatus.PENDING).paymentStatus(PaymentStatus.PENDING).processStatus(ProcessStatus.ON_HOLD).totalPrice(0.0).build());
-        camiseta = productRepository.save(Product.builder().title("Camiseta").shortDescription("Camiseta de algodón").isbn("1234567890").price(20.0).stock(100).build());
-        pantalon = productRepository.save(Product.builder().title("Pantalón").shortDescription("Pantalón vaquero").isbn("0987654321").price(40.0).stock(50).build());
-        productMal = reviewRepository.save(Review.builder().title("Fatal").rating(1).product(pantalon).message("Fatal").creationDate(LocalDateTime.now().minusDays(1)).build());
-        productOK = reviewRepository.save(Review.builder().title("excelente pizza").rating(5).product(camiseta).message("ok").creationDate(LocalDateTime.now().minusDays(1)).build());
+        compraConProductos = purchaseRepository.save(Purchase.builder()
+                .user(user)
+                .purchaseStatus(PurchaseStatus.INITIATED)
+                .shippingMode(ShippingMode.STANDARD)
+                .shippingStatus(ShippingStatus.PENDING)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.PROCESSING)
+                .totalPrice(100.0)
+                .build());
 
-        // Inicializar y configuración de driver
+        compraSinProductos = purchaseRepository.save(Purchase.builder()
+                .creationDate(LocalDateTime.of(2020, Month.MAY, 30, 18, 45))
+                .user(user)
+                .purchaseStatus(PurchaseStatus.INITIATED)
+                .shippingMode(ShippingMode.STANDARD)
+                .shippingStatus(ShippingStatus.PENDING)
+                .paymentStatus(PaymentStatus.PENDING)
+                .processStatus(ProcessStatus.ON_HOLD)
+                .totalPrice(0.0)
+                .build());
+
+        camiseta = productRepository.save(Product.builder()
+                .title("Camiseta")
+                .shortDescription("Camiseta de algodón")
+                .isbn("1234567890")
+                .price(20.0)
+                .stock(100)
+                .build());
+
+        pantalon = productRepository.save(Product.builder()
+                .title("Pantalón")
+                .shortDescription("Pantalón vaquero")
+                .isbn("0987654321")
+                .price(40.0)
+                .stock(50)
+                .build());
+
+        productMal = reviewRepository.save(Review.builder()
+                .title("Fatal")
+                .rating(1)
+                .product(pantalon)
+                .message("Fatal")
+                .creationDate(LocalDateTime.now().minusDays(1))
+                .build());
+
+        productOK = reviewRepository.save(Review.builder()
+                .title("excelente pizza")
+                .rating(5)
+                .product(camiseta)
+                .message("ok")
+                .creationDate(LocalDateTime.now().minusDays(1))
+                .build());
+
         baseUrl = "http://localhost:" + port + "/";
 
-        // Subimos el timeout para operaciones como login y procesamiento de formularios
-        wait = new WebDriverWait(driver, Duration.ofSeconds(30L));
+        boolean ci = System.getenv("CI") != null;
 
-        // Opciones para GitHub Actions
-        boolean ci = System.getenv("CI") != null; // GitHub Actions pone CI=True
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--window-size=1920,1080");
-        // Forzar es-ES en el navegador -> Accept-Language es-ES -> el servidor formatea los
-        // decimales con coma igual en local y en CI. (El <input type="date"> NO se controla
-        // con esto en Linux: usa el locale del SO; por eso su fecha se fija por valor ISO
-        // en el propio test, no tecleando.)
         chromeOptions.addArguments("--lang=es-ES");
         chromeOptions.setExperimentalOption("prefs", Map.of("intl.accept_languages", "es-ES"));
+
         if (ci) {
-            chromeOptions.addArguments("--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage");
+            chromeOptions.addArguments(
+                    "--headless=new",
+                    "--no-sandbox",
+                    "--disable-gpu",
+                    "--disable-dev-shm-usage"
+            );
         }
+
         driver = new ChromeDriver(chromeOptions);
         wait = new WebDriverWait(driver, Duration.ofSeconds(30L));
     }
 
-    // Después de cada test, quitamos el driver para liberar recursos
     @AfterEach
     void tearDown() {
         if (driver != null) {
@@ -110,22 +169,21 @@ public class BaseSeleniumTest {
         }
     }
 
-    // Función para hacer login como admin
     void loginAdmin() {
         login("admin", "admin");
     }
 
-    // Función para hacer login como usuario
     void loginUser() {
         login("user", "user");
     }
 
-    // Función para hacer login
     void login(String username, String password) {
         driver.get(baseUrl + "login");
+
         driver.findElement(By.id("username")).sendKeys(username);
         driver.findElement(By.id("password")).sendKeys(password);
         driver.findElement(By.cssSelector("button[type='submit']")).click();
+
         wait.until(driver -> !driver.getCurrentUrl().contains("/login"));
     }
 
@@ -134,17 +192,43 @@ public class BaseSeleniumTest {
     }
 
     void type(By locator, String value) {
-        var element = wait.until(d -> d.findElement(locator));
+        var element = wait.until(driver -> driver.findElement(locator));
+
         element.clear();
         element.sendKeys(value);
     }
 
     void click(By locator) {
-        wait.until(d -> d.findElement(locator).isDisplayed() && d.findElement(locator).isEnabled());
-        driver.findElement(locator).click();
+        var element = wait.until(driver -> {
+            var foundElement = driver.findElement(locator);
+            return foundElement.isDisplayed() && foundElement.isEnabled()
+                    ? foundElement
+                    : null;
+        });
+
+        element.click();
     }
 
     void waitUntilPageContains(String text) {
-        wait.until(d -> d.getPageSource().contains(text));
+        wait.until(driver -> driver.getPageSource().contains(text));
+    }
+
+    void setInputValue(By locator, String value) {
+        var element = wait.until(driver -> driver.findElement(locator));
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].value = arguments[1];",
+                element,
+                value
+        );
+    }
+
+    void submitForm(By formLocator) {
+        var form = wait.until(driver -> driver.findElement(formLocator));
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'}); arguments[0].requestSubmit();",
+                form
+        );
     }
 }
