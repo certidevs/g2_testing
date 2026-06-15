@@ -107,6 +107,8 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers(HttpMethod.GET, "/products/new").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/add").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/edit/*").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.GET, "/admin/products/list").hasRole("ADMIN")
+                    .requestMatchers(HttpMethod.POST, "/admin/products/update-discount").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.GET, "/products/*").permitAll()
 
                     //CATEGORIES

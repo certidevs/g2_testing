@@ -97,7 +97,7 @@ public class ProductControler {
                                         @RequestParam("discountPercentage") Integer discount) {
 
         productRepository.findById(id).ifPresent(product -> {
-            product.setDiscountPercentage(discount);
+            product.setDiscountPercentage(normalizeDiscount(discount));
             productRepository.save(product);
         });
 
@@ -161,13 +161,22 @@ public class ProductControler {
                 existingProduct.setLongDescription(product.getLongDescription());
                 existingProduct.setStock(product.getStock());
                 existingProduct.setImageUrl(product.getImageUrl());
+                existingProduct.setDiscountPercentage(normalizeDiscount(product.getDiscountPercentage()));
                 existingProduct.setBrand(product.getBrand());
                 existingProduct.setSubcategory(product.getSubcategory());
                 productRepository.save(existingProduct);
             });
         } else {
+            product.setDiscountPercentage(normalizeDiscount(product.getDiscountPercentage()));
             productRepository.save(product);
         }
         return "redirect:/admin/products/list"; // volver al listado de admin para ver el resultado
+    }
+
+    private Integer normalizeDiscount(Integer discount) {
+        if (discount == null) {
+            return 0;
+        }
+        return Math.max(0, Math.min(discount, 99));
     }
 }

@@ -11,9 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PostMapping;import org.springframework.web.bind.annotation.ResponseBody;
 // import org.springframework.transaction.annotation.Transactional; // Ya no es necesario aquí
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,24 +31,28 @@ public class FavoriteController {
     // Mostrar lista de favoritos
     @GetMapping("/favorites")
     // @Transactional // Eliminado, ya que JOIN FETCH en el repositorio maneja la carga
-    public String listFavorites(Model model) {
-        // Por ahora usamos un usuario de ejemplo (después se integraría con autenticación)
-        List<User> users = userRepository.findAll();
+    public String listFavorites(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-        if (!users.isEmpty()) {
-            UUID userId = users.getFirst().getId();
-            // Usar el nuevo método que carga los productos de forma eager
-            List<Favorite> favorites = favoriteRepository.findByUserIdWithProducts(userId);
-            List<Product> favoriteProducts = favorites.stream()
-                    .map(Favorite::getProduct)
-                    .collect(Collectors.toList());
+        Optional<User> userOpt = userRepository.findByUsername(principal.getName());
 
-            model.addAttribute("favoriteProducts", favoriteProducts);
-            model.addAttribute("saludo", "Mis productos favoritos");
-        } else {
+        if (userOpt.isEmpty()) {
             model.addAttribute("favoriteProducts", List.of());
             model.addAttribute("saludo", "No hay favoritos");
+            return "favorite/favorites-list";
         }
+
+        UUID userId = userOpt.get().getId();
+        // Usar el nuevo método que carga los productos de forma eager
+        List<Favorite> favorites = favoriteRepository.findByUserIdWithProducts(userId);
+        List<Product> favoriteProducts = favorites.stream()
+                .map(Favorite::getProduct)
+                .collect(Collectors.toList());
+
+        model.addAttribute("favoriteProducts", favoriteProducts);
+        model.addAttribute("saludo", "Mis productos favoritos");
 
         return "favorite/favorites-list";
     }
@@ -90,34 +95,32 @@ public class FavoriteController {
 
     // Eliminar de favoritos
     @PostMapping("/favorites/remove/{productId}")
-    public String removeFavorite(@PathVariable UUID productId) {
-        List<User> users = userRepository.findAll();
+    public String removeFavorite(@PathVariable UUID productId, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-        if (!users.isEmpty()) {
+        userRepository.findByUsername(principal.getName()).ifPresent(user -> {
             Optional<Favorite> favorite = favoriteRepository.findByUserIdAndProductId(
-                    users.get(0).getId(),
+                    user.getId(),
                     productId
             );
             favorite.ifPresent(favoriteRepository::delete);
-        }
+        });
 
-        return "redirect:/products/" + productId;
+        return "redirect:/favorites";
     }
 
     // Verificar si un producto está en favoritos
+    @ResponseBody
     @GetMapping("/favorites/check/{productId}")
-    public String checkFavorite(@PathVariable UUID productId, Model model) {
-        List<User> users = userRepository.findAll();
-
-        if (!users.isEmpty()) {
-            boolean isFavorite = favoriteRepository.findByUserIdAndProductId(
-                    users.get(0).getId(),
-                    productId
-            ).isPresent();
-
-            model.addAttribute("isFavorite", isFavorite);
+    public boolean checkFavorite(@PathVariable UUID productId, Principal principal) {
+        if (principal == null) {
+            return false;
         }
 
-        return "favorites/check";
+        return userRepository.findByUsername(principal.getName())
+                .map(user -> favoriteRepository.findByUserIdAndProductId(user.getId(), productId).isPresent())
+                .orElse(false);
     }
 }

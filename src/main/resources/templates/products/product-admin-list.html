@@ -344,6 +344,32 @@
     justify-content: flex-end;
   }
 
+  .quick-discount-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.28rem;
+    border: 1px solid rgba(127, 29, 29, 0.16);
+    border-radius: 999px;
+    background: rgba(127, 29, 29, 0.05);
+  }
+
+  .quick-discount-input {
+    width: 76px;
+    min-height: 2.25rem;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    color: #1f1a17;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .quick-discount-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(127, 29, 29, 0.12);
+  }
+
   .btn-icon-soft {
     display: inline-flex;
     align-items: center;
@@ -493,6 +519,11 @@
 
     .actions-group {
       flex-direction: column;
+    }
+
+    .quick-discount-form {
+      width: 100%;
+      justify-content: space-between;
     }
 
     .btn-icon-soft {
@@ -664,14 +695,35 @@
             <td class="text-end pe-4">
               <div class="actions-group" role="group" aria-label="Acciones del producto">
 
-                <button type="button"
-                        class="btn btn-sm btn-premium-danger btn-icon-soft"
-                        data-bs-toggle="modal"
-                        th:data-bs-target="|#discountModal-${product.id}|"
-                        title="Gestionar descuento">
-                  <i class="fa-solid fa-percent"></i>
-                  Descuento
-                </button>
+                <form th:action="@{/admin/products/update-discount}"
+                      method="post"
+                      class="quick-discount-form"
+                      title="Guardar descuento">
+                  <input type="hidden"
+                         th:if="${_csrf != null}"
+                         th:name="${_csrf.parameterName}"
+                         th:value="${_csrf.token}">
+                  <input type="hidden"
+                         name="productId"
+                         th:value="${product.id}">
+                  <label class="visually-hidden"
+                         th:for="|quickDiscount-${product.id}|">
+                    Porcentaje de descuento
+                  </label>
+                  <input type="number"
+                         class="quick-discount-input"
+                         name="discountPercentage"
+                         th:id="|quickDiscount-${product.id}|"
+                         th:value="${product.discountPercentage != null ? product.discountPercentage : 0}"
+                         min="0"
+                         max="99"
+                         required>
+                  <button type="submit"
+                          class="btn btn-sm btn-premium-danger btn-icon-soft">
+                    <i class="fa-solid fa-percent"></i>
+                    Guardar
+                  </button>
+                </form>
 
                 <a th:href="@{/products/edit/{id}(id=${product.id})}"
                    class="btn btn-sm btn-premium-secondary btn-icon-soft"

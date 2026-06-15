@@ -1,69 +1,259 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{layout/head :: head('Reseñas')}">
-    <meta charset="UTF-8">
+<head th:replace="~{layout/head :: head('Gestión de reseñas')}">
 </head>
-<body class="d-flex flex-column min-vh-100">
+<body class="reviews-admin-body d-flex flex-column min-vh-100">
 <nav th:replace="~{layout/navbar :: navbar}"></nav>
-<main class="container flex-grow-1">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">
-            <i class="fa-solid fa-star text-warning me-2"></i>Reseñas
-        </h1>
-        <span class="badge bg-secondary fs-6" th:text="|${#lists.size(reviews)} resultados|">0 resultados</span>
+
+<style>
+    .reviews-admin-body {
+        background: linear-gradient(180deg, #fbfaf7 0%, #f2eee8 100%);
+        color: #1f1a17;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .reviews-page {
+        flex: 1;
+        padding: 4.5rem 0 5rem;
+    }
+
+    .reviews-shell {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    .reviews-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.12);
+    }
+
+    .reviews-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 0.75rem;
+        color: #8a6f4d;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+    }
+
+    .reviews-eyebrow::before {
+        content: "";
+        width: 34px;
+        height: 1px;
+        background: currentColor;
+    }
+
+    .reviews-title {
+        margin: 0;
+        color: #1f1a17;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        font-weight: 500;
+        letter-spacing: -0.05em;
+    }
+
+    .reviews-subtitle {
+        max-width: 700px;
+        margin: 0.8rem 0 0;
+        color: #6b6057;
+        line-height: 1.7;
+    }
+
+    .reviews-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border-radius: 999px;
+        padding: 0.7rem 1rem;
+        background: #1f1a17;
+        color: #fff;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .reviews-panel {
+        overflow: hidden;
+        border: 1px solid rgba(31, 26, 23, 0.10);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 24px 70px rgba(31, 26, 23, 0.08);
+    }
+
+    .reviews-table {
+        margin: 0;
+    }
+
+    .reviews-table thead th {
+        padding: 1rem 1.15rem;
+        border: 0;
+        background: #1f1a17;
+        color: #f8f3ea;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .reviews-table tbody td {
+        padding: 1.1rem 1.15rem;
+        border-bottom: 1px solid rgba(31, 26, 23, 0.08);
+        vertical-align: middle;
+    }
+
+    .review-title {
+        margin: 0;
+        color: #1f1a17;
+        font-weight: 900;
+    }
+
+    .review-meta {
+        display: inline-block;
+        margin-top: 0.3rem;
+        color: #8c8178;
+        font-size: 0.82rem;
+    }
+
+    .rating-stars {
+        color: #b7791f;
+        white-space: nowrap;
+    }
+
+    .soft-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        border-radius: 999px;
+        padding: 0.45rem 0.7rem;
+        background: #faf7f1;
+        color: #5f554d;
+        font-size: 0.78rem;
+        font-weight: 800;
+    }
+
+    .btn-review-action {
+        border: 1px solid rgba(31, 26, 23, 0.14);
+        border-radius: 999px;
+        background: #fff;
+        color: #1f1a17;
+        font-size: 0.78rem;
+        font-weight: 900;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .btn-review-action:hover {
+        border-color: #1f1a17;
+        background: #1f1a17;
+        color: #fff;
+    }
+
+    .empty-state {
+        padding: 4rem 1.5rem;
+        text-align: center;
+        color: #74685f;
+    }
+
+    @media (max-width: 767.98px) {
+        .reviews-page {
+            padding: 3rem 0 4rem;
+        }
+
+        .reviews-hero {
+            align-items: stretch;
+            flex-direction: column;
+        }
+    }
+</style>
+
+<main class="reviews-page">
+    <div class="container reviews-shell">
+        <section class="reviews-hero">
+            <div>
+                <span class="reviews-eyebrow">Administración</span>
+                <h1 class="reviews-title">Gestión de reseñas</h1>
+                <p class="reviews-subtitle">
+                    Revisa opiniones de clientes, consulta el producto asociado y accede al detalle para editar o eliminar comentarios.
+                </p>
+            </div>
+
+            <span class="reviews-count">
+                <i class="fa-solid fa-star"></i>
+                <span th:text="|${reviews != null ? #lists.size(reviews) : 0} reseñas|">0 reseñas</span>
+            </span>
+        </section>
+
+        <section class="reviews-panel" th:if="${reviews != null and !#lists.isEmpty(reviews)}">
+            <div class="table-responsive">
+                <table class="table reviews-table align-middle">
+                    <thead>
+                    <tr>
+                        <th>Reseña</th>
+                        <th class="text-center">Valoración</th>
+                        <th>Producto</th>
+                        <th>Usuario</th>
+                        <th class="text-end">Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="review : ${reviews}">
+                        <td>
+                            <p class="review-title" th:text="${review.title != null ? review.title : 'Sin título'}">
+                                Título de reseña
+                            </p>
+                            <span class="review-meta"
+                                  th:text="${review.creationDate != null ? #temporals.format(review.creationDate, 'dd/MM/yyyy HH:mm') : 'Sin fecha'}">
+                                01/01/2026 12:00
+                            </span>
+                        </td>
+                        <td class="text-center rating-stars">
+                            <span th:each="i : ${#numbers.sequence(1, 5)}"
+                                  th:class="${i <= review.rating ? 'fa-solid fa-star' : 'fa-regular fa-star text-muted'}"
+                                  class="me-1"></span>
+                        </td>
+                        <td>
+                            <span class="soft-pill" th:if="${review.product != null}">
+                                <i class="fa-solid fa-box"></i>
+                                <span th:text="${review.product.title}">Producto</span>
+                            </span>
+                            <span class="text-muted" th:unless="${review.product != null}">Sin producto</span>
+                        </td>
+                        <td>
+                            <span class="soft-pill" th:if="${review.user != null}">
+                                <i class="fa-solid fa-user"></i>
+                                <span th:text="${review.user.name}">Usuario</span>
+                            </span>
+                            <span class="text-muted" th:unless="${review.user != null}">Anónimo</span>
+                        </td>
+                        <td class="text-end">
+                            <a th:href="@{/reviews/{id}(id=${review.id})}" class="btn btn-sm btn-review-action">
+                                <i class="fa-regular fa-eye me-1"></i>
+                                Detalle
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="reviews-panel empty-state" th:if="${reviews == null or #lists.isEmpty(reviews)}">
+            <i class="fa-regular fa-star fa-2x mb-3"></i>
+            <h2 class="h4">No hay reseñas disponibles</h2>
+            <p class="mb-0">Cuando los clientes valoren productos, aparecerán aquí para gestionarlas.</p>
+        </section>
     </div>
-
-    <div class="alert alert-info" th:if="${#lists.isEmpty(reviews)}">
-        No hay reseñas disponibles por ahora.
-    </div>
-
-    <div class="card shadow-sm" th:unless="${#lists.isEmpty(reviews)}">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                <tr>
-                    <th>Título</th>
-                    <th class="text-center">Rating</th>
-                    <th>Producto</th>
-                    <th>Usuario</th>
-                    <th class="text-center">Estado</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="review : ${reviews}">
-                    <td>
-                        <div class="fw-semibold" th:text="${review.title}">Título de reseña</div>
-                        <small class="text-muted" th:text="${#temporals.format(review.creationDate, 'dd/MM/yyyy HH:mm')}">01/01/2026 12:00</small>
-                    </td>
-                    <td class="text-center">
-                        <span th:each="i : ${#numbers.sequence(1, 5)}"
-                              th:class="${i <= review.rating ? 'fa-solid fa-star text-warning' : 'fa-regular fa-star text-muted'}"
-                              class="me-1"></span>
-                    </td>
-                    <td>
-                        <span th:if="${review.product != null}" th:text="${review.product.title}">Producto</span>
-                        <span th:unless="${review.product != null}" class="text-muted">Sin producto</span>
-                    </td>
-                    <td>
-                        <span th:if="${review.user != null}" th:text="${review.user.name}">Usuario</span>
-                        <span th:unless="${review.user != null}" class="text-muted">Anónimo</span>
-                    </td>
-
-
-                    <td class="text-end">
-                        <a th:href="@{/reviews/{id}(id=${review.id})}" class="btn btn-outline-primary btn-sm">
-                            <i class="fa-regular fa-eye me-1"></i>Detalle
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <footer th:replace="~{layout/footer :: footer}"></footer>
-    <script th:replace="~{layout/footer :: scripts}"></script>
 </main>
+
+<footer th:replace="~{layout/footer :: footer}"></footer>
+<script th:replace="~{layout/footer :: scripts}"></script>
 </body>
 </html>
-
