@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -41,8 +42,11 @@ public class BrandSeleniumTest extends BaseSeleniumTest
         type(By.id("country"), BRAND_COUNTRY);
         type(By.id("website"), BRAND_WEBSITE);
         type(By.id("logo"), BRAND_LOGO);
+        click(By.id("active"));
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        new Actions(driver).moveToElement(
+                driver.findElement(By.cssSelector("form[action*='/brands'] button[type='submit']"))
+        ).click().perform();
 
         wait.until(ExpectedConditions.urlContains("/brands"));
         waitUntilPageContains(BRAND_NAME);
@@ -62,7 +66,9 @@ public class BrandSeleniumTest extends BaseSeleniumTest
         type(By.id("country"), "Portugal");
         type(By.id("website"), "https://updated-brand.example.com");
 
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
+        new Actions(driver).moveToElement(
+                driver.findElement(By.cssSelector("form[action*='/brands'] button[type='submit']"))
+        ).click().perform();
 
         wait.until(ExpectedConditions.urlContains("/brands"));
         waitUntilPageContains("Selenium Brand Updated");
