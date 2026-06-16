@@ -42,7 +42,8 @@ public class BrandSeleniumTest extends BaseSeleniumTest
         type(By.id("country"), BRAND_COUNTRY);
         type(By.id("website"), BRAND_WEBSITE);
         type(By.id("logo"), BRAND_LOGO);
-        click(By.id("active"));
+//        click(By.id("active"));
+        check(By.id("active"), true);
 
         new Actions(driver).moveToElement(
                 driver.findElement(By.cssSelector("form[action*='/brands'] button[type='submit']"))

@@ -148,7 +148,7 @@ public class BaseSeleniumTest {
         chromeOptions.addArguments("--window-size=1920,1080");
         chromeOptions.addArguments("--lang=es-ES");
         chromeOptions.setExperimentalOption("prefs", Map.of("intl.accept_languages", "es-ES"));
-
+        chromeOptions.addArguments("--force-device-scale-factor=1", "--start-maximized");
         if (ci) {
             chromeOptions.addArguments(
                     "--headless=new",
@@ -207,6 +207,12 @@ public class BaseSeleniumTest {
         });
 
         element.click();
+    }
+    void check(By locator, boolean shouldBeChecked) {
+        var element = wait.until(driver -> driver.findElement(locator));
+        if (element.isSelected() != shouldBeChecked) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        }
     }
 
     void waitUntilPageContains(String text) {
