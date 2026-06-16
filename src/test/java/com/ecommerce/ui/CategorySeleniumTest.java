@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -118,16 +118,20 @@ class CategorySeleniumTest extends BaseSeleniumTest {
     }
 
     private void clickEditButtonForCategory(String categoryName) {
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
+        WebElement editButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
                 "//tr[.//*[contains(@class,'category-name') and normalize-space()='" + categoryName + "']]" +
                         "//a[contains(normalize-space(), 'Editar')]"
-        ))).click();
+        )));
+
+        clickWithJavaScript(editButton);
     }
 
     private void clickDeleteButtonForCategory(String categoryName) {
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
+        WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
                 "//tr[.//*[contains(@class,'category-name') and normalize-space()='" + categoryName + "']]" +
                         "//button[contains(normalize-space(), 'Eliminar')]"
-        ))).click();
+        )));
+
+        clickWithJavaScript(deleteButton);
     }
 }

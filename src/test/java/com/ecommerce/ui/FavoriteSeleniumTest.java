@@ -4,7 +4,6 @@ import com.ecommerce.model.Favorite;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -112,7 +111,4 @@ public class FavoriteSeleniumTest extends BaseSeleniumTest {
         wait.until(ExpectedConditions.urlContains("/products/" + camiseta.getId()));
     }
 
-    private void clickWithJavaScript(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-    }
 }

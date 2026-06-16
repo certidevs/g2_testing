@@ -6,6 +6,7 @@ import com.ecommerce.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,17 +131,21 @@ public class UserSeleniumTest extends BaseSeleniumTest
     }
 
     private void clickEditButtonForUser(String username) {
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
+        WebElement editButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
                 "//tr[.//*[contains(@class,'user-name') and normalize-space()='" + username + "']]" +
                         "//a[contains(normalize-space(), 'Editar')]"
-        ))).click();
+        )));
+
+        clickWithJavaScript(editButton);
     }
 
     private void clickToggleStatusButtonForUser(String username, String buttonText) {
-        wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
+        WebElement toggleButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(
                 "//tr[.//*[contains(@class,'user-name') and normalize-space()='" + username + "']]" +
                         "//button[contains(normalize-space(), '" + buttonText + "')]"
-        ))).click();
+        )));
+
+        clickWithJavaScript(toggleButton);
     }
 
     private void submitAdminEditForm() {

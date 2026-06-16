@@ -4,7 +4,6 @@ import com.ecommerce.model.Review;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -101,7 +100,4 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
         assertFalse(driver.getPageSource().contains("Fatal"));
     }
 
-    private void clickWithJavaScript(WebElement element) {
-        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-    }
 }
