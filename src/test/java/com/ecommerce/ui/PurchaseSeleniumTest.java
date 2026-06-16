@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 public class PurchaseSeleniumTest extends BaseSeleniumTest {
 
     // Verifica la vista de la lista de compras
@@ -70,10 +69,10 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
         assertTrue(driver.findElement(By.id("totalPurchase-" + compraConProductos.getId())).getText().contains("100,00 €"));
 
         // Fecha de finalización de la compra
-//        assertTrue(driver.findElement(By.id("finishedDate-" + compraConProductos.getId())).getText().contains(compraConProductos.getFinishedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
         assertTrue(driver.findElement(By.id("finishedDate-" + compraConProductos.getId())).getText().contains("Pendiente"));
 
         // Acciones de la tabla del listado de las compras
+
 
         // Detalle de la compra
         assertEquals(driver.findElement(By.id("detailPurchaseBtn-" + compraConProductos.getId())).getAttribute("href"), baseUrl + "purchases/" + compraConProductos.getId());
