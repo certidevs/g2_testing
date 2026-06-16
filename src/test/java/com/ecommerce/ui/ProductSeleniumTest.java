@@ -34,14 +34,13 @@ public class ProductSeleniumTest extends BaseSeleniumTest {
     // Comprueba que al entrar en el detalle de un producto se muestran sus datos principales.
     @Test
     void productDetailShowsProductInformation() {
-        // Abre directamente el detalle de la camiseta
         driver.get(baseUrl + "products/" + camiseta.getId());
 
-        // Espera a que el titulo del detalle sea visible.
-        WebElement productTitle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h1.product-title")));
+        WebElement productTitle = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector("h1.product-title"))
+        );
 
-        // Verifica que el detalle pertenece al producto correcto y que se renderizan sus datos.
-        assertEquals("Camiseta", productTitle.getText());
+        assertEquals("Camiseta", productTitle.getText().trim());
         assertTrue(driver.getPageSource().contains("Camiseta de algodón"));
         assertTrue(driver.getPageSource().contains("Añadir al carrito"));
     }

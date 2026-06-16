@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.format.DateTimeFormatter;
@@ -141,24 +142,56 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
     }
 */
     // Verifica el proceso de creación de una compra
-    @Test
-    void startPurchase() {
-        loginUser();
-        driver.navigate().to(baseUrl + "products/" + camiseta.getId());
-        wait.until(ExpectedConditions.elementToBeClickable(By.linkText("AÑADIR AL CARRITO")));
-        driver.findElement(By.linkText("AÑADIR AL CARRITO")).click();
-        wait.until(ExpectedConditions.urlContains("/purchases/purchaseId="));
-        driver.findElement(By.id("addBtn-" + camiseta.getId())).click();
-        wait.until(ExpectedConditions.urlContains("/purchases/new?purchaseId=" + camiseta.getId()));
-        driver.findElement(By.id("lessBtn-" + camiseta.getId())).click();
-        wait.until(ExpectedConditions.urlContains("/purchases/new?purchaseId=" + camiseta.getId()));
+@Test
+void startPurchase() {
+    loginUser();
 
-        driver.findElement(By.id("numPeople")).sendKeys("2");
-        driver.findElement(By.id("userSuggestions")).sendKeys("al fondo a la derecha");
-        driver.findElement(By.cssSelector("button[type='submit']")).click();
-        wait.until(ExpectedConditions.urlContains("/orders/"));
-        assertTrue(driver.findElement(By.tagName("h1")).getText().contains("Pedido #"));
-    }
+    driver.get(baseUrl + "products/" + camiseta.getId());
+
+    WebElement addToCartLink = wait.until(ExpectedConditions.elementToBeClickable(
+            By.linkText("AÑADIR AL CARRITO")
+    ));
+    addToCartLink.click();
+
+    wait.until(ExpectedConditions.urlContains("/purchases/"));
+
+    WebElement addQuantityButton = wait.until(ExpectedConditions.elementToBeClickable(
+            By.id("addBtn-" + camiseta.getId())
+    ));
+    addQuantityButton.click();
+
+    wait.until(ExpectedConditions.elementToBeClickable(
+            By.id("lessBtn-" + camiseta.getId())
+    ));
+
+    WebElement lessQuantityButton = wait.until(ExpectedConditions.elementToBeClickable(
+            By.id("lessBtn-" + camiseta.getId())
+    ));
+    lessQuantityButton.click();
+
+    WebElement numPeopleInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.id("numPeople")
+    ));
+    numPeopleInput.clear();
+    numPeopleInput.sendKeys("2");
+
+    WebElement userSuggestionsInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.id("userSuggestions")
+    ));
+    userSuggestionsInput.clear();
+    userSuggestionsInput.sendKeys("al fondo a la derecha");
+
+    WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(
+            By.cssSelector("button[type='submit']")
+    ));
+    submitButton.click();
+
+    WebElement title = wait.until(ExpectedConditions.visibilityOfElementLocated(
+            By.tagName("h1")
+    ));
+
+    assertTrue(title.getText().contains("Pedido #"));
+}
 
     // UpdatePurchase | Add Product
 

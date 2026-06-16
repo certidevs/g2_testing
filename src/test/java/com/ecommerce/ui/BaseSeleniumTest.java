@@ -8,6 +8,7 @@ import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseRepository;
+import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.ReviewRepository;
 import com.ecommerce.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +47,9 @@ public class BaseSeleniumTest {
     PurchaseRepository purchaseRepository;
 
     @Autowired
+    PurchaseLineRepository purchaseLineRepository;
+
+    @Autowired
     ReviewRepository reviewRepository;
 
     @Autowired
@@ -75,8 +79,9 @@ public class BaseSeleniumTest {
 
         favoriteRepository.deleteAll();
         reviewRepository.deleteAll();
-        productRepository.deleteAll();
+        purchaseLineRepository.deleteAll();
         purchaseRepository.deleteAll();
+        productRepository.deleteAll();
         userRepository.deleteAll();
 
         user = userRepository.save(User.builder()

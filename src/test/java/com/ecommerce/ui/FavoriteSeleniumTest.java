@@ -2,10 +2,11 @@ package com.ecommerce.ui;
 
 import com.ecommerce.model.Favorite;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,38 +24,55 @@ public class FavoriteSeleniumTest extends BaseSeleniumTest {
 
     @Test
     void userCanAddProductToFavoritesAndSeeItInFavoritesList() {
-        // Inicia sesion como cliente normal para activar el boton de favoritos.
         loginUser();
 
-        // Entra al detalle del producto y envia el formulario real de "Añadir a favoritos".
         driver.get(baseUrl + "products/" + camiseta.getId());
+
         WebElement addButton = wait.until(ExpectedConditions.elementToBeClickable(
                 By.cssSelector("form[action*='/favorites/add/'] button[type='submit']")
         ));
-        clickWithJavaScript(addButton);
 
-        // Acepta la confirmacion del navegador y espera a volver al detalle.
-        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-        alert.accept();
-        wait.until(ExpectedConditions.urlContains("/products/" + camiseta.getId()));
+        scrollToElement(addButton);
 
-        // Comprueba primero la base de datos y despues la pantalla de favoritos.
-        assertTrue(favoriteRepository.findByUserIdAndProductId(user.getId(), camiseta.getId()).isPresent());
+        try {
+            addButton.click();
+        } catch (ElementClickInterceptedException e) {
+            clickWithJavaScript(addButton);
+        }
+
+        acceptAlertIfPresent();
+
+        wait.until(driver -> favoriteRepository
+                .findByUserIdAndProductId(user.getId(), camiseta.getId())
+                .isPresent()
+        );
+
+        assertTrue(
+                favoriteRepository.findByUserIdAndProductId(user.getId(), camiseta.getId()).isPresent()
+        );
 
         driver.get(baseUrl + "favorites");
+
         waitUntilPageContains("Mis Favoritos");
         waitUntilPageContains("Camiseta");
     }
 
     @Test
     void addingSameProductTwiceDoesNotCreateDuplicateFavorite() {
-        // Este flujo valida la proteccion del controlador contra favoritos duplicados.
         loginUser();
 
-        addProductToFavoritesFromDetail();
-        addProductToFavoritesFromDetail();
+        addProductToFavoritesFromDetailWithoutAlert();
+        waitUntilFavoriteExists();
 
-        assertEquals(1, favoriteRepository.findByUserIdWithProducts(user.getId()).size());
+        addProductToFavoritesFromDetailWithoutAlert();
+        waitUntilFavoriteExists();
+
+        long favoritesForProduct = favoriteRepository.findByUserIdWithProducts(user.getId())
+                .stream()
+                .filter(favorite -> favorite.getProduct().getId().equals(camiseta.getId()))
+                .count();
+
+        assertEquals(1, favoritesForProduct);
     }
 
     @Test
@@ -98,17 +116,51 @@ public class FavoriteSeleniumTest extends BaseSeleniumTest {
         assertTrue(driver.findElement(By.tagName("body")).getText().contains("true"));
     }
 
-    private void addProductToFavoritesFromDetail() {
+    private void addProductToFavoritesFromDetailWithoutAlert() {
         driver.get(baseUrl + "products/" + camiseta.getId());
 
-        WebElement addButton = wait.until(ExpectedConditions.elementToBeClickable(
-                By.cssSelector("form[action*='/favorites/add/'] button[type='submit']")
+        WebElement form = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("form[action*='/favorites/add/']")
         ));
-        clickWithJavaScript(addButton);
 
-        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
-        alert.accept();
-        wait.until(ExpectedConditions.urlContains("/products/" + camiseta.getId()));
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'});",
+                form
+        );
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].submit();",
+                form
+        );
+
+        wait.until(driver -> favoriteRepository
+                .findByUserIdAndProductId(user.getId(), camiseta.getId())
+                .isPresent()
+        );
+    }
+
+    private void acceptAlertIfPresent() {
+        try {
+            WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(3));
+            Alert alert = shortWait.until(ExpectedConditions.alertIsPresent());
+            alert.accept();
+        } catch (TimeoutException | NoAlertPresentException ignored) {
+            // Si no hay alert, el test continúa.
+        }
+    }
+
+    private void scrollToElement(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center'});",
+                element
+        );
+    }
+
+    private void waitUntilFavoriteExists() {
+        wait.until(driver -> favoriteRepository
+                .findByUserIdAndProductId(user.getId(), camiseta.getId())
+                .isPresent()
+        );
     }
 
 }

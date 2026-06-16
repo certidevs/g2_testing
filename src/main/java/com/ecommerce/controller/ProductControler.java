@@ -9,10 +9,12 @@ import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.UserRepository;
 import com.ecommerce.repository.BrandRepository;
 import com.ecommerce.repository.CategoryRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.web.csrf.CsrfToken;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,17 +52,30 @@ public class ProductControler {
     }
 
 
-    @GetMapping("products/{id}")
-    public String productsDetail(@PathVariable UUID id, Model model) {
+    @GetMapping("/products/{id}")
+    public String productsDetail(@PathVariable UUID id,
+                                 Model model,
+                                 HttpServletRequest request) {
+
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute("_csrf");
+
+        if (csrfToken != null) {
+            csrfToken.getToken();
+        }
+
         Optional<Product> productOptional = productRepository.findById(id);
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-            model.addAttribute("product", product);
-            List<Review> reviews = reviewRepository.findByProductId(id);
-            model.addAttribute("reviews", reviews);
-        } else {
+
+        if (productOptional.isEmpty()) {
             return "redirect:/products";
         }
+
+        Product product = productOptional.get();
+
+        model.addAttribute("product", product);
+
+        List<Review> reviews = reviewRepository.findByProductId(id);
+        model.addAttribute("reviews", reviews);
+
         return "products/product-detail";
     }
 
