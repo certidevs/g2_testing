@@ -82,7 +82,7 @@ public class UserSeleniumTest extends BaseSeleniumTest
         new Select(driver.findElement(By.id("paymentMethod"))).selectByValue("PAYPAL");
         new Select(driver.findElement(By.id("role"))).selectByValue("ROLE_CUSTOMER");
 
-        type(By.id("birthday"), "1995-01-15");
+        setInputValue(By.id("birthday"), "1995-01-15");
 
         submitAdminEditForm();
 
