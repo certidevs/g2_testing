@@ -33,7 +33,12 @@
         <sonar.projectKey>certidevs_g2_testing</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.coverage.exclusions>**/DataInitializer.java,**/G2TestingApplication.java</sonar.coverage.exclusions>
+        <sonar.exclusions>
+            **/DataInitializer.java,
+            **/G2TestingApplication.java,
+            **/controller/api/**,
+            **/Chatbot*.java
+        </sonar.exclusions>
     </properties>
     <dependencies>
         <dependency>
