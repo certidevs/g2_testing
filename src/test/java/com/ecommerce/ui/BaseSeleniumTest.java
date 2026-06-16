@@ -60,8 +60,8 @@ public class BaseSeleniumTest {
     Purchase compraSinProductos;
     Product camiseta;
     Product pantalon;
-    Review productMal;
-    Review productOK;
+    Review reviewMal;
+    Review reviewOK;
     User user;
     User admin;
 
@@ -124,7 +124,7 @@ public class BaseSeleniumTest {
                 .stock(50)
                 .build());
 
-        productMal = reviewRepository.save(Review.builder()
+        reviewMal = reviewRepository.save(Review.builder()
                 .title("Fatal")
                 .rating(1)
                 .product(pantalon)
@@ -132,13 +132,14 @@ public class BaseSeleniumTest {
                 .creationDate(LocalDateTime.now().minusDays(1))
                 .build());
 
-        productOK = reviewRepository.save(Review.builder()
+        reviewOK = reviewRepository.save(Review.builder()
                 .title("excelente pizza")
                 .rating(5)
                 .product(camiseta)
                 .message("ok")
                 .creationDate(LocalDateTime.now().minusDays(1))
                 .build());
+
 
         baseUrl = "http://localhost:" + port + "/";
 

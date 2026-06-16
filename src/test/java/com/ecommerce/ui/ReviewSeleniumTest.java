@@ -36,7 +36,7 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
     @Test
     void reviewDetailShowsReviewInformation() {
         // Entra directamente al detalle de una reseña concreta.
-        driver.get(baseUrl + "reviews/" + productOK.getId());
+        driver.get(baseUrl + "reviews/" + reviewOK.getId());
 
         // Espera al encabezado de detalle para confirmar que la pagina esta lista.
         WebElement pageTitle = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".review-title")));
@@ -55,7 +55,7 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
         loginAdmin();
 
         // Abre el detalle de la reseña que se va a modificar.
-        driver.get(baseUrl + "reviews/" + productOK.getId());
+        driver.get(baseUrl + "reviews/" + reviewOK.getId());
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("editTitle")));
 
         // Cambia los campos editables del formulario.
@@ -68,13 +68,13 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
         clickWithJavaScript(driver.findElement(By.cssSelector(".edit-form button[type='submit']")));
 
         // Verifica que la pagina vuelve al detalle y muestra el contenido actualizado.
-        wait.until(ExpectedConditions.urlContains("/reviews/" + productOK.getId()));
+        wait.until(ExpectedConditions.urlContains("/reviews/" + reviewOK.getId()));
         waitUntilPageContains("Reseña editada con Selenium");
         waitUntilPageContains("Mensaje actualizado desde el test Selenium");
         assertTrue(driver.getPageSource().contains("4/5"));
 
         // Verifica tambien en base de datos que la reseña se actualizo realmente.
-        Review updatedReview = reviewRepository.findById(productOK.getId()).orElseThrow();
+        Review updatedReview = reviewRepository.findById(reviewOK.getId()).orElseThrow();
         assertEquals("Reseña editada con Selenium", updatedReview.getTitle());
         assertEquals("Mensaje actualizado desde el test Selenium", updatedReview.getMessage());
         assertEquals(4, updatedReview.getRating());
@@ -86,7 +86,7 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
         loginAdmin();
 
         // Abre el detalle de la reseña que se va a borrar.
-        driver.get(baseUrl + "reviews/" + productMal.getId());
+        driver.get(baseUrl + "reviews/" + reviewMal.getId());
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".review-title")));
 
         // Pulsa eliminar y acepta el confirm del navegador.
@@ -97,7 +97,7 @@ public class ReviewSeleniumTest extends BaseSeleniumTest {
         // Comprueba que vuelve al listado y la reseña ya no existe.
         wait.until(ExpectedConditions.urlContains("/reviews"));
         waitUntilPageContains("Gestión de reseñas");
-        assertFalse(reviewRepository.existsById(productMal.getId()));
+        assertFalse(reviewRepository.existsById(reviewMal.getId()));
         assertFalse(driver.getPageSource().contains("Fatal"));
     }
 

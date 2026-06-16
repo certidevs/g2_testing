@@ -4,6 +4,7 @@ import com.ecommerce.model.Product;
 import com.ecommerce.model.Review;
 import com.ecommerce.model.User;
 import com.ecommerce.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.ui.Model;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.ReviewRepository;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.web.csrf.CsrfToken;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -28,9 +30,22 @@ public class ReviewController {
         return "reviews/reviews-list"; // VISTA
     }
 
-    @GetMapping("reviews/{id}")
-    public String reviewsDetail(@PathVariable UUID id, Model model) {
-        model.addAttribute("review", reviewRepository.findById(id).orElseThrow());
+    @GetMapping("/reviews/{id}")
+    public String showReviewDetail(@PathVariable UUID id,
+                                   Model model,
+                                   HttpServletRequest request) {
+
+        CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+
+        if (csrfToken != null) {
+            csrfToken.getToken();
+        }
+
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Reseña no encontrada: " + id));
+
+        model.addAttribute("review", review);
+
         return "reviews/reviews-detail";
     }
 
