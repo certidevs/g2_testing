@@ -53,7 +53,8 @@ class CategorySeleniumTest extends BaseSeleniumTest {
         type(By.id("slug"), CATEGORY_SLUG);
         type(By.id("description"), CATEGORY_DESCRIPTION);
         setInputValue(By.id("imageUrl"), CATEGORY_IMAGE_URL);
-        new Actions(driver).moveToElement(driver.findElement(By.id("active"))).click().perform();
+        check(By.id("active"), true);
+//        new Actions(driver).moveToElement(driver.findElement(By.id("active"))).click().perform();
 //        click(By.id("active"));
 
         submitCategoryForm();
