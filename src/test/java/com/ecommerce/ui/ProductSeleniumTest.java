@@ -32,7 +32,6 @@ public class ProductSeleniumTest extends BaseSeleniumTest {
     }
 
     // Comprueba que al entrar en el detalle de un producto se muestran sus datos principales.
-    @Disabled
     @Test
     void productDetailShowsProductInformation() {
         // Abre directamente el detalle de la camiseta

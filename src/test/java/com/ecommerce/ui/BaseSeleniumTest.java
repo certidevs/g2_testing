@@ -5,6 +5,7 @@ import com.ecommerce.model.Purchase;
 import com.ecommerce.model.Review;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.FavoriteRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.ReviewRepository;
@@ -47,6 +48,9 @@ public class BaseSeleniumTest {
     ReviewRepository reviewRepository;
 
     @Autowired
+    FavoriteRepository favoriteRepository;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -68,6 +72,7 @@ public class BaseSeleniumTest {
     @BeforeEach
     void setUp() {
 
+        favoriteRepository.deleteAll();
         reviewRepository.deleteAll();
         productRepository.deleteAll();
         purchaseRepository.deleteAll();
