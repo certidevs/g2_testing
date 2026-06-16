@@ -574,7 +574,7 @@
         height: 42px;
         border: 1px solid rgba(82, 99, 77, .24);
         border-radius: 999px;
-        background-color: rgba(255, 253, 248, .94);
+        background-color: rgb(12 10 5 / 0.94);
         box-shadow: 0 12px 26px rgba(20, 20, 20, .12);
         background-size: 46%;
         filter: invert(1) grayscale(1);
@@ -583,7 +583,7 @@
 
     .premium-control:hover {
         transform: translateY(-1px);
-        background-color: #fff;
+        background-color: #650404;
         box-shadow: 0 16px 34px rgba(20, 20, 20, .18);
     }
 
@@ -731,7 +731,6 @@
 
             <div id="discountCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="6500">
                 <div class="carousel-inner">
-
                     <div th:each="prod, iter : ${discountedProducts}"
                          th:if="${iter.index % 3 == 0}"
                          th:class="|carousel-item ${iter.index == 0 ? 'active' : ''}|">

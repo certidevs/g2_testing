@@ -571,7 +571,6 @@ public class DataInitializer  implements CommandLineRunner {
                 .imageUrl("https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80")
                 .stock(36)
                 .price(31.90)
-                .discountPercentage(15)
                 .brand(brand6).build());
 
 //        // -------- COMPRAS --------

@@ -157,7 +157,7 @@
                 <div th:if="${user.addresses == null or #lists.isEmpty(user.addresses)}" class="text-center py-4">
                     <i class="fa-solid fa-map-location-dot text-muted fs-1 mb-3"></i>
                     <p class="text-muted mb-3">No tienes direcciones registradas</p>
-                    <a th:href="@{/profile/addresses/new(email=${user.email})}" class="btn btn-primary">
+                    <a th:href="@{/addresses/new}" class="btn btn-primary">
                         <i class="fa-solid fa-plus"></i> Agregar mi primera dirección
                     </a>
                 </div>
