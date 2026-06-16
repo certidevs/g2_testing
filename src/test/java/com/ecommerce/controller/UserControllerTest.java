@@ -98,8 +98,9 @@ class UserControllerTest
     }
 
     @Test
-    void register_whenDtoValidationFails_shouldReturnRegisterViewWithErrors() throws Exception
-    {
+    void register_whenDtoValidationFails_shouldReturnRegisterViewWithErrors() throws Exception {
+        long usersBefore = userRepository.count();
+
         mockMvc.perform(post("/register")
                         .with(csrf())
                         .param("username", "")
@@ -117,7 +118,7 @@ class UserControllerTest
                         "passwordConfirm"
                 ));
 
-        assertThat(userRepository.count()).isZero();
+        assertThat(userRepository.count()).isEqualTo(usersBefore);
     }
 
     @Test
