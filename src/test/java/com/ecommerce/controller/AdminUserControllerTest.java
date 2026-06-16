@@ -58,34 +58,49 @@ class AdminUserControllerTest
     }
 
     @Test
-    void listUsers_whenUserIsAdminAndAdminEmailIsProvided_shouldReturnAdminListView() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void listUsers_whenUserIsAdminAndAdminEmailIsProvided_shouldReturnAdminListView() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_list_provided",
+                "admin_list_provided@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        userRepository.save(buildUser(
+                "cliente_list_provided",
+                "cliente_list_provided@example.com",
+                Role.ROLE_CUSTOMER
+        ));
 
         mockMvc.perform(get("/admin/users")
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .param("adminEmail", admin.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("users/users-admin-list"))
                 .andExpect(model().attributeExists("adminEmail"))
                 .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("adminEmail", "admin@example.com"));
+                .andExpect(model().attribute("adminEmail", admin.getEmail()));
     }
 
     @Test
-    void listUsers_whenUserIsAdminAndAdminEmailIsMissing_shouldResolveFirstAdminAndReturnAdminListView() throws Exception
-    {
-        userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void listUsers_whenUserIsAdminAndAdminEmailIsMissing_shouldResolveFirstAdminAndReturnAdminListView() throws Exception {
+        User admin = userRepository.findByUsername("admin")
+                .orElseGet(() -> userRepository.save(
+                        buildUser("admin", "admin@example.com", Role.ROLE_ADMIN)
+                ));
+
+        userRepository.save(buildUser(
+                "cliente_list_users",
+                "cliente_list_users@example.com",
+                Role.ROLE_CUSTOMER
+        ));
 
         mockMvc.perform(get("/admin/users")
-                        .with(user("admin").roles("ADMIN")))
+                        .with(user(admin.getUsername()).roles("ADMIN")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("users/users-admin-list"))
                 .andExpect(model().attributeExists("adminEmail"))
                 .andExpect(model().attributeExists("users"))
-                .andExpect(model().attribute("adminEmail", "admin@example.com"));
+                .andExpect(model().attribute("adminEmail", admin.getEmail()));
     }
 
     @Test
@@ -123,19 +138,27 @@ class AdminUserControllerTest
     }
 
     @Test
-    void editUser_whenUserIsAdmin_shouldReturnEditView() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        User target = userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void editUser_whenUserIsAdmin_shouldReturnEditView() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_edit_user",
+                "admin_edit_user@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        User target = userRepository.save(buildUser(
+                "cliente_edit_user",
+                "cliente_edit_user@example.com",
+                Role.ROLE_CUSTOMER
+        ));
 
         mockMvc.perform(get("/admin/users/{id}/edit", target.getId())
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .param("adminEmail", admin.getEmail()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("users/user-admin-edit"))
                 .andExpect(model().attributeExists("adminEmail"))
                 .andExpect(model().attributeExists("user"))
-                .andExpect(model().attribute("adminEmail", "admin@example.com"));
+                .andExpect(model().attribute("adminEmail", admin.getEmail()));
     }
 
     @Test
@@ -167,19 +190,27 @@ class AdminUserControllerTest
     }
 
     @Test
-    void updateUser_whenAdminAndDataIsValid_shouldUpdateUserAndRedirect() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        User target = userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void updateUser_whenAdminAndDataIsValid_shouldUpdateUserAndRedirect() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_update_user",
+                "admin_update_user@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        User target = userRepository.save(buildUser(
+                "cliente_update_user",
+                "cliente_update_user@example.com",
+                Role.ROLE_CUSTOMER
+        ));
 
         mockMvc.perform(post("/admin/users/{id}/edit", target.getId())
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .with(csrf())
                         .param("adminEmail", admin.getEmail())
                         .param("name", "Nombre actualizado")
                         .param("lastName", "Apellido actualizado")
                         .param("phone", "600111222")
-                        .param("email", "updated@example.com"))
+                        .param("email", "updated_update_user@example.com"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/admin/users*"))
                 .andExpect(flash().attributeExists("success"));
@@ -189,7 +220,7 @@ class AdminUserControllerTest
         assertThat(updatedUser.getName()).isEqualTo("Nombre actualizado");
         assertThat(updatedUser.getLastName()).isEqualTo("Apellido actualizado");
         assertThat(updatedUser.getPhone()).isEqualTo("600111222");
-        assertThat(updatedUser.getEmail()).isEqualTo("updated@example.com");
+        assertThat(updatedUser.getEmail()).isEqualTo("updated_update_user@example.com");
     }
 
     @Test
@@ -228,14 +259,23 @@ class AdminUserControllerTest
     }
 
     @Test
-    void toggleStatus_whenAdminAndTargetIsCustomer_shouldToggleUserStatusAndRedirect() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        User target = userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void toggleStatus_whenAdminAndTargetIsCustomer_shouldToggleUserStatusAndRedirect() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_toggle_customer",
+                "admin_toggle_customer@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        User target = userRepository.save(buildUser(
+                "cliente_toggle_customer",
+                "cliente_toggle_customer@example.com",
+                Role.ROLE_CUSTOMER
+        ));
+
         assertThat(target.isActive()).isTrue();
 
         mockMvc.perform(post("/admin/users/{id}/toggle-status", target.getId())
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .with(csrf())
                         .param("adminEmail", admin.getEmail()))
                 .andExpect(status().is3xxRedirection())
@@ -248,13 +288,21 @@ class AdminUserControllerTest
     }
 
     @Test
-    void toggleStatus_whenAdminAndTargetIsAdmin_shouldRedirectWithError() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        User otherAdmin = userRepository.save(buildUser("admin2", "admin2@example.com", Role.ROLE_ADMIN));
+    void toggleStatus_whenAdminAndTargetIsAdmin_shouldRedirectWithError() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_toggle_status",
+                "admin_toggle_status@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        User otherAdmin = userRepository.save(buildUser(
+                "admin2_toggle_status",
+                "admin2_toggle_status@example.com",
+                Role.ROLE_ADMIN
+        ));
 
         mockMvc.perform(post("/admin/users/{id}/toggle-status", otherAdmin.getId())
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .with(csrf())
                         .param("adminEmail", admin.getEmail()))
                 .andExpect(status().is3xxRedirection())
@@ -289,13 +337,21 @@ class AdminUserControllerTest
     }
 
     @Test
-    void softDelete_whenAdminAndTargetIsCustomer_shouldSetActiveFalseAndRedirect() throws Exception
-    {
-        User admin = userRepository.save(buildUser("admin", "admin@example.com", Role.ROLE_ADMIN));
-        User target = userRepository.save(buildUser("cliente", "cliente@example.com", Role.ROLE_CUSTOMER));
+    void softDelete_whenAdminAndTargetIsCustomer_shouldSetActiveFalseAndRedirect() throws Exception {
+        User admin = userRepository.save(buildUser(
+                "admin_soft_delete",
+                "admin_soft_delete@example.com",
+                Role.ROLE_ADMIN
+        ));
+
+        User target = userRepository.save(buildUser(
+                "cliente_soft_delete",
+                "cliente_soft_delete@example.com",
+                Role.ROLE_CUSTOMER
+        ));
 
         mockMvc.perform(post("/admin/users/{id}/delete", target.getId())
-                        .with(user("admin").roles("ADMIN"))
+                        .with(user(admin.getUsername()).roles("ADMIN"))
                         .with(csrf())
                         .param("adminEmail", admin.getEmail()))
                 .andExpect(status().is3xxRedirection())

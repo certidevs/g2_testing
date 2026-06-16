@@ -102,18 +102,25 @@ public class LoginSecurityTest
     }
 
     @Test
-    void login_whenAdminCredentialsAreValid_shouldAuthenticateWithAdminAuthority() throws Exception
-    {
-        userRepository.save(buildUser("admin", "admin@example.com", "Password1!", Role.ROLE_ADMIN));
+    void login_whenAdminCredentialsAreValid_shouldAuthenticateWithAdminAuthority() throws Exception {
+        String username = "admin_test_login";
+        String password = "Password1!";
+
+        userRepository.save(buildUser(
+                username,
+                "admin_test_login@example.com",
+                password,
+                Role.ROLE_ADMIN
+        ));
 
         mockMvc.perform(post("/login")
                         .with(csrf())
-                        .param("username", "admin")
-                        .param("password", "Password1!"))
+                        .param("username", username)
+                        .param("password", password))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/products"))
                 .andExpect(authenticated()
-                        .withUsername("admin")
+                        .withUsername(username)
                         .withRoles("ADMIN"));
     }
 

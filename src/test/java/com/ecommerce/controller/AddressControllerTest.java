@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -53,29 +56,35 @@ class AddressControllerTest {
     User admin;
     @BeforeEach
     void setUp() {
+        String suffix = UUID.randomUUID().toString().substring(0, 8);
+
         user = userRepository.save(User.builder()
-                .username("user")
-                .email("user@gmail.com")
+                .username("user_address_" + suffix)
+                .email("user_address_" + suffix + "@example.com")
                 .password(passwordEncoder.encode("useruseruserA*"))
                 .role(Role.ROLE_CUSTOMER)
+                .active(true)
                 .build());
+
         admin = userRepository.save(User.builder()
-                .username("adminadmin")
-                .email("adminadmin@gmail.com")
+                .username("admin_address_" + suffix)
+                .email("admin_address_" + suffix + "@example.com")
                 .password(passwordEncoder.encode("adminadminadmAin8*"))
                 .role(Role.ROLE_ADMIN)
+                .active(true)
                 .build());
 
         user1 = userRepository.save(User.builder()
-                .username("user1.address.controller")
+                .username("user1_address_" + suffix)
                 .name("User 1")
                 .lastName("Last Name 1")
-                .email("user1@gmail.com")
+                .email("user1_address_" + suffix + "@example.com")
                 .phone("123456789")
-                .password("password1")
+                .password(passwordEncoder.encode("password1A*"))
                 .birthday(LocalDateTime.of(1990, Month.JANUARY, 1, 0, 0))
                 .gender(Gender.MALE)
                 .role(Role.ROLE_CUSTOMER)
+                .active(true)
                 .build());
 
         address1 = Address.builder()
@@ -111,14 +120,27 @@ class AddressControllerTest {
                 .user(user1)
                 .build();
 
-        addressRepository.saveAll(List.of(address1, address2, address3));
+        List<Address> savedAddresses = addressRepository.saveAll(List.of(address1, address2, address3));
+
+        address1 = savedAddresses.get(0);
+        address2 = savedAddresses.get(1);
+        address3 = savedAddresses.get(2);
     }
+
 
     // Verifica que la lista de direcciones se muestra correctamente con datos completos
 //    @Disabled
     @Test
     void listAddressesFull() throws Exception {
-        mockMvc.perform(get("/addresses").with(user(admin)))
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
+                        admin,
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                );
+
+        mockMvc.perform(get("/addresses")
+                        .with(authentication(auth)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addresses/address-list"))
                 .andExpect(model().attributeExists("addresses"))
@@ -133,7 +155,15 @@ class AddressControllerTest {
     void listAddressesEmpty() throws Exception {
         addressRepository.deleteAll();
 
-        mockMvc.perform(get("/addresses").with(user(user)))
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"))
+                );
+
+        mockMvc.perform(get("/addresses")
+                        .with(authentication(authentication)))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addresses/address-list"))
                 .andExpect(model().attributeExists("addresses"))
@@ -143,7 +173,8 @@ class AddressControllerTest {
     // Verifica que se muestra la vista de detalle de una dirección específica con datos completos
     @Test
     void addressDetailFound() throws Exception {
-        mockMvc.perform(get("/addresses/{id}", address1.getId()).with(user(user)))
+        mockMvc.perform(get("/addresses/{id}", address1.getId())
+                        .with(user(user.getUsername()).roles("CUSTOMER")))
                 .andExpect(status().isOk())
                 .andExpect(view().name("addresses/address-detail"))
                 .andExpect(model().attributeExists("address"))
