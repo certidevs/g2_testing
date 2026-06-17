@@ -489,6 +489,27 @@ class PurchaseServiceTest {
         verify(purchaseRepository).save(activeCart);
     }
 
+    // Verifica que al completar el carrito se use el precio final con descuento cuando exista
+    @Test
+    void completeCurrentCartCalculatesTotalWithDiscountedFinalPrice() {
+        Purchase activeCart = purchaseWithLine(1);
+        product.setDiscountPercentage(25);
+        Address userAddress = Address.builder().id(UUID.randomUUID()).user(user).build();
+        List<PurchaseLine> lines = List.of(PurchaseLine.builder().product(product).quantity(2).build());
+
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(lines);
+        when(addressRepository.findById(userAddress.getId())).thenReturn(Optional.of(userAddress));
+        when(purchaseRepository.save(any(Purchase.class))).thenReturn(activeCart);
+
+        Purchase completedPurchase = purchaseService.completeCurrentCart(user, userAddress.getId(), ShippingMode.PREMIUM);
+
+        assertEquals(15.0, completedPurchase.getTotalPrice());
+        assertEquals(ShippingMode.PREMIUM, completedPurchase.getShippingMode());
+        verify(purchaseRepository).save(activeCart);
+    }
+
     // Verifica que al intentar completar el carrito actual si el usuario es nulo, se lance una excepción
     @Test
     void completeCurrentCartThrowsWhenUserIsNull() {
@@ -534,6 +555,23 @@ class PurchaseServiceTest {
         verify(purchaseRepository, never()).save(any());
     }
 
+    // Verifica que al completar el carrito actual si el repositorio devuelve líneas nulas se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenRepositoryReturnsNullLines() {
+        Purchase activeCart = purchaseWithLine(1);
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(null);
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, UUID.randomUUID(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+        assertEquals("Can not finish a purchase without lines", exception.getReason());
+        verify(addressRepository, never()).findById(any());
+        verify(purchaseRepository, never()).save(any());
+    }
+
     // Verifica que al intentar completar el carrito actual si la dirección no existe, se lance una excepción
     @Test
     void completeCurrentCartThrowsWhenAddressNotFound() {
@@ -569,6 +607,26 @@ class PurchaseServiceTest {
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
                 () -> purchaseService.completeCurrentCart(user, otherUserAddress.getId(), ShippingMode.STANDARD));
+
+        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+        assertEquals("This address does not belong to the authenticated user", exception.getReason());
+        verify(purchaseRepository, never()).save(any());
+    }
+
+    // Verifica que al completar el carrito actual si la dirección no tiene usuario se lance una excepción
+    @Test
+    void completeCurrentCartThrowsWhenAddressHasNoUser() {
+        Purchase activeCart = purchaseWithLine(1);
+        Address addressWithoutUser = Address.builder().id(UUID.randomUUID()).user(null).build();
+        List<PurchaseLine> lines = List.of(PurchaseLine.builder().product(product).quantity(1).build());
+
+        when(purchaseRepository.findFirstByUserIdAndPurchaseStatus(userId, PurchaseStatus.INITIATED))
+                .thenReturn(Optional.of(activeCart));
+        when(purchaseLineRepository.findByPurchaseId(activeCart.getId())).thenReturn(lines);
+        when(addressRepository.findById(addressWithoutUser.getId())).thenReturn(Optional.of(addressWithoutUser));
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> purchaseService.completeCurrentCart(user, addressWithoutUser.getId(), ShippingMode.STANDARD));
 
         assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
         assertEquals("This address does not belong to the authenticated user", exception.getReason());
