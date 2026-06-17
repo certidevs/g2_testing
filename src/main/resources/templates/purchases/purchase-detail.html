@@ -221,13 +221,13 @@
 
                         <div class="d-flex justify-content-end gap-2">
 
-                            <a id="'addBtn' + ${line.product.id}" th:href="@{/purchases/{purchaseId}/lines/remove/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
+                            <a  th:id="'lessBtn-' + ${line.product.id}" th:href="@{/purchases/{purchaseId}/lines/remove/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
                                class="btn btn-sm btn-outline-danger"
                                title="Restar unidad">
                                 <i class="fa-solid fa-minus"></i>
                             </a>
 
-                            <a id="'lessBtn' + ${line.product.id}" th:href="@{/purchases/{purchaseId}/lines/add/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
+                            <a  th:id="'addBtn-' + ${line.product.id}" th:href="@{/purchases/{purchaseId}/lines/add/{productId}(purchaseId=${purchase.id}, productId=${line.product.id})}"
                                class="btn btn-sm btn-outline-success"
                                title="Añadir unidad">
                                 <i class="fa-solid fa-plus"></i>
