@@ -4,10 +4,12 @@ import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
+import com.ecommerce.repository.AddressRepository;
 import com.ecommerce.repository.ProductRepository;
 import com.ecommerce.repository.PurchaseLineRepository;
 import com.ecommerce.repository.PurchaseRepository;
 import com.ecommerce.repository.UserRepository;
+import com.ecommerce.service.PaymentService;
 import com.ecommerce.service.PurchaseService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +58,18 @@ class PurchaseControllerTest {
     UserRepository userRepository;
 
     @Autowired
+    AddressRepository addressRepository;
+
+    @Autowired
     MockMvc mockMvc;
 
     // Utilizamos la anotación MockitoBean para inyectar un mock de PurchaseService y así poder verificar las interacciones que tengan con este servicio durante las pruebas
     @MockitoBean
     PurchaseService purchaseService;
+
+    @MockitoBean
+    PaymentService paymentService;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -82,6 +91,7 @@ class PurchaseControllerTest {
         purchaseLineRepository.deleteAll();
         purchaseRepository.deleteAll();
         productRepository.deleteAll();
+        addressRepository.deleteAll();
         userRepository.deleteAll();
 
         // Hacemos reset del mock de purchaseService para asegurar que no haya nada previo que afecte a las pruebas etc
@@ -218,6 +228,18 @@ class PurchaseControllerTest {
                 .andExpect(model().attribute("purchases", hasSize(0)));
     }
 
+    // Verifica que un usuario cliente solo ve sus propias compras
+    @Test
+    void purchasesForCustomerOnlyShowsOwnPurchases() throws Exception {
+        mockMvc.perform(get("/purchases").with(user(user1)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/purchase-list"))
+                .andExpect(model().attribute("purchases", hasSize(2)))
+                .andExpect(model().attribute("purchases", hasItem(hasProperty("id", is(purchase1.getId())))))
+                .andExpect(model().attribute("purchases", hasItem(hasProperty("id", is(purchase3.getId())))))
+                .andExpect(model().attribute("purchases", not(hasItem(hasProperty("id", is(purchase2.getId()))))));
+    }
+
     // Verifica que el detalle de una compra se muestra correctamente cuando la compra existe (purchase-detail)
     @Test
     void purchaseDetailIsPresentTrue() throws Exception {
@@ -248,6 +270,18 @@ class PurchaseControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("purchases/purchase-form"))
                 .andExpect(model().attributeExists("purchase"));
+    }
+
+    // Verifica que si ya hay un carrito activo se redirige a la lista de compras
+    @Test
+    void showCreatePurchaseFormRedirectsWhenActiveCartExists() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(get("/purchases/new").with(user(admin)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/purchases*"));
+
+        verify(purchaseService).getOrCreateCartForUser(any(UUID.class));
     }
 
     // Verifica que al enviar el formulario de creación de compra se redirige a la lista de compras
@@ -328,6 +362,19 @@ class PurchaseControllerTest {
         verify(purchaseService).getOrCreateCartForUser(any(UUID.class));
     }
 
+    // Verifica también la ruta /purchases/cart sin id
+    @Test
+    void showCartWithoutPathId() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/purchases/cart").with(user(admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("cart", nullValue()))
+                .andExpect(model().attribute("lines", hasSize(0)))
+                .andExpect(model().attributeExists("paymentCard", "addresses", "shippingModes"));
+    }
+
     // Verifica que al finalizar una compra se redirige a la lista de compras
     @Test
     void finishPurchaseRedirectsToPurchaseList() throws Exception {
@@ -356,5 +403,150 @@ class PurchaseControllerTest {
                 .andExpect(redirectedUrlPattern("/purchases/" + purchase1.getId() + "*"));
 
         verify(purchaseService).removeProductFromCart(eq(product1.getId()), nullable(User.class));
+    }
+
+    // Verifica que el pago exige seleccionar dirección
+    @Test
+    void payCurrentCartReturnsCartWhenAddressIsMissing() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("shippingMode", ShippingMode.STANDARD.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "Debes seleccionar una dirección de envío"));
+
+        verify(paymentService, never()).saveSimulatedCreditCard(any(), any());
+        verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
+    }
+
+    // Verifica que el pago exige seleccionar tipo de envío
+    @Test
+    void payCurrentCartReturnsCartWhenShippingModeIsMissing() throws Exception {
+        UUID addressId = UUID.randomUUID();
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "Debes seleccionar un tipo de envío"));
+
+        verify(paymentService, never()).saveSimulatedCreditCard(any(), any());
+        verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
+    }
+
+    // Verifica que el formulario de pago inválido vuelve al carrito
+    @Test
+    void payCurrentCartReturnsCartWhenPaymentFormHasErrors() throws Exception {
+        UUID addressId = UUID.randomUUID();
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.EXPRESS.name())
+                        .param("cardHolderName", "")
+                        .param("cardNumber", "abc")
+                        .param("expirationMonth", "13")
+                        .param("expirationYear", "2025")
+                        .param("cvv", "x"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().hasErrors());
+
+        verify(paymentService, never()).saveSimulatedCreditCard(any(), any());
+        verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
+    }
+
+    // Verifica que un pago correcto guarda la tarjeta simulada y redirige al detalle de la compra
+    @Test
+    void payCurrentCartRedirectsToFinishedPurchaseWhenPaymentSucceeds() throws Exception {
+        UUID addressId = UUID.randomUUID();
+        Purchase finishedPurchase = Purchase.builder().id(UUID.randomUUID()).build();
+
+        doNothing().when(paymentService).saveSimulatedCreditCard(any(User.class), any());
+        when(purchaseService.completeCurrentCart(any(User.class), eq(addressId), eq(ShippingMode.EXPRESS)))
+                .thenReturn(finishedPurchase);
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.EXPRESS.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/purchases/" + finishedPurchase.getId() + "*"))
+                .andExpect(flash().attribute("message", "Pago realizado correctamente"));
+
+        verify(paymentService).saveSimulatedCreditCard(any(User.class), any());
+        verify(purchaseService).completeCurrentCart(any(User.class), eq(addressId), eq(ShippingMode.EXPRESS));
+    }
+
+    // Verifica que un error del servicio de compra vuelve al carrito con el mensaje
+    @Test
+    void payCurrentCartReturnsCartWhenPurchaseServiceThrowsResponseStatusException() throws Exception {
+        UUID addressId = UUID.randomUUID();
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+        doThrow(new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "No active cart found"))
+                .when(purchaseService).completeCurrentCart(any(User.class), eq(addressId), eq(ShippingMode.STANDARD));
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.STANDARD.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "No active cart found"));
+    }
+
+    // Verifica que un error de validación del pago vuelve al carrito con el mensaje
+    @Test
+    void payCurrentCartReturnsCartWhenPaymentServiceThrowsIllegalArgumentException() throws Exception {
+        UUID addressId = UUID.randomUUID();
+        when(purchaseService.getOrCreateCartForUser(any(UUID.class))).thenReturn(Optional.of(purchase3));
+        doThrow(new IllegalArgumentException("Tarjeta rechazada"))
+                .when(paymentService).saveSimulatedCreditCard(any(User.class), any());
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.STANDARD.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "Tarjeta rechazada"));
+
+        verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
     }
 }
