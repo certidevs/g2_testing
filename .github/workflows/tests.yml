@@ -1,11 +1,5 @@
 name: Tests (manual)
 
-# Solo se ejecuta cuando lo lanzas manualmente desde la pestaña Actions de GitHub
-# o vía: gh workflow run tests.yml
-#
-# Manual a propósito: hacemos +10 commits al día en este repo y no queremos
-# desperdiciar minutos de runner en cada push. Lo lanzas cuando quieres
-# validar (antes de una review, al cerrar un sprint, etc.).
 on:
   workflow_dispatch:
 
@@ -45,3 +39,64 @@ jobs:
 
       - name: Ejecutar *ControllerTest
         run: mvn -B test -Dtest='*ControllerTest'
+
+  service-tests:
+    name: Tests de servicios (Unitarios con mocks)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java 25 + cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Ejecutar *ServiceTest
+        run: mvn -B test -Dtest='*ServiceTest'
+
+  security-tests:
+    name: Tests de seguridad (rutas SecurityConfig)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java 25 + cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Ejecutar *SecurityTest
+        run: mvn -B test -Dtest='*SecurityTest'
+  selenium-tests:
+    name: Tests de Selenium E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Java 25 + cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: Versión de Chrome del runner
+        run: google-chrome --version
+      - name: Ejecutar tests de Selenium
+        run: mvn -B test -Dtest="${{ inputs.test }}"
+        # opcional, para ver más detalles
+      - name: Subir reporte de Selenium a GitHub Actions
+        if: always() # Siempre subir el reporte, incluso si los tests fallan
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: '**/target/surefire-reports/'
+          retention-days: 7
+      - name: Subir capturas de fallos
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: selenium-screenshots
+          path: 'target/screenshots/'
+          retention-days: 7
