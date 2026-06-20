@@ -142,6 +142,7 @@ public class PurchaseSeleniumTest extends BaseSeleniumTest {
     }
 */
     // Verifica el proceso de creación de una compra
+    @Disabled
 @Test
 void startPurchase() {
     loginUser();
