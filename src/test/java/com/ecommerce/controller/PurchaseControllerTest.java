@@ -2,6 +2,7 @@ package com.ecommerce.controller;
 
 import com.ecommerce.model.Product;
 import com.ecommerce.model.Purchase;
+import com.ecommerce.model.PurchaseLine;
 import com.ecommerce.model.User;
 import com.ecommerce.model.enums.*;
 import com.ecommerce.repository.AddressRepository;
@@ -14,13 +15,17 @@ import com.ecommerce.service.PurchaseService;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -31,6 +36,8 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -47,6 +54,9 @@ class PurchaseControllerTest {
 
     @Autowired
     PurchaseRepository purchaseRepository;
+
+    @Autowired
+    PurchaseController purchaseController;
 
     @Autowired
     ProductRepository productRepository;
@@ -95,7 +105,7 @@ class PurchaseControllerTest {
         userRepository.deleteAll();
 
         // Hacemos reset del mock de purchaseService para asegurar que no haya nada previo que afecte a las pruebas etc
-        reset(purchaseService);
+        reset(purchaseService, paymentService);
 
         user = userRepository.save(User.builder()
                 .username("user")
@@ -548,5 +558,219 @@ class PurchaseControllerTest {
                 .andExpect(model().attribute("errorMessage", "Tarjeta rechazada"));
 
         verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
+    }
+
+    @Test
+    void getCurrentUserId_whenUserIsNull_shouldReturnNull() {
+        User nullUser = null;
+
+        UUID result = ReflectionTestUtils.invokeMethod(
+                purchaseController,
+                "getCurrentUserId",
+                nullUser
+        );
+
+        assertNull(result);
+    }
+
+    @Test
+    void getCurrentUserId_whenUserExists_shouldReturnUserId() {
+        UUID result = ReflectionTestUtils.invokeMethod(
+                purchaseController,
+                "getCurrentUserId",
+                user1
+        );
+
+        assertEquals(user1.getId(), result);
+    }
+
+    @Test
+    void purchaseDetailWithLines_shouldAddPurchaseAndLinesToModel() throws Exception {
+        PurchaseLine line = new PurchaseLine();
+        line.setPurchase(purchase1);
+        line.setProduct(product1);
+        line.setQuantity(2);
+        purchaseLineRepository.save(line);
+
+        mockMvc.perform(get("/purchases/{id}", purchase1.getId()).with(user(admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/purchase-detail"))
+                .andExpect(model().attributeExists("purchase"))
+                .andExpect(model().attributeExists("lines"))
+                .andExpect(model().attribute("purchase", hasProperty("id", is(purchase1.getId()))))
+                .andExpect(model().attribute("lines", hasSize(1)))
+                .andExpect(model().attribute("lines", hasItem(hasProperty("id", is(line.getId())))));
+    }
+
+    @Test
+    void showCreatePurchaseFormWithoutActiveCart_shouldAddPurchaseAndAddresses() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(admin.getId()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/purchases/new").with(user(admin)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/purchase-form"))
+                .andExpect(model().attributeExists("purchase"))
+                .andExpect(model().attributeExists("addresses"));
+
+        verify(purchaseService).getOrCreateCartForUser(admin.getId());
+    }
+
+    @Test
+    void createPurchase_shouldPassBoundPurchaseToService() throws Exception {
+        ArgumentCaptor<Purchase> purchaseCaptor = ArgumentCaptor.forClass(Purchase.class);
+
+        mockMvc.perform(post("/purchases")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("totalPrice", "123.45")
+                        .param("purchaseStatus", PurchaseStatus.INITIATED.name())
+                        .param("paymentStatus", PaymentStatus.PENDING.name())
+                        .param("processStatus", ProcessStatus.PENDING.name())
+                        .param("shippingStatus", ShippingStatus.PENDING.name())
+                        .param("shippingMode", ShippingMode.EXPRESS.name())
+                        .param("userComment", "Comentario de prueba"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/purchases*"));
+
+        verify(purchaseService).createPurchase(purchaseCaptor.capture(), nullable(User.class));
+
+        Purchase capturedPurchase = purchaseCaptor.getValue();
+
+        assertEquals(123.45, capturedPurchase.getTotalPrice());
+        assertEquals(PurchaseStatus.INITIATED, capturedPurchase.getPurchaseStatus());
+        assertEquals(PaymentStatus.PENDING, capturedPurchase.getPaymentStatus());
+        assertEquals(ProcessStatus.PENDING, capturedPurchase.getProcessStatus());
+        assertEquals(ShippingStatus.PENDING, capturedPurchase.getShippingStatus());
+        assertEquals(ShippingMode.EXPRESS, capturedPurchase.getShippingMode());
+        assertEquals("Comentario de prueba", capturedPurchase.getUserComment());
+    }
+
+    @Test
+    void showCartWithExistingCart_shouldLoadAllCartModelAttributes() throws Exception {
+        PurchaseLine line = new PurchaseLine();
+        line.setPurchase(purchase3);
+        line.setProduct(product1);
+        line.setQuantity(3);
+        purchaseLineRepository.save(line);
+
+        when(purchaseService.getOrCreateCartForUser(user1.getId()))
+                .thenReturn(Optional.of(purchase3));
+
+        mockMvc.perform(get("/purchases/cart").with(user(user1)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("cart", hasProperty("id", is(purchase3.getId()))))
+                .andExpect(model().attribute("lines", hasSize(1)))
+                .andExpect(model().attributeExists("paymentCard"))
+                .andExpect(model().attributeExists("addresses"))
+                .andExpect(model().attributeExists("shippingModes"));
+
+        verify(purchaseService).getOrCreateCartForUser(user1.getId());
+    }
+
+    @Test
+    void showCartWithoutExistingCart_shouldLoadEmptyCartModelAttributes() throws Exception {
+        when(purchaseService.getOrCreateCartForUser(user1.getId()))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/purchases/cart").with(user(user1)))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("cart", nullValue()))
+                .andExpect(model().attribute("lines", hasSize(0)))
+                .andExpect(model().attributeExists("paymentCard"))
+                .andExpect(model().attributeExists("addresses"))
+                .andExpect(model().attributeExists("shippingModes"));
+
+        verify(purchaseService).getOrCreateCartForUser(user1.getId());
+    }
+
+    @Test
+    void payCurrentCartReturnsCartWhenPurchaseServiceThrowsIllegalArgumentException() throws Exception {
+        UUID addressId = UUID.randomUUID();
+
+        when(purchaseService.getOrCreateCartForUser(user1.getId()))
+                .thenReturn(Optional.of(purchase3));
+
+        doNothing()
+                .when(paymentService)
+                .saveSimulatedCreditCard(any(User.class), any());
+
+        when(purchaseService.completeCurrentCart(any(User.class), eq(addressId), eq(ShippingMode.STANDARD)))
+                .thenThrow(new IllegalArgumentException("Stock insuficiente"));
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.STANDARD.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "Stock insuficiente"))
+                .andExpect(model().attributeExists("paymentCard"))
+                .andExpect(model().attributeExists("addresses"))
+                .andExpect(model().attributeExists("shippingModes"));
+
+        verify(paymentService).saveSimulatedCreditCard(any(User.class), any());
+        verify(purchaseService).completeCurrentCart(any(User.class), eq(addressId), eq(ShippingMode.STANDARD));
+    }
+
+    @Test
+    void payCurrentCartReturnsCartWhenPaymentServiceThrowsResponseStatusException() throws Exception {
+        UUID addressId = UUID.randomUUID();
+
+        when(purchaseService.getOrCreateCartForUser(user1.getId()))
+                .thenReturn(Optional.of(purchase3));
+
+        doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tarjeta inválida"))
+                .when(paymentService)
+                .saveSimulatedCreditCard(any(User.class), any());
+
+        mockMvc.perform(post("/purchases/cart/pay")
+                        .with(csrf())
+                        .with(user(user1))
+                        .param("addressId", addressId.toString())
+                        .param("shippingMode", ShippingMode.STANDARD.name())
+                        .param("cardHolderName", "User One")
+                        .param("cardNumber", "4111111111111111")
+                        .param("expirationMonth", "12")
+                        .param("expirationYear", "2028")
+                        .param("cvv", "123"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("purchases/cart"))
+                .andExpect(model().attribute("errorMessage", "Tarjeta inválida"))
+                .andExpect(model().attributeExists("paymentCard"))
+                .andExpect(model().attributeExists("addresses"))
+                .andExpect(model().attributeExists("shippingModes"));
+
+        verify(paymentService).saveSimulatedCreditCard(any(User.class), any());
+        verify(purchaseService, never()).completeCurrentCart(any(), any(), any());
+    }
+
+    @Test
+    void finishPurchase_shouldCallCompletePurchaseWithExactId() throws Exception {
+        UUID purchaseId = purchase1.getId();
+
+        mockMvc.perform(get("/purchases/{id}/finish", purchaseId).with(user(admin)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/purchases*"));
+
+        verify(purchaseService).completePurchase(purchaseId);
+        verifyNoMoreInteractions(paymentService);
+    }
+
+
+
+    private UUID getCurrentUserId(User user) {
+        if (user != null) {
+            return user.getId();
+        }
+        return null;
     }
 }
