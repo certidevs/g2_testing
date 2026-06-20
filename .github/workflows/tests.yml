@@ -2,11 +2,35 @@ name: Tests (manual)
 
 on:
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "Qué grupo de tests quieres ejecutar"
+        required: true
+        default: "controller"
+        type: choice
+        options:
+          - repository
+          - controller
+          - service
+          - security
+          - selenium
+          - api
+          - coverage
+          - all
+      test:
+        description: "Test específico opcional. Ejemplo: ProductRestControllerTest"
+        required: false
+        default: ""
+
+concurrency:
+  group: tests-manual-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  repository-tests:
-    name: Tests de repositorios (@DataJpaTest)
+  tests:
+    name: Tests seleccionados
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -19,84 +43,78 @@ jobs:
           java-version: '25'
           cache: maven
 
-      - name: Ejecutar *RepositoryTest
+      - name: Ver versiones
+        run: |
+          java -version
+          mvn -version
+
+      - name: Ver versión de Chrome
+        if: ${{ inputs.suite == 'selenium' || inputs.suite == 'all' }}
+        run: google-chrome --version
+
+      - name: Ejecutar test específico
+        if: ${{ inputs.test != '' }}
+        run: mvn -B test -Dtest="${{ inputs.test }}"
+
+      - name: Ejecutar Repository Tests
+        if: ${{ inputs.suite == 'repository' && inputs.test == '' }}
         run: mvn -B test -Dtest='*RepositoryTest'
 
-  controller-tests:
-    name: Tests de controllers (@SpringBootTest + MockMvc)
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Java 25 + cache Maven
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-
-      - name: Ejecutar *ControllerTest
+      - name: Ejecutar Controller Tests
+        if: ${{ inputs.suite == 'controller' && inputs.test == '' }}
         run: mvn -B test -Dtest='*ControllerTest'
 
-  service-tests:
-    name: Tests de servicios (Unitarios con mocks)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Java 25 + cache Maven
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-      - name: Ejecutar *ServiceTest
+      - name: Ejecutar Service Tests
+        if: ${{ inputs.suite == 'service' && inputs.test == '' }}
         run: mvn -B test -Dtest='*ServiceTest'
 
-  security-tests:
-    name: Tests de seguridad (rutas SecurityConfig)
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Java 25 + cache Maven
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-      - name: Ejecutar *SecurityTest
+      - name: Ejecutar Security Tests
+        if: ${{ inputs.suite == 'security' && inputs.test == '' }}
         run: mvn -B test -Dtest='*SecurityTest'
-  selenium-tests:
-    name: Tests de Selenium E2E
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Java 25 + cache Maven
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '25'
-          cache: maven
-      - name: Versión de Chrome del runner
-        run: google-chrome --version
-      - name: Ejecutar tests de Selenium
-        run: mvn -B test -Dtest="${{ inputs.test }}"
-        # opcional, para ver más detalles
-      - name: Subir reporte de Selenium a GitHub Actions
-        if: always() # Siempre subir el reporte, incluso si los tests fallan
+
+      - name: Ejecutar API Tests
+        if: ${{ inputs.suite == 'api' && inputs.test == '' }}
+        run: mvn -B test -Dtest='*ApiControllerTest,*RestControllerTest,*ExceptionAdviceTest'
+
+      - name: Ejecutar Selenium Tests
+        if: ${{ inputs.suite == 'selenium' && inputs.test == '' }}
+        run: mvn -B test -Dtest='*SeleniumTest'
+
+      - name: Ejecutar Coverage
+        if: ${{ inputs.suite == 'coverage' && inputs.test == '' }}
+        run: mvn -B clean verify
+
+      - name: Ejecutar todos los tests
+        if: ${{ inputs.suite == 'all' && inputs.test == '' }}
+        run: mvn -B clean test
+
+      - name: Subir reportes Surefire/Failsafe
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: surefire-reports
-          path: '**/target/surefire-reports/'
+          name: test-reports
+          path: |
+            **/target/surefire-reports/
+            **/target/failsafe-reports/
           retention-days: 7
-      - name: Subir capturas de fallos
+          if-no-files-found: ignore
+
+      - name: Subir reporte JaCoCo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: |
+            **/target/site/jacoco/
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Subir capturas de Selenium
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: selenium-screenshots
-          path: 'target/screenshots/'
+          path: |
+            **/target/screenshots/
           retention-days: 7
+          if-no-files-found: ignore
