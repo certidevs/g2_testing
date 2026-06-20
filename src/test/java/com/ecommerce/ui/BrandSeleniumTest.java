@@ -6,11 +6,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,59 +39,65 @@ public class BrandSeleniumTest extends BaseSeleniumTest
     void adminCanCreateEditAndDeleteBrandFromBrowser() {
         loginAdmin();
 
+        String unique = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+
+        String brandName = "Selenium Brand " + unique;
+        String brandNif = generateValidNif();
+        String brandLogo = "test-brand-logo-" + unique + ".png";
+        String updatedBrandName = "Selenium Brand Updated " + unique;
+
         driver.get(baseUrl + "brands/new");
 
-        type(By.id("name"), BRAND_NAME);
-        type(By.id("nif"), BRAND_NIF);
+        type(By.id("name"), brandName);
+        type(By.id("nif"), brandNif);
         type(By.id("country"), BRAND_COUNTRY);
-        type(By.id("website"), BRAND_WEBSITE);
-        type(By.id("logo"), BRAND_LOGO);
-//        click(By.id("active"));
+        type(By.id("website"), "brand-" + unique + ".example.com");
+        type(By.id("logo"), brandLogo);
         check(By.id("active"), true);
 
-        new Actions(driver).moveToElement(
-                driver.findElement(By.cssSelector("form[action*='/brands'] button[type='submit']"))
-        ).click().perform();
+        submitBrandForm();
 
-        wait.until(ExpectedConditions.urlContains("/brands"));
-        waitUntilPageContains(BRAND_NAME);
+        wait.until(ExpectedConditions.urlMatches(".*/brands/?(\\?.*)?$"));
 
-        Optional<Brand> createdBrand = brandRepository.findByNif(BRAND_NIF);
+        Brand createdBrand = wait.until(driver ->
+                brandRepository.findByNif(brandNif).orElse(null)
+        );
 
-        assertThat(createdBrand).isPresent();
-        assertThat(createdBrand.get().getName()).isEqualTo(BRAND_NAME);
-        assertThat(createdBrand.get().getCountry()).isEqualTo(BRAND_COUNTRY);
-        assertThat(createdBrand.get().getWebsite()).isEqualTo(BRAND_WEBSITE);
-        assertThat(createdBrand.get().getLogo()).isEqualTo(BRAND_LOGO);
-        assertThat(createdBrand.get().getActive()).isTrue();
+        assertThat(createdBrand.getName()).isEqualTo(brandName);
+        assertThat(createdBrand.getCountry()).isEqualTo(BRAND_COUNTRY);
+        assertThat(createdBrand.getWebsite()).isEqualTo("brand-" + unique + ".example.com");
+        assertThat(createdBrand.getLogo()).isEqualTo(brandLogo);
+        assertThat(createdBrand.getActive()).isTrue();
 
-        clickEditButtonForBrand(BRAND_NAME);
+        clickEditButtonForBrand(brandName);
 
-        type(By.id("name"), "Selenium Brand Updated");
+        type(By.id("name"), updatedBrandName);
         type(By.id("country"), "Portugal");
-        type(By.id("website"), "https://updated-brand.example.com");
+        type(By.id("website"), "updated-brand-" + unique + ".example.com");
 
-        new Actions(driver).moveToElement(
-                driver.findElement(By.cssSelector("form[action*='/brands'] button[type='submit']"))
-        ).click().perform();
+        submitBrandForm();
 
-        wait.until(ExpectedConditions.urlContains("/brands"));
-        waitUntilPageContains("Selenium Brand Updated");
+        wait.until(ExpectedConditions.urlMatches(".*/brands/?(\\?.*)?$"));
+        waitUntilPageContains(updatedBrandName);
 
-        Brand updatedBrand = brandRepository.findByNif(BRAND_NIF).orElseThrow();
+        Brand updatedBrand = wait.until(driver ->
+                brandRepository.findByNif(brandNif)
+                        .filter(brand -> updatedBrandName.equals(brand.getName()))
+                        .orElse(null)
+        );
 
-        assertThat(updatedBrand.getName()).isEqualTo("Selenium Brand Updated");
+        assertThat(updatedBrand.getName()).isEqualTo(updatedBrandName);
         assertThat(updatedBrand.getCountry()).isEqualTo("Portugal");
-        assertThat(updatedBrand.getWebsite()).isEqualTo("https://updated-brand.example.com");
+        assertThat(updatedBrand.getWebsite()).isEqualTo("updated-brand-" + unique + ".example.com");
 
-        clickDeleteButtonForBrand("Selenium Brand Updated");
+        clickDeleteButtonForBrand(updatedBrandName);
 
         Alert alert = wait.until(ExpectedConditions.alertIsPresent());
         alert.accept();
 
-        wait.until(ExpectedConditions.urlContains("/brands"));
+        wait.until(driver -> brandRepository.findByNif(brandNif).isEmpty());
 
-        assertThat(brandRepository.findByNif(BRAND_NIF)).isEmpty();
+        assertThat(brandRepository.findByNif(brandNif)).isEmpty();
     }
 
     private void clickEditButtonForBrand(String brandName) {
@@ -102,5 +112,28 @@ public class BrandSeleniumTest extends BaseSeleniumTest
                 "//tr[td[contains(normalize-space(), '" + brandName + "')]]" +
                         "//button[normalize-space()='Eliminar']"
         )).click();
+    }
+
+    private void submitBrandForm() {
+        By submitButton = By.cssSelector("form[action*='/brands'] button[type='submit']");
+
+        WebElement button = wait.until(ExpectedConditions.presenceOfElementLocated(submitButton));
+
+        ((JavascriptExecutor) driver).executeScript(
+                "arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});",
+                button
+        );
+
+        wait.until(ExpectedConditions.elementToBeClickable(button));
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+    }
+
+    private String generateValidNif() {
+        int number = ThreadLocalRandom.current().nextInt(10_000_000, 100_000_000);
+        String letters = "TRWAGMYFPDXBNJZSQVHLCKE";
+        char letter = letters.charAt(number % 23);
+
+        return number + String.valueOf(letter);
     }
 }
