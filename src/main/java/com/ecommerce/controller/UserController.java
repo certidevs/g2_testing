@@ -22,7 +22,7 @@ public class UserController {
     public String register(Model model)
     {
         model.addAttribute("user", new UserRequestDto());
-        return "/auth/register";
+        return "auth/register";
     }
 
     @PostMapping("register")
@@ -40,7 +40,7 @@ public class UserController {
         }
 
         if (bindingResult.hasErrors()) {
-            return "/auth/register";
+            return "auth/register";
         }
 
         try {
@@ -50,13 +50,13 @@ public class UserController {
 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
-            return "/auth/register";
+            return "auth/register";
         }
     }
 
     @GetMapping("login")
     public String login(Model model){
-        return "/auth/login";
+        return "auth/login";
     }
 
 //    @GetMapping("/users")
