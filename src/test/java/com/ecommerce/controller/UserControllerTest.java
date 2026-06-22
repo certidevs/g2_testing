@@ -46,7 +46,7 @@ class UserControllerTest
     {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/login"));
+                .andExpect(view().name("auth/login"));
     }
 
     @Test
@@ -54,7 +54,7 @@ class UserControllerTest
     {
         mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/register"))
+                .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("user"));
     }
 
@@ -90,7 +90,7 @@ class UserControllerTest
                         .param("password", "Password1!")
                         .param("passwordConfirm", "Different1!"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/register"))
+                .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attributeHasFieldErrors("user", "passwordConfirm"));
 
@@ -108,7 +108,7 @@ class UserControllerTest
                         .param("password", "weak")
                         .param("passwordConfirm", ""))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/register"))
+                .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attributeHasFieldErrors(
                         "user",
@@ -133,7 +133,7 @@ class UserControllerTest
                         .param("password", "Password1!")
                         .param("passwordConfirm", "Password1!"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/register"))
+                .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attributeExists("error"));
 
@@ -152,7 +152,7 @@ class UserControllerTest
                         .param("password", "Password1!")
                         .param("passwordConfirm", "Password1!"))
                 .andExpect(status().isOk())
-                .andExpect(view().name("/auth/register"))
+                .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attributeExists("error"));
 
