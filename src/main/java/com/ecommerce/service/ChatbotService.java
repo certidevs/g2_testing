@@ -9,6 +9,8 @@ import com.ecommerce.repository.ConversationRepository;
 import com.ecommerce.repository.MessageRepository;
 import com.ecommerce.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ChatbotService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChatbotService.class);
     private static final int PRODUCT_CONTEXT_LIMIT = 20;
+    private static final int GEMINI_RETRY_DELAY_MS = 800;
 
     private final ProductRepository productRepository;
     private final ConversationRepository conversationRepository;
@@ -103,14 +107,7 @@ public class ChatbotService {
         );
 
         try {
-            // Llamada REST directa para evitar añadir una SDK al proyecto.
-            Map<String, Object> response = RestClient.create()
-                    .post()
-                    .uri("https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent?key=%s".formatted(model, apiKey))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(payload)
-                    .retrieve()
-                    .body(Map.class);
+            Map<String, Object> response = callGemini(payload);
 
             String answer = extractOutputText(response);
             if (!StringUtils.hasText(answer)) {
@@ -125,6 +122,7 @@ public class ChatbotService {
             return new ChatbotResponseDto(cleanAnswer, false, conversation.getId());
         } catch (RestClientResponseException exception) {
             // Errores HTTP de Gemini: clave inválida, cuota, modelo no encontrado, etc.
+            LOGGER.warn("Gemini devolvió HTTP {}: {}", exception.getStatusCode().value(), exception.getResponseBodyAsString());
             String error = buildGeminiErrorMessage(exception);
             saveMessage(conversation, error, "ASSISTANT");
             return new ChatbotResponseDto(error, true, conversation.getId());
@@ -133,6 +131,43 @@ public class ChatbotService {
             String error = "Ahora mismo no puedo conectar con Gemini. Puedes probar de nuevo en unos segundos o revisar la clave GEMINI_API_KEY.";
             saveMessage(conversation, error, "ASSISTANT");
             return new ChatbotResponseDto(error, true, conversation.getId());
+        }
+    }
+
+    // Llamada REST directa para evitar añadir una SDK al proyecto.
+    private Map<String, Object> callGemini(Map<String, Object> payload) {
+        try {
+            return executeGeminiRequest(payload);
+        } catch (RestClientResponseException exception) {
+            if (exception.getStatusCode().value() != 503) {
+                throw exception;
+            }
+
+            sleepBeforeRetry();
+            return executeGeminiRequest(payload);
+        }
+    }
+
+    private Map<String, Object> executeGeminiRequest(Map<String, Object> payload) {
+        return RestClient.create()
+                .post()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .host("generativelanguage.googleapis.com")
+                        .path("/v1beta/models/{model}:generateContent")
+                        .queryParam("key", apiKey.trim())
+                        .build(model.trim()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(payload)
+                .retrieve()
+                .body(Map.class);
+    }
+
+    private void sleepBeforeRetry() {
+        try {
+            Thread.sleep(GEMINI_RETRY_DELAY_MS);
+        } catch (InterruptedException interruptedException) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -261,6 +296,7 @@ public class ChatbotService {
             case 403 -> "La clave de Gemini existe, pero no tiene permisos para usar este modelo o proyecto.";
             case 404 -> "Gemini no encontró el modelo configurado. Prueba con GEMINI_MODEL=gemini-2.5-flash.";
             case 429 -> "Gemini respondió con límite o cuota agotada. Espera unos minutos o revisa los límites del proyecto.";
+            case 503 -> "Gemini está temporalmente saturado o no disponible. La clave puede estar bien; prueba de nuevo en unos segundos o usa GEMINI_MODEL=gemini-2.5-flash-lite.";
             default -> "Gemini respondió con error HTTP %d. Revisa la configuración de la clave y el proyecto.".formatted(statusCode);
         };
     }

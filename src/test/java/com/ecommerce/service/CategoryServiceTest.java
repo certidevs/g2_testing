@@ -149,7 +149,7 @@ class CategoryServiceTest
 
         assertThatThrownBy(() -> categoryService.create(dto))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Ya existe una categoria raiz con ese slug");
+                .hasMessage("Ya existe una categoría raíz con ese slug");
 
         verify(categoryRepository).existsByParentIsNullAndSlug("informatica");
         verify(categoryRepository, never()).save(any(Category.class));
@@ -208,7 +208,7 @@ class CategoryServiceTest
 
         assertThatThrownBy(() -> categoryService.create(dto))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Ya existe una subcategoria con ese slug dentro de esta categoria");
+                .hasMessage("Ya existe una subcategoría con ese slug dentro de esta categoría");
 
         verify(categoryRepository).findByIdWithCategories(parentId);
         verify(categoryRepository).existsByParentIdAndSlug(parentId, "portatiles");
@@ -334,7 +334,7 @@ class CategoryServiceTest
 
         assertThatThrownBy(() -> categoryService.update(id, dto))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("Una categoria no puede ser padre de si misma");
+                .hasMessage("Una categoría no puede ser padre de sí misma");
 
         verify(categoryRepository).findByIdWithCategories(id);
         verify(categoryRepository, never()).save(any(Category.class));

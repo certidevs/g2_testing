@@ -606,7 +606,7 @@ main .container > .row:first-child h1 {
     transition: color 0.2s;
 }
 
-/* Opcion default para contorno de botones */
+/* Opción default para contorno de botones */
 .border-button {
     border: 2px solid rgb(18 18 18 / 0.89);
     border-radius: 8px

@@ -12,10 +12,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-// Lo que el cliente manda para crear/editar una categoria.
+// Lo que el cliente manda para crear/editar una categoría.
 public class CategoryRequestDto
 {
-    @NotBlank(message = "El nombre de la categoria es obligatorio")
+    @NotBlank(message = "El nombre de la categoría es obligatorio")
     @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
     private String name;
 

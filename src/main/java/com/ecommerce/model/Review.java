@@ -38,7 +38,7 @@ public class Review {
     private String message;
 
 
-    // Creacion tiempo
+    // Creación tiempo
     @Builder.Default
     private LocalDateTime creationDate = LocalDateTime.now();
 

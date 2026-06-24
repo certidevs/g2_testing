@@ -45,7 +45,7 @@ public class CategoryService
     @Transactional
     public List<CategoryResponseDto> findRootCategories()
     {
-        // Busca las categorias cuyo parent es null y mapea recursivamente
+        // Busca las categorías cuyo parent es null y mapea recursivamente
         return categoryRepository.findByParentIsNull()
                 .stream()
                 .map(this::toResponseDtoWithChildren)// inclute children recursivamente
@@ -62,7 +62,7 @@ public class CategoryService
     @Transactional
     public CategoryResponseDto findById(UUID id)
     {
-        // Reutiliza el metodo auxiliar para obtener la entidad y convertirla
+        // Reutiliza el método auxiliar para obtener la entidad y convertirla
         Category category = categoryRepository.findByIdWithCategories(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
         return toResponseDtoWithChildren(category);
@@ -88,14 +88,14 @@ public class CategoryService
 
             if (categoryRepository.existsByParentIdAndSlug(dto.getParentId(), dto.getSlug()))
             {
-                throw new RuntimeException("Ya existe una subcategoria con ese slug dentro de esta categoria");
+                throw new RuntimeException("Ya existe una subcategoría con ese slug dentro de esta categoría");
             }
         }
         else
         {
             if (categoryRepository.existsByParentIsNullAndSlug(dto.getSlug()))
             {
-                throw new RuntimeException("Ya existe una categoria raiz con ese slug");
+                throw new RuntimeException("Ya existe una categoría raíz con ese slug");
             }
         }
         //Construccion de la entidad a partir del DTO
@@ -132,10 +132,10 @@ public class CategoryService
 
         if (dto.getParentId() != null)
         {
-            //Evitar asignar la misma categoria como su propio padre
+            // Evitar asignar la misma categoría como su propio padre
             if (dto.getParentId().equals(id))
             {
-                throw new RuntimeException("Una categoria no puede ser padre de si misma");
+                throw new RuntimeException("Una categoría no puede ser padre de sí misma");
             }
 
             // verificar la existencia del nuevo padre

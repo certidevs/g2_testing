@@ -25,7 +25,7 @@ public class Category
     private String name;
 
     @Column(nullable = false,  length = 120)
-    private String slug; // parte final de una URL que identifica de forma legible una pagina
+    private String slug; // parte final de una URL que identifica de forma legible una página
 
     @Column(length = 500)
     private String description;
@@ -42,12 +42,12 @@ public class Category
 
     private LocalDateTime updateAt;
 
-    //Relacion hacia el padre (nullable para categorias raiz)
+    // Relación hacia el padre (nullable para categorías raíz)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-    //Coleccion de subcategorias
+    // Colección de subcategorías
     @OneToMany(
             mappedBy = "parent",
             cascade = CascadeType.ALL,
