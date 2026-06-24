@@ -21,6 +21,7 @@ public class AdminUserController {
 
     private final UserService userService;
 
+    // Muestra la lista de usuarios
     @GetMapping
     public String listUsers(@RequestParam(required = false) String adminEmail, Model model) {
         String resolvedAdminEmail = userService.resolveAdminEmail(adminEmail);
@@ -31,6 +32,7 @@ public class AdminUserController {
         return "users/users-admin-list";
     }
 
+    // Muestra el formulario de creación de usuario
     @GetMapping("/{id}/edit")
     public String editUser(@PathVariable UUID id,
                            @RequestParam(required = false) String adminEmail,
@@ -43,6 +45,7 @@ public class AdminUserController {
         return "users/user-admin-edit";
     }
 
+    // Actualiza un usuario
     @PostMapping("/{id}/edit")
     public String updateUser(@PathVariable UUID id,
                              @RequestParam(required = false) String adminEmail,
@@ -62,6 +65,7 @@ public class AdminUserController {
         return "redirect:/admin/users?adminEmail=" + resolvedAdminEmail;
     }
 
+    // Cambia el estado de un usuario
     @PostMapping("/{id}/toggle-status")
     public String toggleStatus(@PathVariable UUID id,
                                @RequestParam(required = false) String adminEmail,
@@ -79,6 +83,7 @@ public class AdminUserController {
         return "redirect:/admin/users?adminEmail=" + resolvedAdminEmail;
     }
 
+    // Desactiva un usuario
     @PostMapping("/{id}/delete")
     public String softDelete(@PathVariable UUID id,
                              @RequestParam(required = false) String adminEmail,
@@ -96,4 +101,3 @@ public class AdminUserController {
         return "redirect:/admin/users?adminEmail=" + resolvedAdminEmail;
     }
 }
-
