@@ -37,6 +37,7 @@ class BrandControllerTest {
     private Brand adidas;
 
     @BeforeEach
+    // Prepara marcas de prueba antes de cada test.
     void setUp() {
         brandRepository.deleteAllInBatch();
         brandRepository.flush();
@@ -65,6 +66,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que el listado de marcas se muestra correctamente
     void findAll_shouldReturnBrandListView() throws Exception {
         mockMvc.perform(get("/brands"))
                 .andExpect(status().isOk())
@@ -76,6 +78,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que el detalle de una marca se muestra correctamente
     void findById_shouldReturnBrandDetailView() throws Exception {
         mockMvc.perform(get("/brands/{id}", nike.getId()))
                 .andExpect(status().isOk())
@@ -91,6 +94,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede abrir el formulario de creacion
     void showCreateForm_whenUserIsAdmin_shouldReturnBrandForm() throws Exception {
         mockMvc.perform(get("/brands/new")
                         .with(user("admin").roles("ADMIN")))
@@ -102,6 +106,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al crear
     void showCreateForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(get("/brands/new"))
                 .andExpect(status().is3xxRedirection())
@@ -109,6 +114,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede crear una marca valida
     void create_whenUserIsAdminAndDataIsValid_shouldCreateBrandAndRedirect() throws Exception {
         mockMvc.perform(post("/brands")
                         .with(user("admin").roles("ADMIN"))
@@ -128,6 +134,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario sin rol administrador no puede crear marcas
     void create_whenUserIsNotAdmin_shouldReturnForbidden() throws Exception {
         mockMvc.perform(post("/brands")
                         .with(user("user").roles("USER"))
@@ -144,6 +151,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al enviar creacion
     void create_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(post("/brands")
                         .with(csrf())
@@ -160,6 +168,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que los errores de validacion devuelven el formulario de marca
     void create_whenValidationErrors_shouldReturnBrandForm() throws Exception {
         mockMvc.perform(post("/brands")
                         .with(user("admin").roles("ADMIN"))
@@ -178,6 +187,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un nombre duplicado devuelve el formulario con errores
     void create_whenDuplicatedName_shouldReturnBrandFormWithGlobalError() throws Exception {
         mockMvc.perform(post("/brands")
                         .with(user("admin").roles("ADMIN"))
@@ -198,6 +208,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede abrir el formulario de edicion
     void showEditForm_whenUserIsAdmin_shouldReturnBrandForm() throws Exception {
         mockMvc.perform(get("/brands/{id}/edit", nike.getId())
                         .with(user("admin").roles("ADMIN")))
@@ -215,6 +226,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario sin rol administrador no puede editar marcas
     void showEditForm_whenUserIsNotAdmin_shouldReturnForbidden() throws Exception {
         mockMvc.perform(get("/brands/{id}/edit", nike.getId())
                         .with(user("user").roles("USER")))
@@ -222,6 +234,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al editar
     void showEditForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(get("/brands/{id}/edit", nike.getId()))
                 .andExpect(status().is3xxRedirection())
@@ -229,6 +242,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede actualizar una marca valida
     void update_whenUserIsAdminAndDataIsValid_shouldUpdateBrandAndRedirect() throws Exception {
         mockMvc.perform(post("/brands/{id}/edit", nike.getId())
                         .with(user("admin").roles("ADMIN"))
@@ -255,6 +269,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario sin rol administrador no puede actualizar marcas
     void update_whenUserIsNotAdmin_shouldReturnForbidden() throws Exception {
         mockMvc.perform(post("/brands/{id}/edit", nike.getId())
                         .with(user("user").roles("USER"))
@@ -274,6 +289,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que actualizar una marca inexistente devuelve errores en el formulario
     void update_whenBrandDoesNotExist_shouldReturnFormWithGlobalError() throws Exception {
         UUID fakeId = UUID.randomUUID();
 
@@ -305,6 +321,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que los errores de validacion al actualizar devuelven el formulario
     void update_whenValidationErrors_shouldReturnBrandForm() throws Exception {
         mockMvc.perform(post("/brands/{id}/edit", nike.getId())
                         .with(user("admin").roles("ADMIN"))
@@ -324,6 +341,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede eliminar una marca
     void delete_whenUserIsAdmin_shouldDeleteBrandAndRedirect() throws Exception {
         mockMvc.perform(post("/brands/{id}/delete", nike.getId())
                         .with(user("admin").roles("ADMIN"))
@@ -336,6 +354,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario sin rol administrador no puede eliminar marcas
     void delete_whenUserIsNotAdmin_shouldReturnForbidden() throws Exception {
         mockMvc.perform(post("/brands/{id}/delete", nike.getId())
                         .with(user("user").roles("USER"))
@@ -346,6 +365,7 @@ class BrandControllerTest {
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al eliminar
     void delete_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception {
         mockMvc.perform(post("/brands/{id}/delete", nike.getId())
                         .with(csrf()))
