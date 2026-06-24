@@ -32,6 +32,7 @@ class BrandServiceTest {
     private BrandService brandService;
 
     @Test
+    // Verifica que se devuelven todas las marcas como DTO
     void findAll_shouldReturnAllBrandsAsDto() {
         Brand nike = Brand.builder()
                 .id(UUID.randomUUID())
@@ -65,6 +66,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que se devuelve una marca existente por id
     void findById_whenBrandExists_shouldReturnDto() {
         UUID id = UUID.randomUUID();
 
@@ -91,6 +93,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que se lanza excepcion cuando la marca no existe
     void findById_whenBrandDoesNotExist_shouldThrowException() {
         UUID id = UUID.randomUUID();
 
@@ -104,6 +107,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que no se crea una marca con nombre duplicado
     void create_whenNameAlreadyExists_shouldThrowException() {
         BrandRequestDto dto = BrandRequestDto.builder()
                 .name("Nike")
@@ -124,6 +128,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que no se crea una marca con NIF duplicado
     void create_whenNifAlreadyExists_shouldThrowException() {
         BrandRequestDto dto = BrandRequestDto.builder()
                 .name("Nike")
@@ -145,6 +150,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que se guarda una marca valida y se devuelve como DTO
     void create_whenDataIsValid_shouldSaveAndReturnDto() {
         UUID generatedId = UUID.randomUUID();
 
@@ -187,6 +193,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que una marca se guarda como activa cuando active es null
     void create_whenActiveIsNull_shouldSaveBrandAsActive() {
         UUID generatedId = UUID.randomUUID();
 
@@ -217,6 +224,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que actualizar una marca inexistente lanza excepcion
     void update_whenBrandDoesNotExist_shouldThrowException() {
         UUID id = UUID.randomUUID();
 
@@ -237,6 +245,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que no se actualiza una marca con nombre usado por otra
     void update_whenAnotherBrandHasSameName_shouldThrowException() {
         UUID id = UUID.randomUUID();
 
@@ -266,6 +275,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que no se actualiza una marca con NIF usado por otra
     void update_whenAnotherBrandHasSameNif_shouldThrowException() {
         UUID id = UUID.randomUUID();
 
@@ -297,6 +307,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que se actualiza una marca valida y se devuelve como DTO
     void update_whenDataIsValid_shouldUpdateAndReturnDto() {
         UUID id = UUID.randomUUID();
 
@@ -338,6 +349,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que al actualizar con active null se mantiene el valor previo
     void update_whenActiveIsNull_shouldKeepPreviousActiveValue() {
         UUID id = UUID.randomUUID();
 
@@ -366,6 +378,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que delete delega el borrado en el repositorio
     void delete_shouldCallRepositoryDeleteById() {
         UUID id = UUID.randomUUID();
 
@@ -375,6 +388,7 @@ class BrandServiceTest {
     }
 
     @Test
+    // Verifica que una entidad Brand se mapea correctamente a DTO
     void toResponseDto_shouldMapEntityToDto() {
         UUID id = UUID.randomUUID();
 

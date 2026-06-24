@@ -20,6 +20,7 @@ public class BrandService
 
     /*Recupera todas las marcas y las transforma a DTOs de respuesta
      * @return lista de BrandResponseDto con todas las marcas*/
+    // Recupera todas las marcas y las convierte a DTO de respuesta
     public List<BrandResponseDto> findAll()
     {
         return brandRepository.findAll()
@@ -32,6 +33,7 @@ public class BrandService
      * @param id UUID de la marca a buscar
      * @return BrandResponseDto con los datos de la marca encontrada
      * @throws RuntimeException si no existe la marca*/
+    // Busca una marca por id y la devuelve como DTO
     public BrandResponseDto findById(UUID id)
     {
         Brand brand = brandRepository.findById(id)
@@ -48,6 +50,7 @@ public class BrandService
      * @throws RuntimeException si ya existe una marca con el mismo nombre o NIF.
      */
     @Transactional
+    // Crea una nueva marca validando nombre y NIF duplicados
     public BrandResponseDto create(BrandRequestDto dto)
     {
         //Validacion: no permite nombres duplicados
@@ -86,6 +89,7 @@ public class BrandService
      * @throws RuntimeException si la marca no existe o si hay conflictos de unicidad.
      */
     @Transactional
+    // Actualiza una marca existente validando conflictos de unicidad
     public BrandResponseDto update(UUID id, BrandRequestDto dto)
     {
         //Recuperar la entidad; lanzar excepción si no existe
@@ -118,6 +122,7 @@ public class BrandService
 
     /*Elimina una marca por su id
      * @param id UUID de la marca a eliminar*/
+    // Elimina una marca por id
     public void delete(UUID id)
     {
         brandRepository.deleteById(id);
@@ -129,6 +134,7 @@ public class BrandService
      * @param brand entidad a convertir.
      * @return DTO de respuesta con los campos relevantes.
      */
+    // Convierte una entidad Brand a BrandResponseDto
     public BrandResponseDto toResponseDto(Brand brand)
     {
         return BrandResponseDto.builder()
