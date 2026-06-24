@@ -37,6 +37,7 @@ class CategoryControllerTest
     private CategoryRepository categoryRepository;
 
     @Test
+    // Verifica que el listado de categorias se muestra para usuarios anonimos
     void findAll_whenUserIsAnonymous_shouldReturnCategoryListView() throws Exception
     {
         categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -48,6 +49,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que el arbol de categorias se muestra para usuarios anonimos
     void findTree_whenUserIsAnonymous_shouldReturnCategoryTreeView() throws Exception
     {
         Category root = buildRootCategory("Informática", "informatica");
@@ -61,6 +63,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que el detalle de una categoria existente se muestra para usuarios anonimos
     void findById_whenUserIsAnonymousAndCategoryExists_shouldReturnCategoryDetailView() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -73,6 +76,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al crear
     void showCreateForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception
     {
         mockMvc.perform(get("/categories/new"))
@@ -81,6 +85,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario normal no puede abrir el formulario de creacion
     void showCreateForm_whenUserIsNormalUser_shouldReturnForbidden() throws Exception
     {
         mockMvc.perform(get("/categories/new")
@@ -89,6 +94,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede abrir el formulario de creacion
     void showCreateForm_whenUserIsAdmin_shouldReturnCategoryFormView() throws Exception
     {
         mockMvc.perform(get("/categories/new")
@@ -101,6 +107,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al enviar creacion
     void create_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception
     {
         mockMvc.perform(post("/categories")
@@ -117,6 +124,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario normal no puede crear categorias
     void create_whenUserIsNormalUser_shouldReturnForbidden() throws Exception
     {
         mockMvc.perform(post("/categories")
@@ -133,6 +141,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede crear una categoria valida
     void create_whenUserIsAdminAndDataIsValid_shouldCreateCategoryAndRedirect() throws Exception
     {
         mockMvc.perform(post("/categories")
@@ -156,6 +165,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que los datos invalidos devuelven el formulario de categoria
     void create_whenUserIsAdminAndDataIsInvalid_shouldReturnFormView() throws Exception
     {
         mockMvc.perform(post("/categories")
@@ -177,6 +187,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede crear una categoria hija
     void create_whenUserIsAdminAndParentExists_shouldCreateChildCategoryAndRedirect() throws Exception
     {
         Category parent = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -202,6 +213,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al editar
     void showEditForm_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -212,6 +224,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario normal no puede abrir el formulario de edicion
     void showEditForm_whenUserIsNormalUser_shouldReturnForbidden() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -222,6 +235,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede abrir el formulario de edicion
     void showEditForm_whenUserIsAdminAndCategoryExists_shouldReturnCategoryFormView() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -237,6 +251,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al actualizar
     void update_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -253,6 +268,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario normal no puede actualizar categorias
     void update_whenUserIsNormalUser_shouldReturnForbidden() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -269,6 +285,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede actualizar una categoria valida
     void update_whenUserIsAdminAndDataIsValid_shouldUpdateCategoryAndRedirect() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -294,6 +311,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que los datos invalidos al actualizar devuelven el formulario
     void update_whenUserIsAdminAndDataIsInvalid_shouldReturnFormView() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -316,6 +334,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que una categoria no puede asignarse como su propio padre
     void update_whenUserIsAdminAndCategoryIsAssignedAsItsOwnParent_shouldReturnFormViewWithGlobalError() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -338,6 +357,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario anonimo es redirigido al login al eliminar
     void delete_whenUserIsAnonymous_shouldRedirectToLogin() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -351,6 +371,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un usuario normal no puede eliminar categorias
     void delete_whenUserIsNormalUser_shouldReturnForbidden() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -364,6 +385,7 @@ class CategoryControllerTest
     }
 
     @Test
+    // Verifica que un administrador puede eliminar una categoria existente
     void delete_whenUserIsAdminAndCategoryExists_shouldDeleteCategoryAndRedirect() throws Exception
     {
         Category category = categoryRepository.save(buildRootCategory("Informática", "informatica"));
@@ -378,6 +400,7 @@ class CategoryControllerTest
         assertThat(categoryRepository.findById(category.getId())).isEmpty();
     }
 
+    // Construye una categoria raiz para los tests
     private Category buildRootCategory(String name, String slug)
     {
         return Category.builder()
