@@ -14,6 +14,7 @@ public class PaymentService
 {
     private final UserRepository userRepository;
 
+    // Guarda la tarjeta de crédito en la base de datos
     @Transactional
     public void saveSimulatedCreditCard(User user, PaymentCardRequestDto dto) {
         String normalizedCardNumber = normalizeCardNumber(dto.getCardNumber());
@@ -32,18 +33,22 @@ public class PaymentService
         userRepository.save(user);
     }
 
+    // Normaliza el número de tarjeta de crédito
     private String normalizeCardNumber(String cardNumber) {
         return cardNumber == null ? "" : cardNumber.replaceAll("\\s+", "");
     }
 
+    // Comprueba la longitud del número de tarjeta de crédito
     private boolean isValidCardNumberLength(String cardNumber) {
         return cardNumber.matches("^[0-9]{13,19}$");
     }
 
+    // Extrae los últimos 4 dígitos del número de tarjeta de crédito
     private String extractLastFourDigits(String cardNumber) {
         return cardNumber.substring(cardNumber.length() - 4);
     }
 
+    // Detecta la marca de la tarjeta de crédito
     private String detectCardBrand(String cardNumber) {
         if (cardNumber.startsWith("4")) {
             return "VISA";
