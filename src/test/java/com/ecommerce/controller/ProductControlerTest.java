@@ -33,7 +33,6 @@ class ProductControlerTest {
     Product productToDeactivate;
     Product productToActivate;
 
-
     @BeforeEach
     void setUp() {
         productToDeactivate = new Product();
@@ -49,6 +48,7 @@ class ProductControlerTest {
         productToActivate = productRepository.save(productToActivate);
     }
 
+    // Comprueba que aparece el detalle del producto correctamente
     @Test
     void productsDetail() throws Exception {
         UUID id = productToDeactivate.getId();
@@ -57,6 +57,7 @@ class ProductControlerTest {
                 .andExpect(view().name("products/product-detail"));
     }
 
+    // Comprueba que aparece la lista de productos correctamente
     @Test
     void searchProducts() throws Exception {
         mockMvc.perform(get("/products/search").param("query", "Producto"))
@@ -64,6 +65,7 @@ class ProductControlerTest {
                 .andExpect(view().name("products/product-list"));
     }
 
+    // Comprueba que el producto se desactiva correctamente
     @Test
     void deactivateProduct() throws Exception {
         assertTrue(productToDeactivate.isAvailable());
@@ -74,12 +76,13 @@ class ProductControlerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/admin/products/list*"));
 
-        // traer producto de base de datos y comprobar que available es false
+        // Traer producto de base de datos y comprobar que available es false
         Product productDB = productRepository.findById(id).orElseThrow();
         assertFalse(productDB.isAvailable());
 
     }
 
+    // Comprueba que el producto se activa correctamente
     @Test
     void activateProduct() throws Exception {
         assertFalse(productToActivate.isAvailable());
@@ -96,6 +99,7 @@ class ProductControlerTest {
 
     }
 
+    // Comprueba que cuando seleccionamos para crear un producto nuevo, aparezca el formulario correspondiente
     @Test
     void navigateToForm() throws Exception {
         mockMvc.perform(get("/products/new"))
@@ -103,6 +107,7 @@ class ProductControlerTest {
                 .andExpect(view().name("products/product-form"));
     }
 
+    // Comprueba que cuando se cree un producto nuevo, redirija y aparezca la lista de productos
     @Test
     void createProduct() throws Exception {
         //count products
@@ -123,6 +128,7 @@ class ProductControlerTest {
         assertEquals(before + 1, after);
     }
 
+    // Comprueba que cuando se acceda a la vista de productos, aparezca la lista de productos
     @Test
     void products() throws Exception {
         mockMvc.perform(get("/products"))
@@ -130,6 +136,7 @@ class ProductControlerTest {
                 .andExpect(view().name("products/product-list"));
     }
 
+    // Comprueba que cuando la categoría no exista, aparezca la lista de productos
     @Test
     void listProducts_whenCategoryIsBlank_shouldListAvailableProducts() throws Exception {
         mockMvc.perform(get("/products").param("category", "   "))
@@ -140,6 +147,7 @@ class ProductControlerTest {
                 .andExpect(model().attribute("saludo", "NUESTRA TIENDA"));
     }
 
+    // Comprueba que cuando la categoría si exista, aparezca la lista de productos
     @Test
     void listProducts_whenCategoryIsPresent_shouldFilterBySubcategorySlug() throws Exception {
         mockMvc.perform(get("/products").param("category", "informatica"))
@@ -150,6 +158,7 @@ class ProductControlerTest {
                 .andExpect(model().attribute("saludo", "NUESTRA TIENDA"));
     }
 
+    // Comprueba que cuando el producto no exista, se redirija a la lista de productos
     @Test
     void productsDetail_whenProductDoesNotExist_shouldRedirectToProducts() throws Exception {
         UUID id = UUID.randomUUID();
@@ -159,6 +168,7 @@ class ProductControlerTest {
                 .andExpect(redirectedUrlPattern("/products*"));
     }
 
+    // Comprueba que si el token CSRF no existe, se muestre el detalle del producto
     @Test
     void productsDetail_whenCsrfTokenExists_shouldStillShowDetail() throws Exception {
         UUID id = productToDeactivate.getId();
@@ -177,6 +187,7 @@ class ProductControlerTest {
                 .andExpect(model().attributeExists("reviews"));
     }
 
+    // Comprueba que la lista de productos por categoría retorne una lista de productos
     @Test
     void listProductsByCategory_shouldReturnProductList() throws Exception {
         UUID categoryId = UUID.randomUUID();
@@ -188,6 +199,7 @@ class ProductControlerTest {
                 .andExpect(model().attributeExists("categories"));
     }
 
+    // Comprueba que la lista de productos del administrador retorne una lista de productos de administrador
     @Test
     void listAdminProducts_shouldReturnAdminProductList() throws Exception {
         mockMvc.perform(get("/admin/products/list"))
@@ -196,6 +208,7 @@ class ProductControlerTest {
                 .andExpect(model().attributeExists("products"));
     }
 
+    // Comprueba que cuando se cambie el descuento de un producto existente, se actualice la base de datos
     @Test
     void updateProductDiscount_whenProductExistsAndDiscountGreaterThan99_shouldNormalizeTo99() throws Exception {
         UUID id = productToDeactivate.getId();
@@ -211,6 +224,7 @@ class ProductControlerTest {
         assertEquals(99, productDB.getDiscountPercentage());
     }
 
+    // Comprueba que cuando se cambie el descuento de un producto que no existe, se redirija a la lista de productos
     @Test
     void updateProductDiscount_whenProductDoesNotExist_shouldOnlyRedirect() throws Exception {
         long before = productRepository.count();
@@ -226,6 +240,7 @@ class ProductControlerTest {
         assertEquals(before, after);
     }
 
+    // Comprueba que cuando se desactiva un producto que no existe, se redirija a la lista de productos
     @Test
     void deactivateProduct_whenProductDoesNotExist_shouldOnlyRedirect() throws Exception {
         mockMvc.perform(get("/products/deactivate/" + UUID.randomUUID()))
@@ -233,6 +248,7 @@ class ProductControlerTest {
                 .andExpect(redirectedUrlPattern("/admin/products/list*"));
     }
 
+    // Comprueba que cuando se activa un producto que no existe, se redirija a la lista de productos
     @Test
     void activateProduct_whenProductDoesNotExist_shouldOnlyRedirect() throws Exception {
         mockMvc.perform(get("/products/activate/" + UUID.randomUUID()))
@@ -240,6 +256,7 @@ class ProductControlerTest {
                 .andExpect(redirectedUrlPattern("/admin/products/list*"));
     }
 
+    // Comprueba que cuando se navega en un formulario de producto, se muestre el formulario
     @Test
     void navigateToFormAlias_shouldReturnProductForm() throws Exception {
         mockMvc.perform(get("/products/add"))
@@ -251,6 +268,7 @@ class ProductControlerTest {
                 .andExpect(model().attributeExists("subcategories"));
     }
 
+    // Comprueba que cuando se navega en un formulario de un producto que existe, se muestre el formulario
     @Test
     void navigateToEditForm_whenProductExists_shouldReturnProductForm() throws Exception {
         UUID id = productToDeactivate.getId();
@@ -264,6 +282,7 @@ class ProductControlerTest {
                 .andExpect(model().attributeExists("subcategories"));
     }
 
+    // Comprueba que cuando se navege por un formulario de edición de un producto que no existe, se redirija a la lista de productos de administrador
     @Test
     void navigateToEditForm_whenProductDoesNotExist_shouldRedirectToAdminList() throws Exception {
         mockMvc.perform(get("/products/edit/" + UUID.randomUUID()))
@@ -271,6 +290,7 @@ class ProductControlerTest {
                 .andExpect(redirectedUrlPattern("/admin/products/list*"));
     }
 
+    // Comprueba que cuando se crea un producto y el descuento es negativo, se normalice a cero
     @Test
     void createProduct_whenDiscountIsNegative_shouldNormalizeToZero() throws Exception {
         long before = productRepository.count();
@@ -301,6 +321,7 @@ class ProductControlerTest {
         assertEquals(0, productDB.getDiscountPercentage());
     }
 
+    // Comprueba que cuando se crea un producto y ya existe esa id, se acutalice a un producto ya existente
     @Test
     void createProduct_whenProductHasExistingId_shouldUpdateExistingProduct() throws Exception {
         UUID id = productToDeactivate.getId();
@@ -331,6 +352,7 @@ class ProductControlerTest {
         assertEquals(99, productDB.getDiscountPercentage());
     }
 
+    // Comprueba que cuando se crea un producto y no existe esa id, se crea un nuevo producto
     @Test
     void createProduct_whenProductHasNonExistingId_shouldNotCreateNewProduct() throws Exception {
         long before = productRepository.count();
