@@ -24,6 +24,7 @@ class PaymentServiceTest
     @InjectMocks
     private PaymentService paymentService;
 
+    // Comprueba que cuando la tarjeta de crédito sea VISA, el metodo de pago sea VISA
     @Test
     void saveSimulatedCreditCard_WhenCardIsVisa_ShouldSaveUserWithVisaData() {
         User user = mock(User.class);
@@ -46,6 +47,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando la tarjeta de crédito sea MASTERCARD, el metodo de pago sea MASTERCARD
     @Test
     void saveSimulatedCreditCard_WhenCardIsMastercard_ShouldSaveUserWithMastercardBrand() {
         User user = mock(User.class);
@@ -68,6 +70,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando la tarjeta de crédito comience con 34, el metodo de pago sea AMEX
     @Test
     void saveSimulatedCreditCard_WhenCardIsAmexStartingWith34_ShouldSaveUserWithAmexBrand() {
         User user = mock(User.class);
@@ -90,6 +93,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando la tarjeta de crédito comience con 37, el metodo de pago sea AMEX
     @Test
     void saveSimulatedCreditCard_WhenCardIsAmexStartingWith37_ShouldSaveUserWithAmexBrand() {
         User user = mock(User.class);
@@ -112,6 +116,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando la tarjeta de crédito no sea de una marca conocida, el metodo de pago sea UNKOWN
     @Test
     void saveSimulatedCreditCard_WhenCardBrandIsUnknown_ShouldSaveUserWithUnknownBrand() {
         User user = mock(User.class);
@@ -134,6 +139,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito tenga espacios, se normalicen antes de guardar
     @Test
     void saveSimulatedCreditCard_WhenCardNumberHasSpaces_ShouldNormalizeCardNumberBeforeSaving() {
         User user = mock(User.class);
@@ -151,6 +157,7 @@ class PaymentServiceTest
         verify(userRepository).save(user);
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito sea demasiado corto, salte una excepción y no se guarde el usuario
     @Test
     void saveSimulatedCreditCard_WhenCardNumberIsTooShort_ShouldThrowExceptionAndNotSaveUser() {
         User user = mock(User.class);
@@ -177,6 +184,7 @@ class PaymentServiceTest
         verify(user, never()).setCardExpirationYear(any());
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito sea demasiado largo, salte una excepción y no se guarde el usuario
     @Test
     void saveSimulatedCreditCard_WhenCardNumberIsTooLong_ShouldThrowExceptionAndNotSaveUser() {
         User user = mock(User.class);
@@ -197,6 +205,7 @@ class PaymentServiceTest
         verify(userRepository, never()).save(any(User.class));
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito contenga letras, salte una excepción y no se guarde el usuario
     @Test
     void saveSimulatedCreditCard_WhenCardNumberContainsLetters_ShouldThrowExceptionAndNotSaveUser() {
         User user = mock(User.class);
@@ -217,6 +226,7 @@ class PaymentServiceTest
         verify(userRepository, never()).save(any(User.class));
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito sea nulo, salte una excepción y no se guarde el usuario
     @Test
     void saveSimulatedCreditCard_WhenCardNumberIsNull_ShouldThrowExceptionAndNotSaveUser() {
         User user = mock(User.class);
@@ -237,6 +247,7 @@ class PaymentServiceTest
         verify(userRepository, never()).save(any(User.class));
     }
 
+    // Comprueba que cuando el número de la tarjeta de crédito esté en blanco, salte una excepción y no se guarde el usuario
     @Test
     void saveSimulatedCreditCard_WhenCardNumberIsBlank_ShouldThrowExceptionAndNotSaveUser() {
         User user = mock(User.class);
