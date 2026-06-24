@@ -68,6 +68,7 @@ class ProfileControllerTest {
         SecurityContextHolder.clearContext();
     }
 
+    // Crear un usuario con los datos proporcionados
     private User createUser(String username, String email) {
         User user = new User();
         user.setId(UUID.randomUUID());
@@ -78,6 +79,7 @@ class ProfileControllerTest {
         return user;
     }
 
+    // Pide autenticación al usuario
     private RequestPostProcessor authenticatedAs(User user) {
         return request -> {
             Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -94,6 +96,7 @@ class ProfileControllerTest {
         };
     }
 
+    // Verifica que un usuario autenticado no-admin vea su propio perfil
     @Test
     void viewProfile_whenAuthenticatedUserIsNotAdmin_shouldUseAuthenticatedUser() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -110,6 +113,7 @@ class ProfileControllerTest {
         verify(usersService, never()).findAnyProfileUser();
     }
 
+    // Verifica que un admin pueda ver el perfil de otro usuario especificando su email
     @Test
     void viewProfile_whenAdminAndEmailIsPresent_shouldFindProfileByEmail() throws Exception {
         String email = "otro@test.com";
@@ -128,6 +132,7 @@ class ProfileControllerTest {
         verify(usersService).findProfileByEmail(email);
     }
 
+    // Verifica que un admin sin email especificado vea su propio perfil
     @Test
     void viewProfile_whenAdminAndEmailIsBlank_shouldUseAuthenticatedAdmin() throws Exception {
         when(usersService.isAdmin(adminUser)).thenReturn(true);
@@ -146,6 +151,7 @@ class ProfileControllerTest {
         verify(usersService, never()).findProfileByEmail("   ");
     }
 
+    // Verifica que un usuario no autenticado pueda ver un perfil aleatorio
     @Test
     void viewProfile_whenNoAuthenticatedUserAndNoEmail_shouldFindAnyProfileUser() throws Exception {
         when(usersService.findAnyProfileUser()).thenReturn(profileUser);
@@ -158,6 +164,7 @@ class ProfileControllerTest {
         verify(usersService).findAnyProfileUser();
     }
 
+    // Verifica que el sistema busque por email como alternativa si no encuentra el usuario por username
     @Test
     void viewProfile_whenAuthenticatedUserNotFoundByUsername_shouldFindByEmailFallback() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -175,6 +182,7 @@ class ProfileControllerTest {
         verify(usersService).findProfileByEmail(authenticatedUser.getEmail());
     }
 
+    // Verifica que se muestre el formulario de edición de perfil
     @Test
     void editProfile_shouldReturnProfileForm() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -187,6 +195,7 @@ class ProfileControllerTest {
                 .andExpect(model().attribute("user", profileUser));
     }
 
+    // Verifica que la actualización exitosa del perfil redirija con mensaje de éxito
     @Test
     void updateProfile_whenSuccess_shouldRedirectWithSuccessMessage() throws Exception {
         when(usersService.findByUsername(authenticatedUser.getUsername()))
@@ -204,6 +213,7 @@ class ProfileControllerTest {
         verify(usersService).updateProfile(eq(profileUser.getId()), any(User.class));
     }
 
+    // Verifica que una excepción en la actualización redirija con mensaje de error
     @Test
     void updateProfile_whenServiceThrowsException_shouldRedirectWithErrorMessage() throws Exception {
         when(usersService.findByUsername(authenticatedUser.getUsername()))
@@ -223,6 +233,7 @@ class ProfileControllerTest {
         verify(usersService).updateProfile(eq(profileUser.getId()), any(User.class));
     }
 
+    // Verifica que un usuario no autenticado no pueda actualizar el perfil
     @Test
     void updateProfile_whenNoAuthenticatedUser_shouldRedirectWithErrorMessage() throws Exception {
         mockMvc.perform(post("/users/profile/update")
@@ -234,6 +245,7 @@ class ProfileControllerTest {
         verify(usersService, never()).updateProfile(any(), any());
     }
 
+    // Verifica que se muestre el formulario para crear una nueva dirección
     @Test
     void newAddress_shouldReturnAddressFormWithEmail() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -247,6 +259,7 @@ class ProfileControllerTest {
                 .andExpect(model().attribute("email", profileUser.getEmail()));
     }
 
+    // Verifica que la creación exitosa de dirección asigne el userId y redirija con éxito
     @Test
     void createAddress_whenSuccess_shouldSetUserIdAndRedirectWithSuccessMessage() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -273,6 +286,7 @@ class ProfileControllerTest {
         assertEquals(profileUser.getId(), dtoCaptor.getValue().getUsersId());
     }
 
+    // Verifica que una excepción en la creación redirija con mensaje de error
     @Test
     void createAddress_whenServiceThrowsException_shouldRedirectWithErrorMessage() throws Exception {
         when(usersService.isAdmin(authenticatedUser)).thenReturn(false);
@@ -294,6 +308,7 @@ class ProfileControllerTest {
         verify(addressService).addAddress(any(AddressRequestDto.class), eq(profileUser));
     }
 
+    // Verifica que se muestre el formulario con los datos de la dirección a editar
     @Test
     void editAddress_shouldReturnAddressFormWithAddressAndEmail() throws Exception {
         UUID addressId = UUID.randomUUID();
@@ -314,6 +329,7 @@ class ProfileControllerTest {
         verify(addressService).findById(addressId);
     }
 
+    // Verifica que la actualización exitosa de dirección asigne el userId y redirija con éxito
     @Test
     void updateAddress_whenSuccess_shouldSetUserIdAndRedirectWithSuccessMessage() throws Exception {
         UUID addressId = UUID.randomUUID();
@@ -342,6 +358,7 @@ class ProfileControllerTest {
         assertEquals(profileUser.getId(), dtoCaptor.getValue().getUsersId());
     }
 
+    // Verifica que una excepción en la actualización redirija con mensaje de error
     @Test
     void updateAddress_whenServiceThrowsException_shouldRedirectWithErrorMessage() throws Exception {
         UUID addressId = UUID.randomUUID();
@@ -365,6 +382,7 @@ class ProfileControllerTest {
         verify(addressService).updateAddress(eq(addressId), any(AddressRequestDto.class), eq(profileUser));
     }
 
+    // Verifica que un usuario no autenticado sea redirigido al login al intentar eliminar
     @Test
     void deleteAddressFromProfile_whenUserIsNull_shouldRedirectToLogin() throws Exception {
         UUID addressId = UUID.randomUUID();
@@ -376,6 +394,7 @@ class ProfileControllerTest {
         verify(addressService, never()).delete(any(), any());
     }
 
+    // Verifica que la eliminación exitosa de dirección redirija con mensaje de éxito
     @Test
     void deleteAddressFromProfile_whenSuccess_shouldRedirectWithSuccessMessage() throws Exception {
         UUID addressId = UUID.randomUUID();
@@ -389,6 +408,7 @@ class ProfileControllerTest {
         verify(addressService).delete(addressId, authenticatedUser);
     }
 
+    // Verifica que una excepción en la eliminación redirija con mensaje de error
     @Test
     void deleteAddressFromProfile_whenServiceThrowsException_shouldRedirectWithErrorMessage() throws Exception {
         UUID addressId = UUID.randomUUID();
