@@ -50,6 +50,7 @@ class ReviewControllerTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // Prepara usuarios producto y review antes de cada test
     @BeforeEach
     void setUp() {
         user = userRepository.save(User.builder()
@@ -81,6 +82,7 @@ class ReviewControllerTest {
     }
 
     @Test
+    // Verifica que el listado de reviews se muestra correctamente
     void reviews() throws Exception {
         // GET /reviews -> Comprobamos que carga el listado
         mockMvc.perform(get("/reviews"))
@@ -89,6 +91,7 @@ class ReviewControllerTest {
     }
 
     @Test
+    // Verifica que el detalle de una review se muestra correctamente
     void reviewsDetail() throws Exception {
         // GET /reviews/{id} -> Detalle de la review que guardamos en el setUp
         mockMvc.perform(get("/reviews/" + review.getId()))
@@ -98,6 +101,7 @@ class ReviewControllerTest {
     }
 
     @Test
+    // Verifica que un usuario puede añadir una review a un producto
     void addReview() throws Exception {
         long totalAntes = reviewRepo.count();
 
@@ -116,6 +120,7 @@ class ReviewControllerTest {
     }
 
     @Test
+    // Verifica que un administrador puede actualizar una review
     void updateReview() throws Exception {
         //  Añadimos .with(csrf()) al final del post()
         mockMvc.perform(post("/reviews/edit/" + review.getId()).with(csrf()).with(user(admin))
@@ -132,6 +137,7 @@ class ReviewControllerTest {
 
 //    @WithMockUser(username = "admin", roles = {"ADMIN"})
     @Test
+    // Verifica que un administrador puede eliminar una review
     void deleteReview() throws Exception {
         UUID id = review.getId();
         assertTrue(reviewRepo.existsById(id));
