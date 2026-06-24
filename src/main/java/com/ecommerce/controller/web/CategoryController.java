@@ -121,7 +121,7 @@ public class CategoryController
         try
         {
           categoryService.create(dto);
-          redirectAttributes.addFlashAttribute("successMessage", "categoria creada correctamente");
+          redirectAttributes.addFlashAttribute("successMessage", "Categoría creada correctamente");
           return "redirect:/categories";
         }
         catch (RuntimeException ex)
@@ -197,7 +197,7 @@ public class CategoryController
         try
         {
           categoryService.update(id, dto);
-          redirectAttributes.addFlashAttribute("successMessage", "Categoria actualizada correctamente");
+          redirectAttributes.addFlashAttribute("successMessage", "Categoría actualizada correctamente");
           return "redirect:/categories";
         }
         catch (RuntimeException ex)
@@ -224,7 +224,7 @@ public class CategoryController
     public String delete(@PathVariable UUID id, RedirectAttributes redirectAttributes)
     {
         categoryService.delete(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Categoria eliminada correctamente");
+        redirectAttributes.addFlashAttribute("successMessage", "Categoría eliminada correctamente");
         return "redirect:/categories";
     }
     

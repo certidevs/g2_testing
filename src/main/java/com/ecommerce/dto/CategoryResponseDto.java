@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-// Lo que el servidor devuelve cuando se consulta o creas una categoria.
+// Lo que el servidor devuelve cuando se consulta o creas una categoría.
 public class CategoryResponseDto
 {
     private UUID id;

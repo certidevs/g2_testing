@@ -23,11 +23,11 @@ class CategorySeleniumTest extends BaseSeleniumTest {
 
     private static final String CATEGORY_NAME = "Selenium Category";
     private static final String CATEGORY_SLUG = "seleniumcategory";
-    private static final String CATEGORY_DESCRIPTION = "Categoria creada desde Selenium";
+    private static final String CATEGORY_DESCRIPTION = "Categoría creada desde Selenium";
 
     private static final String UPDATED_CATEGORY_NAME = "Selenium Category Updated";
     private static final String UPDATED_CATEGORY_SLUG = "seleniumcategoryupdated";
-    private static final String UPDATED_CATEGORY_DESCRIPTION = "Categoria actualizada desde Selenium";
+    private static final String UPDATED_CATEGORY_DESCRIPTION = "Categoría actualizada desde Selenium";
 
     private static final String CATEGORY_IMAGE_URL = "https://example.com/category.png";
     private static final String UPDATED_CATEGORY_IMAGE_URL = "https://example.com/category-updated.png";
@@ -60,7 +60,7 @@ class CategorySeleniumTest extends BaseSeleniumTest {
         submitCategoryForm();
 
         wait.until(ExpectedConditions.urlContains("/categories"));
-        waitUntilPageContains("categoria creada correctamente");
+        waitUntilPageContains("Categoría creada correctamente");
 
         Optional<Category> createdCategory = categoryRepository.findBySlug(CATEGORY_SLUG);
 
@@ -84,7 +84,7 @@ class CategorySeleniumTest extends BaseSeleniumTest {
         submitCategoryForm();
 
         wait.until(ExpectedConditions.urlContains("/categories"));
-        waitUntilPageContains("Categoria actualizada correctamente");
+        waitUntilPageContains("Categoría actualizada correctamente");
 
         Optional<Category> oldCategory = categoryRepository.findBySlug(CATEGORY_SLUG);
         Optional<Category> updatedCategory = categoryRepository.findBySlug(UPDATED_CATEGORY_SLUG);
@@ -103,7 +103,7 @@ class CategorySeleniumTest extends BaseSeleniumTest {
         alert.accept();
 
         wait.until(ExpectedConditions.urlContains("/categories"));
-        waitUntilPageContains("Categoria eliminada correctamente");
+        waitUntilPageContains("Categoría eliminada correctamente");
 
         assertThat(categoryRepository.findBySlug(UPDATED_CATEGORY_SLUG)).isEmpty();
     }

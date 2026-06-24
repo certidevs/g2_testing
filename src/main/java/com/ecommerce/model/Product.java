@@ -34,7 +34,7 @@ public class Product {
     @Builder.Default //por defecto True
     private boolean available = true; //Indica si el producto está disponible para la venta.
 
-    private String isbn ; // Codigo de barras para cada producto
+    private String isbn ; // Código de barras para cada producto
 
     @Column(length = 500) //Limitar la longitud de la descripción corta a 500 caracteres
     private String shortDescription; //Descripción corta del producto
@@ -53,7 +53,7 @@ public class Product {
     // Porcentaje de 0 a 100. Si es 0, no tiene descuento.
     private Integer discountPercentage = 0;
 
-    // metodo para calcular el precio final
+    // Método para calcular el precio final
     public Double getFinalPrice() {
         if (discountPercentage != null && discountPercentage > 0) {
             return price - (price * discountPercentage / 100.0);
