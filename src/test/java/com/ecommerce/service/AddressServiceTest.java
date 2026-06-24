@@ -95,6 +95,7 @@ class AddressServiceTest {
         request = validRequest(userId);
     }
 
+    // Comprueba que aparezcan las direcciones de envío registradas por el usuario concreto
     @Test
     void findByUserReturnsAddressDtos() {
         when(addressRepository.findByUser(user)).thenReturn(List.of(address, secondAddress));
@@ -107,6 +108,7 @@ class AddressServiceTest {
         verify(addressRepository).findByUser(user);
     }
 
+    // Comprueba que cuando se agrega una dirección de envío y se guarda, se guarde a el usuario autenticado
     @Test
     void addAddressSavesAddressForLoggedUser() {
         ArgumentCaptor<Address> captor = ArgumentCaptor.forClass(Address.class);
@@ -127,6 +129,7 @@ class AddressServiceTest {
         assertSame(user, savedAddress.getUser());
     }
 
+    // Comprueba que cuando se agrega una dirección de envío, salte una excepción si el usuario no está autenticado
     @Test
     void addAddressThrowsWhenUserIsNotAuthenticated() {
         RuntimeException exception = assertThrows(RuntimeException.class,
@@ -136,6 +139,7 @@ class AddressServiceTest {
         verifyNoInteractions(addressRepository);
     }
 
+    // Comprueba que cuando se agrega una dirección de envío, salte una excepción si el ID del usuario no está presente
     @Test
     void addAddressThrowsWhenRequestUserIdIsMissing() {
         request.setUsersId(null);
@@ -147,6 +151,7 @@ class AddressServiceTest {
         verifyNoInteractions(addressRepository);
     }
 
+    // Comprueba que cuando se agrega una dirección de envío, salte una excepción si el usuario del formulario no coincide con el usuario autenticado
     @Test
     void addAddressThrowsWhenRequestUserDoesNotMatchAuthenticatedUser() {
         request.setUsersId(otherUserId);
@@ -158,6 +163,7 @@ class AddressServiceTest {
         verifyNoInteractions(addressRepository);
     }
 
+    // Comprueba que cuando se buscan todas las direcciones de envío, salte una excepción si el usuario no está autenticado
     @Test
     void findAllReturnsDtosWithAndWithoutUserData() {
         Address addressWithoutUser = Address.builder()
@@ -183,6 +189,7 @@ class AddressServiceTest {
         verify(addressRepository).findAll();
     }
 
+    // Comprueba que cuando se busca una dirección de envío por su ID, se devuelva un DTO
     @Test
     void findByIdReturnsAddressDto() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
@@ -193,6 +200,7 @@ class AddressServiceTest {
         verify(addressRepository).findById(addressId);
     }
 
+    // Comprueba que cuando se busca una dirección de envío por su ID, salte una excepción si no existe
     @Test
     void findByIdThrowsWhenAddressDoesNotExist() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.empty());
@@ -204,6 +212,7 @@ class AddressServiceTest {
         verify(addressRepository).findById(addressId);
     }
 
+    // Comprueba que cuando se actualice una dirección de envío, retorne un DTO con los datos actualizados
     @Test
     void updateAddressUpdatesAndReturnsDtoWhenUserOwnsAddress() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
@@ -224,6 +233,7 @@ class AddressServiceTest {
         verify(addressRepository).save(address);
     }
 
+    // Comprueba que cuando se actualiza una dirección de envío, salte una excepción si no tiene dueño
     @Test
     void updateAddressThrowsWhenAddressHasNoOwner() {
         address.setUser(null);
@@ -237,6 +247,7 @@ class AddressServiceTest {
         verify(addressRepository, never()).save(any());
     }
 
+    // Comprueba que cuando se actualiza una dirección de envío, salte una excepción si el usuario autenticado no es el dueño de la dirección
     @Test
     void updateAddressThrowsWhenAuthenticatedUserIsNotTheOwner() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
@@ -249,6 +260,7 @@ class AddressServiceTest {
         verify(addressRepository, never()).save(any());
     }
 
+    // Comprueba que cuando se elimina una dirección de envío, se elimine si tiene dueño
     @Test
     void deleteRemovesAddressWhenUserOwnsAddress() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.of(address));
@@ -259,6 +271,7 @@ class AddressServiceTest {
         verify(addressRepository).delete(address);
     }
 
+    // Comprueba que cuando se elimina una dirección de envío, salte una excepción si no existe
     @Test
     void deleteThrowsWhenAddressDoesNotExist() {
         when(addressRepository.findById(addressId)).thenReturn(Optional.empty());
@@ -271,6 +284,7 @@ class AddressServiceTest {
         verify(addressRepository, never()).delete(any());
     }
 
+    // Comprueba que cuando se busque un usuario por su ID, se devuelva el usuario
     @Test
     void findUserEntityByIdReturnsUser() throws Exception {
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -281,6 +295,7 @@ class AddressServiceTest {
         verify(userRepository).findById(userId);
     }
 
+    // Comprueba que cuando se busque un usuario por su ID, salte una excepción si no existe
     @Test
     void findUserEntityByIdThrowsWhenUserDoesNotExist() throws Exception {
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -294,6 +309,7 @@ class AddressServiceTest {
         verify(userRepository).findById(userId);
     }
 
+    // Función para validar una dirección de envío
     private AddressRequestDto validRequest(UUID requestUserId) {
         return AddressRequestDto.builder()
                 .street("Updated Main St")
@@ -308,6 +324,7 @@ class AddressServiceTest {
                 .build();
     }
 
+    // Función para validar un DTO de dirección de envío
     private void assertAddressDto(Address expected, AddressResponseDto actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getStreet(), actual.getStreet());
@@ -323,6 +340,7 @@ class AddressServiceTest {
         assertEquals(expected.getUser().getEmail(), actual.getUsersEmail());
     }
 
+    // Función para invocar un method privado
     private User invokeFindUserEntityById(UUID id) throws Exception {
         Method method = AddressService.class.getDeclaredMethod("findUserEntityById", UUID.class);
         method.setAccessible(true);

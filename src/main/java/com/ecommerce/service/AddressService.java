@@ -91,16 +91,19 @@ public class AddressService {
         addressRepository.delete(address);
     }
 
+    // Encontrar dirección por ID
     private Address findAddressEntityById(UUID id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dirección no encontrada con ID: " + id));
     }
 
+    // Encontrar usuario por ID [STANDBY]
     private User findUserEntityById(UUID userId) {
         return usersRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + userId));
     }
 
+    // Convertir entidad a DTO
     private AddressResponseDto toResponseDto(Address address) {
         return AddressResponseDto.builder()
                 .id(address.getId())
@@ -118,6 +121,7 @@ public class AddressService {
                 .build();
     }
 
+    // Valida que el usuario logeado corresponda al usuario del formulario
     private void validateLoggedUser(AddressRequestDto dto, User user) {
         if (user == null) {
             throw new RuntimeException("Usuario no autenticado");
@@ -132,6 +136,7 @@ public class AddressService {
         }
     }
 
+    // Valida que el usuario autenticado sea el dueño de la dirección
     private void validateAddressOwner(Address address, User user) {
         if (address.getUser() == null || !address.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("No tienes permiso para modificar esta dirección");
